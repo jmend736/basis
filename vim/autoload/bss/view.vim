@@ -1,5 +1,5 @@
-function! bss#view#View(...) abort
-  return extend(copy(s:View), get(a:, 0, {}))
+function! bss#view#View(args) abort
+  return extend(copy(s:View), a:args)
 endfunction
 
 function! bss#view#TermView() abort
@@ -48,11 +48,11 @@ function! s:View.Run(cmd) abort dict
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()
-    call term_start(l:args, {'curwin': v:true})
+    call term_start(l:cmd, {'curwin': v:true})
     call self.ApplyOptions()
   finally
     call l:cursor.Restore()
-  end
+  endtry
   return self
 endfunction
 
