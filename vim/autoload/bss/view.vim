@@ -5,11 +5,11 @@ endfunction
 function! bss#view#TermView() abort
   return bss#view#View({
         \   'options': [
-        \     'nobuflisted'
-        \     'winfixwidth'
-        \     'nonumber'
-        \     'norelativenumber'
-        \   ]
+        \     'nobuflisted',
+        \     'winfixwidth',
+        \     'nonumber',
+        \     'norelativenumber',
+        \   ],
         \ })
 endfunction
 
