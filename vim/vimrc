@@ -1,0 +1,879 @@
+" Copyright (c) 2021 Julian Mendoza
+"
+" MIT License
+"
+" Permission is hereby granted, free of charge, to any person obtaining a copy
+" of this software and associated documentation files (the "Software"), to deal
+" in the Software without restriction, including without limitation the rights
+" to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+" copies of the Software, and to permit persons to whom the Software is
+" furnished to do so, subject to the following conditions:
+"
+" The above copyright notice and this permission notice shall be included in all
+" copies or substantial portions of the Software.
+"
+" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+" AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+" LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+" OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+" SOFTWARE.
+
+""
+" jmend's vimrc!
+"
+" ===== IMPORTANT NOTE =====
+" = Before using this .vimrc, you must:
+" = 1. Run :DownloadPlug (or manually run `$ curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`)
+" = 2. Restart vim
+" = 3. Run :PlugInstall
+" ==========================
+"
+" Commands:
+" :Man ~ Search man pages within vim
+" :Term ~ Without args, run the 'shell', otherwise run the specified command
+
+" Notes {{{
+" Folds:
+"   foldlevels:
+"     zX -- apply foldlevel
+"     zM -- set foldlevel to zero
+"     zR -- set foldlevel to deepest level
+"     zr -- add one to foldlevel
+"     zm -- sub one to foldlevel
+"     zx -- apply foldlevel and zv
+"   misc:
+"     zv -- open folds enough to view cursor
+"
+" Tabs:
+"   'tabstop':
+"     Number of spaces that a <Tab> in a file counts for.
+"   'softtabstop':
+"     Number of spaces that a <Tab> counts for while performing
+"     editing operations, like inserting a <Tab> or using <BS>.
+"   'shiftwidth':
+"     Number of spaces to use for each step of (auto)indent.
+"     Used for 'cindent', <<, >>, etc.
+"   'expandtab':
+"     Replaces tab characters with spaces.
+"   'smarttab':
+"     Better tab semantics, especially after new-lines.
+"
+" }}} Notes
+
+" Quite Important: ----------------------
+" I use the <localleader> to replace the leader usage in all file-specific
+" commands. So basically all commands which are set with autocommand (au) will
+" be utilizing localleader. An example of this is <localleader>r which is
+" usually used to run files.
+"
+" I've defaulted it to the same value as leader, but I recommend changing this
+" to "\<space>" in order to mentally separate the two. I'm not your mom
+" though, so you do you.
+let maplocalleader = '\'
+
+let g:jm_vimrc = {}
+
+" A variety of dependencies on the system
+let g:jm_vimrc.deps = #{
+      \   jshell: '/usr/bin/jshell',
+      \   buildozer: '/home/jmend/go/bin/buildozer',
+      \   curl: '/usr/bin/curl',
+      \   blaze: '/usr/bin/blaze',
+      \   javap: '/usr/bin/javap',
+      \   ag: '/usr/bin/ag',
+      \   JavaClassnameList: {-> readfile('/home/jmend/.vim/java-classnames')},
+      \   ClasspathJarList: {-> systemlist('fish -c "classpath list"')},
+      \   google_java_executable: '/usr/lib/jvm/java-14-openjdk-amd64/bin/java -jar /home/jmend/.vim/google-java-format-1.9-all-deps.jar --skip-javadoc-formatting',
+      \ }
+
+" Defines the import cache used for Java import search, if an attempt to
+" resolve the import for a key in this map, the value specified will be
+" imported before trying any other method to find the import.
+let g:jm_vimrc.java_import_cache = #{
+      \   Map: 'java.util.Map',
+      \   Set: 'java.util.Set',
+      \   Stream: 'java.util.stream.Stream',
+      \   Collectors: 'java.util.stream.Collectors',
+      \   List: 'java.util.List',
+      \   ArrayList: 'java.util.ArrayList',
+      \   Optional: 'java.util.Optional',
+      \   HashSet: 'java.util.HashSet',
+      \   HashMap: 'java.util.HashMap',
+      \   Collection: 'java.util.Collection',
+      \   Consumer: 'java.util.function.Consumer',
+      \   Function: 'java.util.function.Function',
+      \   ImmutableList: 'com.google.common.collect.ImmutableList',
+      \   toImmutableList: 'static com.google.common.collect.ImmutableList.toImmutableList',
+      \   ImmutableMap: 'com.google.common.collect.ImmutableMap',
+      \   Provider: 'javax.inject.Provider',
+      \   Inject: 'javax.inject.Inject',
+      \   Qualifier: 'javax.inject.Qualifier',
+      \   Singleton: 'javax.inject.Singleton',
+      \   Binds: 'dagger.Binds',
+      \   Module: 'dagger.Module',
+      \   Provides: 'dagger.Provides',
+      \   Multibinds: 'dagger.multibindings.Multibinds',
+      \   IntoSet: 'dagger.multibindings.IntoSet',
+      \   IntoMap: 'dagger.multibindings.IntoMap',
+      \   IntKey: 'dagger.multibindings.IntKey',
+      \   LongKey: 'dagger.multibindings.LongKey',
+      \   StringKey: 'dagger.multibindings.StringKey',
+      \   ClassKey: 'dagger.multibindings.ClassKey',
+      \   ElementsIntoSet: 'dagger.multibindings.ElementsIntoSet',
+      \   MapKey: 'dagger.MapKey',
+      \ }
+
+
+" Playground: {{{
+for [key, path] in items(#{
+      \   v: '~/.vimrc',
+      \   l: '~/minecraft/logs/latest.log',
+      \   j: '~/state/jems',
+      \ })
+  execute printf('nnoremap <localleader>e%s :edit %s<cr>', key, path)
+endfor
+" }}} Playground
+
+" Plugins (vim-plug): {{{
+call plug#begin('~/.vim/bundle')
+
+let g:polyglot_disabled = ['tex', 'latex', 'c', 'python']
+
+" Plugins:
+Plug 'morhetz/gruvbox'
+Plug 'tpope/vim-surround'
+Plug 'scrooloose/nerdtree'
+Plug 'godlygeek/tabular'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'moll/vim-bbye'
+Plug 'scrooloose/nerdcommenter'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-repeat'
+Plug 'triglav/vim-visual-increment'
+Plug 'tmhedberg/SimpylFold'
+Plug 'majutsushi/tagbar'
+"Plug 'beloglazov/vim-online-thesaurus'
+Plug 'pangloss/vim-javascript'
+"Plug 'mxw/vim-jsx'
+Plug 'nelstrom/vim-markdown-folding'
+"Plug 'davidhalter/jedi-vim'
+Plug 'justinmk/vim-syntax-extra'
+"Plug 'ervandew/supertab'
+Plug 'sheerun/vim-polyglot'
+Plug 'fatih/vim-go'
+"Plug 'w0rp/ale'
+Plug 'itchyny/lightline.vim'
+Plug 'ap/vim-buftabline'
+Plug 'airblade/vim-gitgutter'
+"Plug 'jpalardy/vim-slime'
+"Plug 'Valloric/YouCompleteMe'
+Plug 'google/vim-maktaba'
+Plug 'google/vim-codefmt'
+Plug 'google/vim-glaive'
+Plug 'google/vim-glaive'
+Plug '~/vim-routine'
+call plug#end()
+
+if !exists('g:loaded_plug')
+  command! DownloadPlug call s:DownloadPlug()
+  function! s:DownloadPlug()
+    let l:curl_cmd = g:jm_vimrc.deps.curl
+          \ .. ' -fLo ~/.vim/autoload/plug.vim'
+          \ .. ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+    let l:choices = [v:none, 'yes', 'no']
+    let l:choice = confirm(
+          \ 'Please confirm, about to run: ' .. l:curl_cmd,
+          \ join(l:choices[1:], "\n"))
+    let l:should_run = l:choice == 1
+    echom printf('Ok %srunning', l:should_run ? '' : 'not ', )
+    if l:choice == 1
+      echom '...'
+      silent let l:output = system(l:curl_cmd)
+      if v:shell_error
+        echom "Oh no! Something went wrong!"
+      else
+        echom "Done! Please restart vim."
+      endif
+    endif
+  endfunction
+  echom ">>>>>>>>>>>>>>>> Please run :DownloadPlug, restart then :PlugInstall <<<<<<<<<<<<<<<<"
+  echom ">>>>>>>>>>>>>>>> Alternatively, see comments in the .vimrc.          <<<<<<<<<<<<<<<<"
+  finish
+endif
+
+
+call glaive#Install()
+
+Glaive codefmt google_java_executable=`g:jm_vimrc.deps.google_java_executable`
+
+" }}} Plugins (Vundle)
+
+" General Options: {{{
+set nocompatible
+filetype plugin indent on
+
+set t_Co=256
+set t_ut=
+
+" Sets the shell to use
+set shell=/bin/bash
+
+" Allows you to define a .vimrc or .exrc in the CWD
+" while disallowing the use of :autocmd in that rc
+set exrc
+set secure
+
+" Specifies the behavior of buffers when they are sent to an `inactive` state.
+" An `inactive` state is one in which there is no window displaying that
+" buffer. The 'bufhidden' option allows defining what action to take when a
+" buffer is about to be hidden. Using `bufhidden=delete` allows a buffer to be
+" removed once the window is closed OR used for something else. See
+" windows.txt for more information about the nuances between 'hidden' and the
+" various window-modifying functions
+set hidden
+
+" Tabs
+set tabstop=2  " col-size of tabs
+set shiftwidth=2  " sets what >> and << ops do
+set expandtab  " replace tabs with spaces
+set smarttab  " More reasonable tab actions
+
+" Reasonable backspace functionality
+set backspace=indent,eol,start
+
+" Replace certain characters visually
+set listchars=tab:\>\ ,trail:·
+set list
+
+" Line number things
+set number
+set numberwidth=4
+set relativenumber
+
+" Show info
+set ruler
+set showcmd
+set statusline=%f\ %=L:%l/%L\ %c\ (%p%%)
+
+" Tab completion for : command
+set wildmenu
+set wildmode=longest,list,full
+
+" Highlight search + incremental search
+set hlsearch
+set incsearch
+
+" Ignore case, unless you use uppercase characters
+set ignorecase
+set smartcase
+
+" Other
+set fileencodings=utf-8
+set tags=.tags
+set printoptions=number:y,duplex:long,paper:letter
+set clipboard=unnamedplus
+set errorbells
+set laststatus=2
+set cursorline
+
+" Themes
+colorscheme gruvbox
+syntax enable
+set bg=dark
+" }}} General Settings
+
+" Keymappings and FT-Specific Settings: {{{
+
+
+" Moves around a line more closely to what is expected (at least by me) when
+" the line is wrapped.
+"nnoremap j gj
+"nnoremap k gk
+"vnoremap j gj
+"vnoremap k gk
+
+" Moving around between windows quickly
+noremap <C-j> <C-W>j
+noremap <C-k> <C-W>k
+noremap <C-h> <C-W>h
+noremap <C-l> <C-W>l
+
+inoremap <C-r><C-f> <C-r>=expand('%:t:r')<cr>
+
+
+" Useful commands for editing the vimrc
+nnoremap <silent> <leader>ve :vsplit $MYVIMRC<cr>
+nnoremap <silent> <leader>vs :source $MYVIMRC<cr>
+
+nnoremap <silent> <leader><leader> :grep JEM::PTR<cr>
+iabbrev ptr JEM::PTR
+
+nnoremap <C-p> :Files<cr>
+
+" Autocommands are split into filetype `augroup`s, each is separated by
+" filetype. This solves the problem of sourcing the vimrc multiple times
+" causing multiple duplicated autocommands to be set. An augroup is only run
+" once**.
+"
+" These keymappings depend on the filetype, when :filetype on is enabled (as
+" it is earlier in this config), when vim first loads a buffer, it will
+" automatically detect the filetype and set the 'filetype' option (buffer)
+" locally. After this happens, any `FileType` type autocommands are triggered
+"
+" NOTES:
+" ** An augroup doesn't provide this functionality by itself. When you
+" redefine it, it will 'add onto' the original one, in order to clear one, you
+" can add `autocommand!` or `au!` to it (or another with the same name). This
+" is used to make sure that only one version of the autocommand hooks is set
+" per buffer.
+augroup ft_latex
+    autocmd!
+    autocmd FileType tex setlocal nocursorline
+    autocmd FileType tex setlocal tabstop=2 shiftwidth=2
+    autocmd FileType tex nnoremap <buffer> <localleader>r
+                \ :Term pdflatex -halt-on-error %<cr>
+augroup END
+
+augroup ft_c
+    autocmd!
+    autocmd FileType c setlocal tabstop=2 shiftwidth=2
+    autocmd FileType c nnoremap <buffer> <localleader>r
+                \ :make<CR>
+    autocmd FileType c nnoremap <buffer> <localleader>R
+                \ :Term gcc -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
+    autocmd FileType c nnoremap <buffer> <localleader>d
+                \ :YcmCompleter GoTo<cr>
+augroup END
+
+
+augroup ft_cc
+    autocmd!
+    autocmd FileType cpp setlocal tabstop=2 shiftwidth=2  " Will target all cpp/cc/h files
+    " TODO: fix this, jank as fuck
+    "autocmd BufWritePre,FileWritePre *.cc :!clang-format -style=Google -i %:p:t
+    "autocmd BufWritePre,FileWritePre *.h :!clang-format -style=Google -i %:p:t
+    autocmd FileType cpp nnoremap <buffer> <localleader>r
+                \ :make<CR>
+    autocmd FileType cpp nnoremap <buffer> <localleader>R
+                \ :Term g++ -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
+    autocmd FileType cpp nnoremap <buffer> <localleader>d
+                \ :YcmCompleter GoTo<cr>
+
+    command! -buffer -nargs=* RunCpp call <SID>CallBuildCpp(<q-args>)
+augroup END
+
+augroup ft_python
+    autocmd!
+    autocmd FileType python nnoremap <buffer> <localleader>r
+                \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+    autocmd FileType python nnoremap <buffer> <localleader>t
+                \ :execute "Term mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
+    autocmd FileType python nnoremap <buffer> <localleader>f
+                \ :FormatCode<cr>
+augroup END
+
+augroup ft_scheme
+    autocmd!
+    autocmd FileType scheme nnoremap <buffer> <localleader>r
+                \ :w<CR> :Term mit-scheme --load % <CR>
+    autocmd FileType scheme setlocal colorcolumn=79
+augroup END
+
+augroup ft_java
+    autocmd!
+    let g:ft_java_build_cmd = './gradlew build'
+    let g:ft_java_run_cmd = './gradlew -q run'
+    autocmd FileType java
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+    autocmd FileType java
+          \ nnoremap <space>f :FormatCode<cr>
+    autocmd FileType java
+          \ vnoremap <space>f :FormatLines<cr>
+    autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+          \ :execute "Term make"<cr>
+          "\ :execute "Term blaze build " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+    autocmd FileType java nnoremap <silent> <buffer> <localleader>R
+          \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+    autocmd FileType java let b:surround_99 = "{@code \r}"
+augroup END
+
+augroup ft_javascript
+    autocmd!
+    " Note: Depending on whether the vim-jsx plugin is installed, this may
+    " need to be changed to filter on the `javascript` filetype
+    autocmd FileType javascript nnoremap <buffer> <localleader>r
+          \ :w<CR> :!node %<CR>
+    autocmd FileType javascript nnoremap <buffer> <localleader>R
+          \ :Term webpack<CR>
+    autocmd FileType javascript
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+    autocmd FileType javascript nnoremap <buffer> <localleader>d
+          \ :YcmCompleter GoTo<CR>
+augroup END
+
+augroup ft_markdown
+    autocmd!
+    autocmd FileType markdown nnoremap <buffer> ]h :<c-u>call search('\v^#+ ', 'Wz')<cr>
+    autocmd FileType markdown nnoremap <buffer> [h :<c-u>call search('\v^#+ ', 'bWz')<cr>
+    autocmd FileType markdown highlight htmlH1 ctermfg=DarkRed
+    autocmd FileType markdown highlight htmlH2 ctermfg=DarkCyan
+    autocmd FileType markdown highlight htmlH3 ctermfg=DarkGreen
+    autocmd FileType markdown highlight htmlH4 ctermfg=LightGray
+    autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
+    autocmd FileType markdown nnoremap <buffer> <leader>r
+                \ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
+augroup END
+
+augroup ft_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType vim nnoremap <buffer> <localleader>r
+          \ :source %<cr>
+augroup END
+
+" Use quickfix window when using :make
+augroup cfg_quickfix_fix
+    autocmd QuickFixCmdPost [^l]* nested cwindow
+    autocmd QuickFixCmdPost    l* nested lwindow
+augroup end
+
+nnoremap <silent> <leader>w :nohlsearch<Bar>:echo<cr>
+
+nnoremap <space> za
+vnoremap <space> zf
+
+nnoremap <leader>q :Bdelete<cr>
+nnoremap <leader>' :NERDTreeToggle<cr>
+nnoremap <leader>" :NERDTreeFind<cr>
+noremap <F12> :setlocal spell! spelllang=en_us<cr>
+noremap <F11> :syntax spell toplevel<cr>
+nnoremap <leader><tab> :TagbarToggle<cr>
+
+nnoremap <leader>j :J! <cword><CR>
+nnoremap <leader>g :Git<cr>
+
+" }}} Keymappings and FT-Specific Settings
+
+" Plugin Settings: {{{
+"" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+"let g:SuperTabDefaultCompletionType = '<C-n>'
+
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+
+" Taken from
+" https://github.com/statico/dotfiles/blob/202e30b23e5216ffb6526cce66a0ef4fa7070456/.vim/vimrc#L406-L453
+let g:lightline = {
+\ 'active': {
+\   'left': [['mode', 'paste'], ['filename', 'modified']],
+\   'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
+\ },
+\ 'inactive': {
+\   'left': [['filename', 'modified']],
+\   'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
+\ },
+\ 'component_expand': {
+\   'linter_warnings': 'LightlineLinterWarnings',
+\   'linter_errors': 'LightlineLinterErrors',
+\   'linter_ok': 'LightlineLinterOK'
+\ },
+\ 'component_type': {
+\   'readonly': 'error',
+\   'linter_warnings': 'warning',
+\   'linter_errors': 'error'
+\ },
+\ 'component': {
+\   'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
+\ },
+\ }
+
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ◆', all_non_errors)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '✓ ' : ''
+endfunction
+
+augroup cfg_ale_lint
+    autocmd User ALELint call lightline#update()
+augroup END
+
+let g:ale_pattern_options = {'\.js$': {'ale_enabled': 0}}
+
+let g:slime_target = "tmux"
+
+" Online Thesaurus
+let g:online_thesaurus_map_keys = 0
+
+let g:vim_markdown_new_list_item_indent = 0
+let g:vim_markdown_folding_disabled = 1
+
+" BufTabLine
+let g:buftabline_numbers = 2  " use ordinal numbers (2) rather than bufnum (1)
+let g:buftabline_indicators = v:true
+let g:buftabline_separators = v:false
+nmap <leader>1 <Plug>BufTabLine.Go(1)
+nmap <leader>2 <Plug>BufTabLine.Go(2)
+nmap <leader>3 <Plug>BufTabLine.Go(3)
+nmap <leader>4 <Plug>BufTabLine.Go(4)
+nmap <leader>5 <Plug>BufTabLine.Go(5)
+nmap <leader>6 <Plug>BufTabLine.Go(6)
+nmap <leader>7 <Plug>BufTabLine.Go(7)
+nmap <leader>8 <Plug>BufTabLine.Go(8)
+nmap <leader>9 <Plug>BufTabLine.Go(9)
+nmap <leader>0 <Plug>BufTabLine.Go(10)
+
+let g:netre_liststyle=3
+
+let g:tex_flavor='latex'
+
+let g:slime_target = "tmux"
+
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+
+let g:ale_fixers = {
+            \   'python': [
+            \     'autopep8',
+            \   ]
+            \ }
+
+let g:ale_linters = {
+            \ 'cpp': ['clang', 'clangcheck', 'cppcheck', 'cpplint', 'g++']
+            \ }
+
+let g:jsx_ext_required = 0
+
+let g:gitgutter_sign_added = '··'
+let g:gitgutter_sign_modified = '··'
+let g:gitgutter_sign_removed = '·'
+let g:gitgutter_sign_modified_removed = '·'
+
+let g:ycm_python_binary_path = '/usr/bin/python'
+" }}} Plugin Settings
+
+" Functions: {{{
+
+" The Silver Searcher
+if executable('ag')
+    " Use ag over grep
+    set grepprg=ag\ --nogroup\ --nocolor\ --ignore=tags
+endif
+
+nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+function! s:SaveCursor() abort
+  let l:winid = win_getid()
+  let l:view = winsaveview()
+  return {'Restore': { -> win_gotoid(l:winid) && winrestview(l:view) }}
+endfunction
+
+" Command :Term ~ Simpler :term API {{{
+" :Term ~ Runs 'shell'
+" :Term [command]... ~ Runs the command in 'shell'
+"
+" This command will reuse the last window, unless it's no longer being used
+" for the terminal buffer. Also, this hides the buffer, in case you leave a
+" terminal window running and don't want to accidentally get stuck in it.
+if !exists('g:jm_term')
+  let g:jm_term = {
+        \   'bufnr': v:none,
+        \   'winid': v:none,
+        \   'last_args': v:none,
+        \ }
+endif
+
+command! -nargs=* Term call g:jm_term.Run([<f-args>])
+command T call g:jm_term.RunLast()
+nnoremap <localleader>T :T<CR>
+
+function! g:jm_term.RunLast() abort
+  if self.last_args is v:none
+    echo 'No command to run!'
+    return
+  endif
+  return self.Run(self.last_args)
+endfunction
+
+function! g:jm_term.Run(args) abort
+  let self.last_args = a:args
+  let l:args = map(
+        \ empty(a:args) ? [&shell] : a:args,
+        \ {s, v -> expand(v)})
+  let l:cursor = s:SaveCursor() | try
+    call self.GoToWindow()
+    call term_start(l:args, {'curwin': v:true})
+    setlocal nobuflisted
+    setlocal winfixheight
+    setlocal nonumber
+    setlocal norelativenumber
+    let self.winid = win_getid()
+    let self.bufnr = bufnr()
+  finally
+    call l:cursor.Restore()
+  endtry
+  return self
+endfunction
+
+function! g:jm_term.Exec(cmd) abort
+  let l:cursor = s:SaveCursor() | try
+    call self.GoToWindow()
+    call execute(a:cmd)
+    let self.winid = win_getid()
+    let self.bufnr = bufnr()
+  finally
+    call l:cursor.Restore()
+  endtry
+  return self
+endfunction
+
+
+function! g:jm_term.GoToWindow() abort
+  if self.bufnr is v:none
+        \ || self.winid is v:none
+        \ || winbufnr(self.winid) != self.bufnr
+    botright 10 new
+    setlocal nobuflisted
+  else
+    call term_setkill(self.bufnr, "term")
+    call win_gotoid(self.winid)
+  endif
+  setlocal norelativenumber
+  setlocal nonumber
+  return self
+endfunction
+" }}}
+
+nnoremap <space>t :call <SID>FindImport(expand('<cword>'))<CR>
+command -nargs=1 FindImport call <SID>FindImport(<q-args>)
+function! s:FindImport(word) abort
+  " First try the g:jm_vimrc.java_import_cache
+  if (has_key(g:jm_vimrc.java_import_cache, a:word))
+    call s:AddImport(printf('import %s;', get(g:jm_vimrc.java_import_cache, a:word)))
+    return
+  endif
+
+  " Next find an import statement in the current directory
+  let l:results = systemlist(printf(
+        \ '%s --nofilename --nobreak ''import .+\b%s\b;''',
+        \ g:jm_vimrc.deps.ag,
+        \ a:word))->sort()->uniq()
+
+  " Finally, fallback to classname list
+  if empty(l:results)
+    let l:results = g:jm_vimrc.deps.JavaClassnameList()
+          \->filter('v:val =~# a:word')
+          \->map('"import " .. v:val .. ";"')
+  endif
+
+  if len(l:results) == 1
+    call s:AddImport(l:results[0])
+  elseif len(l:results) > 1
+    call maktaba#ui#selector#Create(l:results)
+          \.WithMappings({'<cr>': [function("s:AddImport")->get("name"), 'Close', 'Add import']})
+          \.Show()
+  endif
+endfunction
+
+function! s:AddImport(import) abort
+    call append(1, [a:import])
+    execute '1,1FormatLines'
+    echom "Adding: " .. a:import
+endfunction
+
+command! Mc CtrlP ~/mc/src/main
+command! Latest view /mnt/c/Users/jmend/AppData/Roaming/.minecraft/logs/latest.log
+
+nnoremap <localleader>] yiW:Javap<CR>
+command! -nargs=? -complete=customlist,<SID>JavapComplete -bang
+      \ J call <SID>Javap(<q-args>, "<bang>" ==# '!')
+command! -nargs=? -complete=customlist,<SID>JavapComplete -bang
+      \ Javap call <SID>Javap(<q-args>, "<bang>" ==# '!')
+function! s:Javap(arg, search) abort
+  if empty($CLASSPATH)
+    SetupClasspath
+  endif
+
+  let l:cls = empty(a:arg) ? @" : a:arg
+  let l:cls = substitute(l:cls, '\(;\|<.\+>\)', '', 'ga')
+
+  if a:search
+    let l:results = s:JavapComplete(l:cls, v:none, v:none)
+    if len(l:results) == 1
+      let l:cls = l:results[0]
+    else
+      call maktaba#ui#selector#Create(l:results)
+            \.WithMappings({'<cr>': [function("s:JavapOpen")->get("name"), 'Close', 'Open window']})
+            \.Show()
+      return
+    endif
+  endif
+
+  call g:jm_term
+        \.Run([g:jm_vimrc.deps.javap, l:cls])
+        \.Exec('set ft=java')
+endfunction
+
+function! s:JavapComplete(arg_lead, cmd_line, cursor_pos) abort
+  return g:jm_vimrc.deps.JavaClassnameList()
+        \->filter('v:val =~# a:arg_lead')
+endfunction
+
+function! s:JavapOpen(cls) abort
+  execute 'Javap ' .. a:cls
+endfunction
+
+function! s:Print(fmt, ...) abort
+  echom call('printf', [a:fmt] + a:000)
+endfunction
+
+function! s:Prints(lines) abort
+  for l:line in a:lines
+    echom l:line
+  endfor
+endfunction
+
+command! -nargs=1 MavenSearch call <SID>MavenSearch(<q-args>)
+command! -nargs=1 M MavenSearch <args>
+function! s:MavenSearch(query) abort
+  const l:query_url = printf(
+        \ 'https://search.maven.org/solrsearch/select?q=%s&rows=10&wt=json',
+        \ a:query)
+
+  const l:query_cmd = join([
+        \   g:jm_vimrc.deps.curl,
+        \   '-s',
+        \   printf('"%s"', l:query_url),
+        \ ])
+
+  let l:msg = system(l:query_cmd)
+  let l:resp = json_decode(l:msg).response
+
+  if l:resp.numFound == 0
+    echom "None found!"
+    return
+  endif
+  let l:docs = l:resp.docs
+  const l:mappings = {
+        \   '<cr>': [function("s:Insert")->get("name"), 'Close', 'Insert below'],
+        \   'y': [function("s:Copy")->get("name"), 'Close', 'Add import'],
+        \ }
+  call maktaba#ui#selector#Create(map(l:docs, 'v:val.id .. ":" .. v:val.latestVersion'))
+        \.WithMappings(l:mappings)
+        \.Show()
+endfunction
+
+function! s:Copy(msg) abort
+  let @" = a:msg"
+endfunction
+
+function! s:Insert(msg) abort
+  let l:spaces = getline('.')->matchstr('^\s*')
+  call append(line('.'), printf("%simplementation '%s'", l:spaces, a:msg))
+endfunction
+
+function! s:BlazeTargets(fname) abort
+  let l:query = printf(
+        \   'same_pkg_direct_rdeps("//%s:%s")',
+        \   fnamemodify(a:fname, ":.:h:r"),
+        \   fnamemodify(a:fname, ":t"),
+        \ )
+
+  let l:command = printf(
+        \   "%s query '%s'",
+        \   g:jm_vimrc.deps.blaze,
+        \   l:query,
+        \ )
+  echom l:command
+  return filter(systemlist(l:command), 'v:val =~# "^//"')
+endfunction
+
+
+command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
+function! s:ReplaceR(cmd) abort
+  call execute(printf(
+        \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
+        \ a:cmd))
+endfunction
+
+command! -nargs=? Jsh call <SID>Jsh(<q-args>)
+function! s:Jsh(...) abort
+  call g:jm_term.Run([g:jm_vimrc.deps.jshell])
+endfunction
+
+function! s:TargetClasspath() abort
+  let l:target = BlazeTarget()
+  if l:target ==# "???"
+    echom "Can't find blaze target!"
+    return ""
+  endif
+
+  let l:lines = systemlist(printf('blaze print_action "%s"', l:target))
+  let l:jars = filter(l:lines, {_, v -> v =~# '^\s\+\(outputjar\|classpath\): "[^"]*"'})
+        \->map({_, v -> matchlist(v, '"\([^"]*\)"')[1]})
+  return join(l:jars, ':')
+endfunction
+
+function! s:CompleteTargets(arg_lead, cmd_line, cursor_pos) abort
+  if a:arg_lead =~ '^//.*'
+    return systemlist(printf('%s query ... 2>&1', g:jm_vimrc.deps.blaze))
+          \->filter('v:val =~# "' .. a:arg_lead .. '"')
+  endif
+endfunction
+
+command! -nargs=+ -complete=customlist,<SID>CompleteTargets Doz
+      \ call g:jm_term.Run([g:jm_vimrc.deps.buildozer, <q-args>])
+command! -nargs=+ -complete=customlist,<SID>CompleteTargets Dep
+      \ call g:jm_term.Run([g:jm_vimrc.deps.buildozer, "add deps " .. <q-args>, BlazeTarget()])
+command! SetupClasspath
+      \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
+command! SetupTargetClasspath
+      \ let $CLASSPATH = s:TargetClasspath()
+command! SetupMake
+      \ windo ReplaceR make
+command! SetupBracketFolds
+      \ set foldmethod=marker | set foldmarker={,}
+command! -nargs=+ Man
+      \ Term env MANPAGER=cat man <args>
+
+" }}} Functions
+
+" Insert Functions: {{{
+
+function! BlazeTarget() abort
+  return get(s:BlazeTargets(expand('%:p')), 0, "???")
+endfunction
+
+" ISO 8601 datetime string parsable by python
+function! Datetime() abort
+  return strftime("%FT%R%z")
+endfunction
+
+" }}} Insert Functions
