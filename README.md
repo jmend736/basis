@@ -21,3 +21,9 @@ make install
 ```sh
 make install
 ```
+
+## [License](LICENSE)
+
+MIT License
+
+Copyright (c) 2021 Julian Mendoza
