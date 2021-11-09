@@ -601,72 +601,9 @@ endfunction
 " for the terminal buffer. Also, this hides the buffer, in case you leave a
 " terminal window running and don't want to accidentally get stuck in it.
 if !exists('g:jm_term')
-  let g:jm_term = {
-        \   'bufnr': v:none,
-        \   'winid': v:none,
-        \   'last_args': v:none,
-        \ }
+  let g:jm_term = bss#view#TermView()
 endif
-
 command! -nargs=* Term call g:jm_term.Run([<f-args>])
-command T call g:jm_term.RunLast()
-nnoremap <localleader>T :T<CR>
-
-function! g:jm_term.RunLast() abort
-  if self.last_args is v:none
-    echo 'No command to run!'
-    return
-  endif
-  return self.Run(self.last_args)
-endfunction
-
-function! g:jm_term.Run(args) abort
-  let self.last_args = a:args
-  let l:args = map(
-        \ empty(a:args) ? [&shell] : a:args,
-        \ {s, v -> expand(v)})
-  let l:cursor = s:SaveCursor() | try
-    call self.GoToWindow()
-    call term_start(l:args, {'curwin': v:true})
-    setlocal nobuflisted
-    setlocal winfixheight
-    setlocal nonumber
-    setlocal norelativenumber
-    let self.winid = win_getid()
-    let self.bufnr = bufnr()
-  finally
-    call l:cursor.Restore()
-  endtry
-  return self
-endfunction
-
-function! g:jm_term.Exec(cmd) abort
-  let l:cursor = s:SaveCursor() | try
-    call self.GoToWindow()
-    call execute(a:cmd)
-    let self.winid = win_getid()
-    let self.bufnr = bufnr()
-  finally
-    call l:cursor.Restore()
-  endtry
-  return self
-endfunction
-
-
-function! g:jm_term.GoToWindow() abort
-  if self.bufnr is v:none
-        \ || self.winid is v:none
-        \ || winbufnr(self.winid) != self.bufnr
-    botright 10 new
-    setlocal nobuflisted
-  else
-    call term_setkill(self.bufnr, "term")
-    call win_gotoid(self.winid)
-  endif
-  setlocal norelativenumber
-  setlocal nonumber
-  return self
-endfunction
 " }}}
 
 nnoremap <space>t :call <SID>FindImport(expand('<cword>'))<CR>
