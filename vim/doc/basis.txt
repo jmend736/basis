@@ -1,6 +1,6 @@
 *basis.txt*    For Vim version 7.4 or later.
 
-        The Ultimate Plugin for Snippets in Vim~
+        basis lib for jmend's vimrc~
 
 Basis                                                            *bss* *basis*
 
