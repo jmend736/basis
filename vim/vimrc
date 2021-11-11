@@ -35,6 +35,13 @@
 " :Term ~ Without args, run the 'shell', otherwise run the specified command
 
 " Notes {{{
+" Misc:
+"   :exusage ~ List ex commands
+" Functions:
+"   normal: Foo
+"   script: <SNR>139_Foo
+"   lambda: {'<lambda>42'}
+"   numbered: {'42'}
 " Folds:
 "   foldlevels:
 "     zX -- apply foldlevel
@@ -45,7 +52,6 @@
 "     zx -- apply foldlevel and zv
 "   misc:
 "     zv -- open folds enough to view cursor
-"
 " Tabs:
 "   'tabstop':
 "     Number of spaces that a <Tab> in a file counts for.
@@ -289,6 +295,54 @@ syntax enable
 set bg=dark
 " }}} General Settings
 
+" Plugin Settings: {{{
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:ycm_python_binary_path = '/usr/bin/python'
+"let g:SuperTabDefaultCompletionType = '<C-n>'
+
+let g:lightline = {
+            \   'active': {
+            \     'left': [['mode', 'paste'], ['filename', 'modified']],
+            \     'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
+            \   },
+            \   'inactive': {
+            \     'left': [['filename', 'modified']],
+            \     'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
+            \   },
+            \   'component_type': {
+            \     'readonly': 'error',
+            \   },
+            \   'component': {
+            \     'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
+            \   },
+            \ }
+
+let g:slime_target = "tmux"
+
+let g:vim_markdown_new_list_item_indent = 0
+let g:vim_markdown_folding_disabled = 1
+
+" Use ordinal numbers (2) rather than bufnum (1)
+let g:buftabline_numbers = 2
+let g:buftabline_indicators = v:true
+let g:buftabline_separators = v:false
+
+let g:netre_liststyle=3
+
+let g:tex_flavor='latex'
+
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+
+let g:gitgutter_sign_added = '··'
+let g:gitgutter_sign_modified = '··'
+let g:gitgutter_sign_removed = '·'
+let g:gitgutter_sign_modified_removed = '·'
+" }}} Plugin Settings
+
 " Keymappings: {{{
 
 " Moves around a line more closely to what is expected (at least by me) when
@@ -366,12 +420,14 @@ command! SetupBracketFolds
       \ set foldmethod=marker | set foldmarker={,}
 command! -nargs=+ Man
       \ Term env MANPAGER=cat man <args>
+command! -nargs=+ Jsh
+      \ call g:jm_term.Run([g:jm_vimrc.deps.jshell])
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
 function! s:ReplaceR(cmd) abort
-  call execute(printf(
-        \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
-        \ a:cmd))
+call execute(printf(
+    \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
+    \ a:cmd))
 endfunction
 
 " The Silver Searcher
@@ -487,7 +543,7 @@ augroup END
 
 augroup ft_vim
     autocmd!
-    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType vim setlocal foldmethod=marker shiftwidth=2
     autocmd FileType vim nnoremap <buffer> <localleader>r
           \ :source %<cr>
 augroup END
@@ -500,57 +556,7 @@ augroup end
 
 " }}} FT-Specific Settings
 
-" Plugin Settings: {{{
-
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:ycm_python_binary_path = '/usr/bin/python'
-"let g:SuperTabDefaultCompletionType = '<C-n>'
-
-let g:lightline = {
-            \   'active': {
-            \     'left': [['mode', 'paste'], ['filename', 'modified']],
-            \     'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
-            \   },
-            \   'inactive': {
-            \     'left': [['filename', 'modified']],
-            \     'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
-            \   },
-            \   'component_type': {
-            \     'readonly': 'error',
-            \   },
-            \   'component': {
-            \     'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
-            \   },
-            \ }
-
-let g:slime_target = "tmux"
-
-let g:vim_markdown_new_list_item_indent = 0
-let g:vim_markdown_folding_disabled = 1
-
-" Use ordinal numbers (2) rather than bufnum (1)
-let g:buftabline_numbers = 2
-let g:buftabline_indicators = v:true
-let g:buftabline_separators = v:false
-
-let g:netre_liststyle=3
-
-let g:tex_flavor='latex'
-
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsEditSplit="vertical"
-
-let g:gitgutter_sign_added = '··'
-let g:gitgutter_sign_modified = '··'
-let g:gitgutter_sign_removed = '·'
-let g:gitgutter_sign_modified_removed = '·'
-
-" }}} Plugin Settings
-
-" Functions: {{{
+" Misc: {{{
 
 nnoremap <space>t :call <SID>FindImport(expand('<cword>'))<CR>
 command -nargs=1 FindImport call <SID>FindImport(<q-args>)
@@ -675,12 +681,6 @@ function! s:BlazeTargets(fname) abort
   return filter(systemlist(l:command), 'v:val =~# "^//"')
 endfunction
 
-
-command! -nargs=? Jsh call <SID>Jsh(<q-args>)
-function! s:Jsh(...) abort
-  call g:jm_term.Run([g:jm_vimrc.deps.jshell])
-endfunction
-
 function! s:TargetClasspath() abort
   let l:target = BlazeTarget()
   if l:target ==# "???"
@@ -701,10 +701,6 @@ function! s:CompleteTargets(arg_lead, cmd_line, cursor_pos) abort
   endif
 endfunction
 
-" }}} Functions
-
-" Insert Functions: {{{
-
 function! BlazeTarget() abort
   return get(s:BlazeTargets(expand('%:p')), 0, "???")
 endfunction
@@ -714,4 +710,4 @@ function! Datetime() abort
   return strftime("%FT%R%z")
 endfunction
 
-" }}} Insert Functions
+" }}} Misc
