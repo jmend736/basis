@@ -39,5 +39,8 @@ install:
 	cp -i fish/functions/* ~/.config/fish/functions
 	cp -i fish/completions/* ~/.config/fish/completions
 
+vim/doc/tags: vim/doc/basis.txt
+	vim +'helptags vim/doc/' +q
+
 .PHONY: clean
 clean:

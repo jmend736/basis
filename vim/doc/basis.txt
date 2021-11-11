@@ -25,14 +25,10 @@ setting is not set.
 USAGE                            RESULT         DESCRIPTION
 
 bss#cursor#Save()                |Cursor{}|       Save the cursor
-
+bss#view#View()                  |View{}|         Create a new view
+bss#view#TermView()              |View{}|         Create a view for `:term`
 
 DEFINITIONS
-
-bss#cursor#Save()                                          *bss#cursor#Save()*
-
-    Saves the current cursor location (window, line and column) and returns a
-    |Cursor{}| which can be used to restore the cursor to this location.
 
 ==============================================================================
 3. Types                                                         *basis-types*
@@ -48,7 +44,7 @@ In general fields will use lower snake-case, while methods will be upper camel
 case.
 
 3.1 Cursor{}                                           *basis-cursor* *Cursor{}*
-----------
+------------
 
 This represents a saved location of a cursor. To create an instance, use the
 |bss#cursor#Save()| function.
@@ -60,10 +56,100 @@ This represents a saved location of a cursor. To create an instance, use the
     call l:cursor.Restore()
 <
 
+CONSTRUCTORS
+
+bss#cursor#Save() -> |Cursor{}|                            *bss#cursor#Save()*
+
+    Saves the current cursor location (window, line and column) and returns a
+    |Cursor{}| which can be used to restore the cursor to this location.
+
+FIELDS
+
+    None
+
 METHODS
 
-Cursor.Restore()                                            *Cursor.Restore()*
+Cursor.Restore() -> nothing                                 *Cursor.Restore()*
 
     Restore the location of the cursor to the location where it was saved.
 
-vim:tw=78:ts=8:ft=help:norl:
+3.2 View{}                                               *basis-view* *View{}*
+----------
+
+This represents a reusable buffer and window combination. If the view is still
+valid (according to |View.IsValid()|), calling |View.GoToWindow()| will put
+the cursor back in the window. If the view has become invalid, then a new
+buffer/window will be created, and the cursor will be left in the new window.
+
+OVERVIEW
+
+bss#view#View()		Create a new view
+bss#view#TermView()	Create a new term view
+
+View.bufnr		The view's buffer number
+View.winid		The view's window id
+View.options		The local options to apply on the view
+
+View.Run({cmd})		Run a `:term` using the view as the output
+View.Exec({cmd})	Execute (`:execute`) the command in the view window
+View.AddOption({opt})	Add {opt} to the |View.options| list
+View.ApplyOptions()	Apply the |View.options| entries
+
+CONSTRUCTORS
+
+bss#view#View([{fields}]) -> |View{}|                        *bss#view#View()*
+
+    Creates an unopened |View{}|. If the optional |dict| {fields} argument is
+    present, then the view instance is extended (|extend()|) with the {fields}
+    argument.
+>
+        " Create a new view
+        let l:view = bss#view#View()
+
+        " Create a new view, specifying the buffer to use
+        let l:view = bss#view#View({'bufnr': 32})
+
+        " Create a new view, with options to set locally
+        let l:view = bss#view#View({'options': ['nobuflisted']})
+<
+
+bss#view#TermView() -> |View{}|                          *bss#view#TermView()*
+
+    Creates a |View{}| meant for holding output from a `:term` execution.
+
+FIELDS
+
+bufnr                                                             *View.bufnr*
+
+    The buffer number (see |bufnr()|) of the view, or |v:none| if unset.
+
+winid                                                             *View.winid*
+
+    The window id (see |win_getid()|) of the view, or |v:none| if unset.
+
+options                                                         *View.options*
+
+    A |list| of |string| which specifies options. Each entry of this list will
+    be applied by |View.ApplyOptions()| using `:setlocal`.
+
+METHODS
+
+View.Exec({cmd}) -> |View{}|                                     *View.Exec()*
+
+    `:execute` the specified EX command in the |View{}|'s window. {cmd} must
+    be a |string|.
+
+View.Run({cmd}) -> |View{}|                                       *View.Run()*
+
+    Run `:term {cmd}` within the |View{}|.
+
+View.AddOption({opt}) -> |View{}|                           *View.AddOption()*
+
+    Add an option to the |View.options| list.
+
+View.ApplyOptions() -> nothing                           *View.ApplyOptions()*
+
+    For each entry in |View.options|, apply it using `:setlocal` on the
+    current window.
+
+vim:tw=78:ts=8:sw=4:ft=help:norl:

@@ -1,5 +1,13 @@
 Cursor.Restore()	basis.txt	/*Cursor.Restore()*
 Cursor{}	basis.txt	/*Cursor{}*
+View.AddOption()	basis.txt	/*View.AddOption()*
+View.ApplyOptions()	basis.txt	/*View.ApplyOptions()*
+View.Exec()	basis.txt	/*View.Exec()*
+View.Run()	basis.txt	/*View.Run()*
+View.bufnr	basis.txt	/*View.bufnr*
+View.options	basis.txt	/*View.options*
+View.winid	basis.txt	/*View.winid*
+View{}	basis.txt	/*View{}*
 basis	basis.txt	/*basis*
 basis-cursor	basis.txt	/*basis-cursor*
 basis-desc	basis.txt	/*basis-desc*
@@ -7,6 +15,9 @@ basis-misc	basis.txt	/*basis-misc*
 basis-reqs	basis.txt	/*basis-reqs*
 basis-type	basis.txt	/*basis-type*
 basis-types	basis.txt	/*basis-types*
+basis-view	basis.txt	/*basis-view*
 basis.txt	basis.txt	/*basis.txt*
 bss	basis.txt	/*bss*
 bss#cursor#Save()	basis.txt	/*bss#cursor#Save()*
+bss#view#TermView()	basis.txt	/*bss#view#TermView()*
+bss#view#View()	basis.txt	/*bss#view#View()*
