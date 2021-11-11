@@ -1,0 +1,69 @@
+*basis.txt*    For Vim version 7.4 or later.
+
+        The Ultimate Plugin for Snippets in Vim~
+
+Basis                                                            *bss* *basis*
+
+1. Description                                  |basis-desc|
+   1.1 Requirements                             |basis-reqs|
+2. Misc. Functions                              |basis-misc|
+
+==============================================================================
+I. Description                                                    *basis-desc*
+
+Basis is my "standard-library" of sorts. Mostly a collection of fun vimscript.
+
+1.1 Requirements                                                  *basis-reqs*
+----------------
+
+This plugin works with Vim version 7.4. It only works if the 'compatible'
+setting is not set.
+
+==============================================================================
+2. Misc. Functions                                                *basis-misc*
+
+USAGE                            RESULT         DESCRIPTION
+
+bss#cursor#Save()                |Cursor{}|       Save the cursor
+
+
+DEFINITIONS
+
+bss#cursor#Save()                                          *bss#cursor#Save()*
+
+    Saves the current cursor location (window, line and column) and returns a
+    |Cursor{}| which can be used to restore the cursor to this location.
+
+==============================================================================
+3. Types                                                         *basis-types*
+
+3.0 Type Defintion                                                *basis-type*
+------------------
+
+You can't define new types in vimscript, so for this section a type refers to
+a |dict| with a specified set of fields and methods. The name of a type will
+be suffixed by curly-braces, eg. |Cursor{}|.
+
+In general fields will use lower snake-case, while methods will be upper camel
+case.
+
+3.1 Cursor{}                                           *basis-cursor* *Cursor{}*
+----------
+
+This represents a saved location of a cursor. To create an instance, use the
+|bss#cursor#Save()| function.
+
+>
+    let l:cursor = bss#cursor#Save()
+    call win_gotoid(...)
+    ...
+    call l:cursor.Restore()
+<
+
+METHODS
+
+Cursor.Restore()                                            *Cursor.Restore()*
+
+    Restore the location of the cursor to the location where it was saved.
+
+vim:tw=78:ts=8:ft=help:norl:
