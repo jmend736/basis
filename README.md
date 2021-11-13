@@ -2,36 +2,33 @@
 
 Configurations that define my typical development environment
 
+## Configurations
+
+| File                | Install Location              |
+| ----                | ----------------              |
+| [vim/vimrc]         | `~/.vimrc`                    |
+| [tmux/tmux.conf]    | `~/.tmux.conf`                |
+| [fish/functions/]   | `~/.config/fish/functions/`   |
+| [fish/completions/] | `~/.config/fish/completions/` |
+
 ## Installation
+
+To quickly install everything
 
 ```sh
 make install
 ```
 
-### Fish Configuration
+Otherwise, manually copy configurations as you'd like, see the
+[Makefile](Makefile) for more details.
 
-```fish
-source fish/install.fish
-```
+### Vim Plugin Usage
 
-### Vim Configuration
-
-To install the vimrc
-
-```sh
-cp vim/vimrc ~/.vimrc
-```
-
-To use the vim library (if using [vim-plug](https://github.com/junegunn/vim-plug)).
+To use the vim library (if using
+[vim-plug](https://github.com/junegunn/vim-plug)).
 
 ```viml
 Plug 'jmend736/basis', { 'rtp': 'vim' }
-```
-
-### Tmux Configuration
-
-```sh
-make install
 ```
 
 ## [License](LICENSE)

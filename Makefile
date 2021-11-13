@@ -14,13 +14,18 @@ Available Commands:
   clean:
     Do any clean-up, currently a NO-OP
 
+Generation Commands:
+
+  vim/doc/tags:
+    Generate tags for the help pages
+
 endef
 
 # Dependencies
 dep = $(or $(shell which $(1)),$(error Missing required dependency: $(1)))
 
 FISH = $(call dep, fish)
-PYTHON = $(call dep, python)
+VIM = $(call dep, vim)
 
 .PHONY: help
 help:
@@ -40,7 +45,7 @@ install:
 	cp -i fish/completions/* ~/.config/fish/completions
 
 vim/doc/tags: vim/doc/basis.txt
-	vim +'helptags vim/doc/' +q
+	$(VIM) +'helptags vim/doc/' +q
 
 .PHONY: clean
 clean:
