@@ -7,9 +7,9 @@ Configurations that define my typical development environment
 | File                                  | Install Location              |
 |---------------------------------------|-------------------------------|
 | [vim/vimrc](vim/vimrc)                | `~/.vimrc`                    |
-| [tmux/tmux.conf][tmux/tmux.conf]      | `~/.tmux.conf`                |
-| [fish/functions/][fish/functions]     | `~/.config/fish/functions/`   |
-| [fish/completions/][fish/completions] | `~/.config/fish/completions/` |
+| [tmux/tmux.conf](tmux/tmux.conf)      | `~/.tmux.conf`                |
+| [fish/functions/](fish/functions)     | `~/.config/fish/functions/`   |
+| [fish/completions/](fish/completions) | `~/.config/fish/completions/` |
 
 ## Installation
 
