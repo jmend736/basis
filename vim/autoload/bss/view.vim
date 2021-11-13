@@ -1,5 +1,5 @@
 function! bss#view#View(args) abort
-  return extend(copy(s:View), a:args)
+  return extend(deepcopy(s:View), a:args)
 endfunction
 
 function! bss#view#TermView() abort
