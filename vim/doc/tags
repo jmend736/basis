@@ -1,3 +1,14 @@
+Alts.Add()	basis.txt	/*Alts.Add()*
+Alts.AddDict()	basis.txt	/*Alts.AddDict()*
+Alts.AddMagicMatch()	basis.txt	/*Alts.AddMagicMatch()*
+Alts.AddMatch()	basis.txt	/*Alts.AddMatch()*
+Alts.AddPred()	basis.txt	/*Alts.AddPred()*
+Alts.Finally()	basis.txt	/*Alts.Finally()*
+Alts.Run()	basis.txt	/*Alts.Run()*
+Alts.alternative	basis.txt	/*Alts.alternative*
+Alts.alternatives	basis.txt	/*Alts.alternatives*
+Alts.finalizer	basis.txt	/*Alts.finalizer*
+Alts{}	basis.txt	/*Alts{}*
 Cursor.Restore()	basis.txt	/*Cursor.Restore()*
 Cursor{}	basis.txt	/*Cursor{}*
 View.AddOption()	basis.txt	/*View.AddOption()*
@@ -9,6 +20,7 @@ View.options	basis.txt	/*View.options*
 View.winid	basis.txt	/*View.winid*
 View{}	basis.txt	/*View{}*
 basis	basis.txt	/*basis*
+basis-alts	basis.txt	/*basis-alts*
 basis-cursor	basis.txt	/*basis-cursor*
 basis-desc	basis.txt	/*basis-desc*
 basis-misc	basis.txt	/*basis-misc*
@@ -18,6 +30,7 @@ basis-types	basis.txt	/*basis-types*
 basis-view	basis.txt	/*basis-view*
 basis.txt	basis.txt	/*basis.txt*
 bss	basis.txt	/*bss*
+bss#alts#Alts()	basis.txt	/*bss#alts#Alts()*
 bss#cursor#Save()	basis.txt	/*bss#cursor#Save()*
 bss#view#TermView()	basis.txt	/*bss#view#TermView()*
 bss#view#View()	basis.txt	/*bss#view#View()*
