@@ -35,6 +35,8 @@ function! s:View.GoToWindow() abort
         \ || winbufnr(self.winid) != self.bufnr
     botright 10 new
     call self.ApplyOptions()
+    let self.bufnr = bufnr('')
+    let self.winid = win_getid()
   else
     call win_gotoid(self.winid)
   endif
@@ -50,6 +52,8 @@ function! s:View.Run(cmd) abort dict
     call self.GoToWindow()
     call term_start(l:cmd, {'curwin': v:true})
     call self.ApplyOptions()
+    let self.bufnr = bufnr('')
+    let self.winid = win_getid()
   finally
     call l:cursor.Restore()
   endtry
