@@ -1,3 +1,3 @@
-function git-last-change --argument commit
-  git rev-list --pretty=format:'> %ar' $commit -1 | string replace -f '> ' ''
+function git-last-change --argument fname
+  git rev-list --pretty=format:'>%ar' HEAD -1 -- $fname | string replace -f '>' ''
 end

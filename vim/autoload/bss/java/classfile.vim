@@ -92,27 +92,23 @@ unlet s:Parser
 
 function! s:ParseConstantPool(bytes) abort
   " Parse Values
-  let l:constants = []
+  let l:constants = {}
   let l:count = a:bytes.U2() - 1
-  while len(l:constants) < l:count
+  let l:next = 0
+  while l:next < l:count
     let l:id = a:bytes.Read(1)
     let l:result = filter(copy(s:ConstantParsers), {k, v -> v.id == l:id})
     if len(l:result) != 1
-      throw 'ERROR(InvalidFormat): Wrong number of matches? ' .. string(l:result)
+      throw 'ERROR(InvalidFormat): Wrong number of matches? '
+            \ .. string(l:result)
             \ .. ' for id ' .. string(l:id)
     endif
-    let l:const = l:result[0].Parse(a:bytes)
-    call add(l:constants, l:const)
-    if l:const.T == 'Long' || l:const.T == 'Double'
-      call add(l:constants, v:none)
-    endif
+    let l:constants[l:next] = l:result[0].Parse(a:bytes)
+    let l:next += (l:const.T == 'Long' || l:const.T == 'Double') ? 2 : 1
   endwhile
 
   " Replace Indexes with values
-  for l:constant in l:constants
-    if l:constant is v:none
-      continue
-    endif
+  for [l:n, l:constant] in l:constants
     for [l:field, l:value] in items(l:constant)
       if type(l:value) isnot v:t_dict
         continue
