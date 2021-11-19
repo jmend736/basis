@@ -1,3 +1,3 @@
 function fw
-  string match -r '^\w+' $argv
+  string match -r '\S*' $argv
 end
