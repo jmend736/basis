@@ -4,6 +4,10 @@ Configurations that define my typical development environment
 
 ## Configurations
 
+## Installation
+
+To manually install, manually move files to:
+
 | File                                  | Install Location              |
 |---------------------------------------|-------------------------------|
 | [vim/vimrc](vim/vimrc)                | `~/.vimrc`                    |
@@ -11,16 +15,11 @@ Configurations that define my typical development environment
 | [fish/functions/](fish/functions)     | `~/.config/fish/functions/`   |
 | [fish/completions/](fish/completions) | `~/.config/fish/completions/` |
 
-## Installation
-
-To quickly install everything
+To quickly install everything:
 
 ```sh
 make install
 ```
-
-Otherwise, manually copy configurations as you'd like, see the
-[Makefile](Makefile) for more details.
 
 ### Vim Plugin Usage
 
