@@ -1,12 +1,12 @@
+let s:ConstantPool = {
+      \   'count': v:t_number,
+      \ }
+
 let s:ClassFile = {
       \   'magic': v:t_blob,
       \   'minor_version': v:t_number,
       \   'major_version': v:t_number,
       \   'constants': s:ConstantPool,
-      \ }
-
-let s:ConstantPool = {
-      \   'count': v:t_number,
       \ }
 
 function! bss#java#classfile#Parse(fname) abort
@@ -103,12 +103,13 @@ function! s:ParseConstantPool(bytes) abort
             \ .. string(l:result)
             \ .. ' for id ' .. string(l:id)
     endif
-    let l:constants[l:next] = l:result[0].Parse(a:bytes)
+    let l:const = l:result[0].Parse(a:bytes)
+    let l:constants[l:next] = l:const
     let l:next += (l:const.T == 'Long' || l:const.T == 'Double') ? 2 : 1
   endwhile
 
   " Replace Indexes with values
-  for [l:n, l:constant] in l:constants
+  for [l:n, l:constant] in items(l:constants)
     for [l:field, l:value] in items(l:constant)
       if type(l:value) isnot v:t_dict
         continue
