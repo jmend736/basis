@@ -1,4 +1,4 @@
-let s:Bytes = {'ptr': v:none, 'root': v:none}
+let s:Bytes = {'ptr': v:t_blob, 'root': v:t_blob}
 
 function! bss#java#bytes#Bytes(fname) abort
   let l:bytes = readfile(a:fname, 'B')

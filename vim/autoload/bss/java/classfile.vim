@@ -129,12 +129,8 @@ function! s:ParseConstantPool(bytes) abort
     endfor
   endfor
 
-  return {'entries': l:constants}
+  return {
+        \ 'count': l:count,
+        \ 'entries': l:constants,
+        \ }
 endfunction
-
-let s:file = bss#java#classfile#Parse('main.class')
-let i = 0
-for c in s:file.constants.entries
-  let i += 1
-  echom i c
-endfor
