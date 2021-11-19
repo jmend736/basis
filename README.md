@@ -2,8 +2,6 @@
 
 Configurations that define my typical development environment
 
-## Configurations
-
 ## Installation
 
 To manually install, manually move files to:
