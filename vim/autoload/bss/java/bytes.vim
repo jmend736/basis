@@ -29,7 +29,7 @@ function! s:Bytes.U4() abort dict
   let l:result = l:parts[3]
         \ + (l:parts[2] * 256)
         \ + (l:parts[1] * 256 * 256)
-        \ + (l:parts[2] * 256 * 256 * 256)
+        \ + (l:parts[0] * 256 * 256 * 256)
   return l:result
 endfunction
 
