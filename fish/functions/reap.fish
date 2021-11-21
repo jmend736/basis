@@ -26,7 +26,7 @@ DESCRIPTION
 
     *   ( -p | --peek ) read the current value(s) without consuming it.
 '
-  argparse 'q/query' 'p/peek' 'h/help' -- $argv
+  argparse -s 'q/query' 'p/peek' 'h/help' -- $argv
 
   if set -q _flag_help
     echo $helptext

@@ -31,9 +31,9 @@ set -l fnames (basename -s .fish $fpaths)
 for fname in $fnames
   set -l basis_fpath $basis_path/fish/functions/$fname.fish
   if not diff (functions --no-details $fname | psub) $basis_fpath >/dev/null
-    echo -s "  $fname" (set_color green) " synced!" (set_color normal)
+    echo '['(colored green '!')']' $fname
     functions --no-details $fname > $basis_fpath
   else
-    echo -s "  $fname" (set_color yellow) " up-to-date" (set_color normal)
+    echo '['(colored yellow '-')']' $fname
   end
 end

@@ -23,7 +23,7 @@ OPTIONS
 
     *   ( -a | --append ) do not overwrite current value, append instead
 '
-  argparse 'a/append' 'h/help' -- $argv
+  argparse -s 'a/append' 'h/help' -- $argv
 
   if set -q _flag_help
     echo $helptext
