@@ -25,10 +25,15 @@ if not set -l basis_path (git rev-parse --show-toplevel)
   exit 1
 end
 
-pushd $basis_path/fish/functions
-set -l fnames (ls | string replace '.fish' '')
-popd
+set -l fpaths $basis_path/fish/functions/*
+set -l fnames (basename -s .fish $fpaths)
 
 for fname in $fnames
-  functions --no-details $fname > $basis_path/fish/functions/$fname.fish
+  set -l basis_fpath $basis_path/fish/functions/$fname.fish
+  if not diff (functions --no-details $fname | psub) $basis_fpath >/dev/null
+    echo -s "  $fname" (set_color green) " synced!" (set_color normal)
+    functions --no-details $fname > $basis_fpath
+  else
+    echo -s "  $fname" (set_color yellow) " up-to-date" (set_color normal)
+  end
 end
