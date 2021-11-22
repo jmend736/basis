@@ -1,7 +1,3 @@
-function getor --argument val def
-  if test -z $val
-    echo $def
-    return 1
-  end
-  echo $val
+function getor --description 'Return first non-empty argument'
+  string match -r '.+' $argv | head -1
 end
