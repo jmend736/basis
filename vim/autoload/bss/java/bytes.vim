@@ -8,6 +8,9 @@ endfunction
 
 " Read n bytes off the front of the blob
 function! s:Bytes.Read(n) abort dict
+  if a:n == 0
+    return 0z
+  endif
   return remove(self.ptr, 0, a:n - 1)
 endfunction
 
