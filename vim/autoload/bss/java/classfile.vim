@@ -1,19 +1,23 @@
 let s:ConstantPool = {
       \   'count': v:t_number,
-      \   'entries': [v:t_dict, [
-      \     v:t_number,
-      \     v:t_dict
-      \   ]],
+      \   'entries': {v:t_number: v:t_dict},
       \ }
 
 let s:Attributes = {
       \   'count': v:t_number,
-      \   'entries': [v:t_list, [v:t_dict]],
+      \   'entries': [v:t_dict],
       \ }
 
 let s:Fields = {
       \   'count': v:t_number,
-      \   'entries': [v:t_list, [v:t_dict]],
+      \   'entries': [v:t_dict],
+      \   'attributes': s:Attributes,
+      \ }
+
+let s:Methods = {
+      \   'count': v:t_number,
+      \   'entries': [v:t_dict],
+      \   'attributes': s:Attributes,
       \ }
 
 let s:ClassFile = {
@@ -21,6 +25,13 @@ let s:ClassFile = {
       \   'minor_version': v:t_number,
       \   'major_version': v:t_number,
       \   'constants': s:ConstantPool,
+      \   'access_flags': v:t_number,
+      \   'this_class': v:t_string,
+      \   'super_class': v:t_string,
+      \   'interfaces': [v:t_string],
+      \   'fields': s:Fields,
+      \   'methods': s:Methods,
+      \   'attributes': s:Attributes,
       \ }
 
 function! bss#java#classfile#Parse(fname) abort
@@ -40,6 +51,8 @@ function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf.super_class = l:ReadName()
   let l:cf.interfaces = range(a:bytes.U2())->map('l:ReadName()')
   let l:cf.fields = s:ParseFields(a:bytes, l:cf.constants)
+  let l:cf.methods = s:ParseMethods(a:bytes, l:cf.constants)
+  let l:cf.attributes = s:ParseAttributes(a:bytes, l:cf.constants)
   return l:cf
 endfunction
 
@@ -205,6 +218,15 @@ function! s:ParseAttributes(bytes, constants) abort
 endfunction
 
 function! s:ParseFields(bytes, constants) abort
+  return range(a:bytes.U2())->map({i, v -> {
+        \   'access_flags': a:bytes.U2(),
+        \   'name': a:constants.GetString(a:bytes.U2()),
+        \   'descriptor': a:constants.GetString(a:bytes.U2()),
+        \   'attributes': s:ParseAttributes(a:bytes, a:constants),
+        \ }})
+endfunction
+
+function! s:ParseMethods(bytes, constants) abort
   return range(a:bytes.U2())->map({i, v -> {
         \   'access_flags': a:bytes.U2(),
         \   'name': a:constants.GetString(a:bytes.U2()),
