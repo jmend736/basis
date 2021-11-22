@@ -17,13 +17,23 @@ let s:ClassFile = {
 
 function! bss#java#classfile#Parse(fname) abort
   let l:bytes = bss#java#bytes#Bytes(a:fname)
+  return bss#java#classfile#ParseBytes(l:bytes)
+endfunction
+
+function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf = copy(s:ClassFile)
-  let l:cf.magic = l:bytes.ReadExpected(4, 0zCAFEBABE)
-  let l:cf.minor_version = l:bytes.U2()
-  let l:cf.major_version = l:bytes.U2()
-  let l:cf.constants = s:ParseConstantPool(l:bytes)
+  let l:cf.magic = a:bytes:g.ReadExpected(4, 0zCAFEBABE)
+  let l:cf.minor_version = a:bytes:g.U2()
+  let l:cf.major_version = a:bytes:g.U2()
+  let l:cf.constants = s:ParseConstantPool(a:bytes:g)
+  let l:cf.access_flags = a:bytes:g.U2()
+  let l:ReadName = { -> l:cf.constants.GetClassName(a:bytes:g.U2()) }
+  let l:cf.this_class = l:ReadName()
+  let l:cf.super_class = l:ReadName()
+  let l:cf.interfaces = range(a:bytes:g.U2())->map('l:ReadName()')
   return l:cf
 endfunction
+
 
 " i is a blob and Parser is a function that accepts bytes and returns a
 " dictionary.
@@ -103,6 +113,17 @@ function! s:ConstantPool.ForEach(Handler) abort dict
       call a:Handler(l:id, self.entries[l:id])
     endif
   endfor
+endfunction
+
+function! s:ConstantPool.GetClassName(idx) abort dict
+  if !has_key(self.entries, a:idx)
+    throw 'Invalid index!'
+  endif
+  let l:v = self.entries->get(a:idx)
+  if l:v.T != 'Class'
+    throw 'Not a class!'
+  endif
+  return l:v.name
 endfunction
 
 function! s:ParseConstantPool(bytes) abort
