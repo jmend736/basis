@@ -3,20 +3,115 @@ let s:ConstantPool = {
       \   'entries': {v:t_number: v:t_dict},
       \ }
 
+let s:Attribute = [
+      \   {
+      \     'T': 'Class',
+      \     'name': v:t_string,
+      \   },
+      \   {
+      \     'T': 'FieldRef',
+      \     'class': {'T': 'Class'},
+      \     'name_and_type': {'T': 'NameAndType'},
+      \   },
+      \   {
+      \     'T': 'MethodRef',
+      \     'class': {'T': 'Class'},
+      \     'name_and_type': {'T': 'NameAndType'},
+      \   },
+      \   {
+      \     'T': 'InterfaceMethodref',
+      \     'class': {'T': 'Class'},
+      \     'name_and_type': {'T': 'NameAndType'},
+      \   },
+      \   {
+      \     'T': 'String',
+      \     'string': v:t_string,
+      \   },
+      \   {
+      \     'T': 'Integer',
+      \     'value': v:t_number,
+      \   },
+      \   {
+      \     'T': 'Float',
+      \     'value': v:t_number,
+      \   },
+      \   {
+      \     'T': 'Long',
+      \     'high_bytes': v:t_blob,
+      \     'low_bytes': v:t_blob,
+      \   },
+      \   {
+      \     'T': 'Double',
+      \     'high_bytes': v:t_blob,
+      \     'low_bytes': v:t_blob,
+      \   },
+      \   {
+      \     'T': 'NameAndType',
+      \     'name': v:t_string,
+      \     'desc': v:t_string,
+      \   },
+      \   {
+      \     'T': 'Utf8',
+      \     'bytes': v:t_string,
+      \   },
+      \   {
+      \     'T': 'MethodHandle',
+      \     'kind': v:t_number,
+      \     'ref': {'T': '<unknown>'},
+      \   },
+      \   {
+      \     'T': 'MethodType',
+      \     'desc': v:t_string,
+      \   },
+      \   {
+      \     'T': 'InvokeDynamic',
+      \     'bootstrap_method_attr': v:t_string,
+      \     'name_and_type': {'T': 'NameAndType'},
+      \   }
+      \ ]
+
+let s:Attribute = {
+      \   'RuntimeVisibleAnnotations': {
+      \     'annotations': [{
+      \       'type': v:t_string,
+      \       'element_value_pairs': [{
+      \         'name': v:t_string,
+      \         'value': {
+      \           'tag': v:t_string,
+      \         },
+      \       }],
+      \     }],
+      \   },
+      \ }
+
 let s:Attributes = {
       \   'count': v:t_number,
-      \   'entries': [v:t_dict],
+      \   'entries': [s:Attribute],
+      \ }
+
+let s:Field = {
+      \   'access_flags': v:t_number,
+      \   'name': v:t_string,
+      \   'descripto': v:t_string,
+      \   'attributes': s:Attributes,
       \ }
 
 let s:Fields = {
       \   'count': v:t_number,
-      \   'entries': [v:t_dict],
+      \   'entries': [s:Field],
+      \   'attributes': s:Attributes,
+      \ }
+
+let s:Method = {
+      \   'access_flags': v:t_number,
+      \   'name': v:t_string,
+      \   'descripto': v:t_string,
       \   'attributes': s:Attributes,
       \ }
 
 let s:Methods = {
       \   'count': v:t_number,
-      \   'entries': [v:t_dict],
+      \   'entries': [s:Method],
       \   'attributes': s:Attributes,
       \ }
 
