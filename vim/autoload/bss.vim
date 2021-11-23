@@ -1,3 +1,3 @@
-function! bss#ParseClassFile(fname) abort dict
+function! bss#ParseClassFile(fname) abort
   return bss#java#classfile#Parse(a:fname)
 endfunction

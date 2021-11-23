@@ -203,6 +203,42 @@ function! s:ParseConstantPool(bytes) abort
   return l:constants
 endfunction
 
+function! s:ParseAnnotation(bytes, constants) abort
+  return {
+      \   'type': a:constants.GetString(a:bytes.U2()),
+      \   'element_value_pairs': range(a:bytes.U2())->map({i, v -> {
+      \     'name': a:constants.GetString(a:bytes.U2()),
+      \     'value': s:ParseElementValue(a:bytes, a:constants),
+      \   }}),
+      \ }
+endfunction
+
+function! s:ParseElementValue(bytes, constants) abort
+  let l:ev = {}
+  let l:ev.tag = nr2char(a:bytes.U1())
+  if l:ev.tag =~# '[BCDFIJSZs]'
+    let l:ev.const_value = a:constants.entries->get(a:bytes.U2())
+  elseif l:ev.tag =~# '[e]'
+    let l:ev.enum_const_value = {
+          \   'type_name': a:constants.GetString(a:bytes.U2()),
+          \   'const_name': a:constants.GetString(a:bytes.U2()),
+          \ }
+  elseif l:ev.tag =~# '[c]'
+    let l:ev.const_value = a:constants.GetString(a:bytes.U2())
+  elseif l:ev.tag =~# '[@]'
+    let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:constants)
+  elseif l:ev.tag =~# '\['
+    let l:ev.array_value = s:ParseElementValue(a:bytes, a:constants)
+  endif
+  return l:ev
+endfunction
+
+let s:AttributeParsers = {
+      \   'RuntimeVisibleAnnotations': {b, c -> {
+      \     'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
+      \   }},
+      \ }
+
 function! s:ParseAttributes(bytes, constants) abort
   let l:attrs = copy(s:Attributes)
   let l:attrs.count = a:bytes.U2()
@@ -211,7 +247,11 @@ function! s:ParseAttributes(bytes, constants) abort
     let l:attr = {}
     let l:attr.name = a:constants.GetString(a:bytes.U2())
     let l:attr.length = a:bytes.U4()
-    let l:attr.info = a:bytes.Read(l:attr.length)
+    if has_key(s:AttributeParsers, l:attr.name)
+      call extend(l:attr, s:AttributeParsers->get(l:attr.name)(a:bytes, a:constants))
+    else
+      let l:attr.info = a:bytes.Read(l:attr.length)
+    endif
     call add(l:attrs.entries, l:attr)
   endfor
   return l:attrs
