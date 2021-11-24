@@ -6,6 +6,6 @@ function! bss#Type(Desc) abort
   return bss#type#Type(a:Desc)
 endfunction
 
-function! bss#EnsureType(Desc, value) abort
-  return bss#type#Ensure(a:val, a:Desc)
+function! bss#Typed(Desc, value) abort
+  return bss#type#Typed(a:val, a:Desc)
 endfunction

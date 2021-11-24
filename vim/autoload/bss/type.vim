@@ -2,7 +2,7 @@
 " bss#type#Type(desc) returns a funcref which asserts that
 "   any values passed in match the {desc}
 "
-" bss#type#Ensure(desc, value) ensures that {value} matches {desc}, then
+" bss#type#Typed(desc, value) ensures that {value} matches {desc}, then
 "   returns {value} extended (but not overriden) by {desc} (effectively
 "   forwarding methods, but not values).
 "
@@ -41,7 +41,7 @@
 "     function! s:Type.Foo() abort
 "     endfunction
 "     ...
-"     let l:instance = bss#TypeEnsure(s:Type, {'value': 10})
+"     let l:instance = bss#Typed(s:Type, {'value': 10})
 
 function! bss#type#Enable() abort
   let g:bss_typecheck = v:true
@@ -62,7 +62,7 @@ function! bss#type#Type(Desc) abort
   return { v -> v }
 endfunction
 
-function! bss#type#Ensure(Desc, value) abort
+function! bss#type#Typed(Desc, value) abort
   return bss#type#Type(a:Desc)(extend(copy(a:Desc), a:value))
 endfunction
 

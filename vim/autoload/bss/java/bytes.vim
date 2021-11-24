@@ -2,8 +2,8 @@ let s:Bytes = {'ptr': v:t_blob, 'root': v:t_blob}
 
 function! bss#java#bytes#Bytes(fname) abort
   let l:bytes = readfile(a:fname, 'B')
-  return copy(s:Bytes)
-        \->extend({'ptr': l:bytes, 'root': copy(l:bytes)})
+  return bss#Typed(s:Bytes,
+        \  {'ptr': l:bytes, 'root': copy(l:bytes)})
 endfunction
 
 " Read n bytes off the front of the blob
