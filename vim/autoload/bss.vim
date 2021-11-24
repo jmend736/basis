@@ -7,5 +7,5 @@ function! bss#Type(Desc) abort
 endfunction
 
 function! bss#Typed(Desc, value) abort
-  return bss#type#Typed(a:val, a:Desc)
+  return bss#type#Typed(a:Desc, a:value)
 endfunction
