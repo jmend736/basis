@@ -65,6 +65,29 @@
 "     Replaces tab characters with spaces.
 "   'smarttab':
 "     Better tab semantics, especially after new-lines.
+" Channel:
+"   option:
+"     mode:
+"       'json' (ch def), 'js', 'nl' (job def), 'raw'
+"     callback:
+"       { ch, msg -> ... }
+"     close_cb:
+"       { ch -> ... }
+"     drop:
+"       'auto': Drop if no callbacks, keep o/w
+"       'never': Never drop
+" Jobs:
+"   option:
+"     (in|out|err)_mode: See Channel.option.mode
+"     callback: Generic callback
+"       { ch, msg -> ... }
+"     (out|err)_cb: Specific callbacks
+"       { ch, msg -> ... }
+"     close_cb:
+"       { ch -> ... }
+"     exit_cb:
+"       { job, status -> ... }
+"     drop: See Channel.option.drop
 "
 " }}} Notes
 
