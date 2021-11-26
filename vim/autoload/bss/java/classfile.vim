@@ -1,9 +1,4 @@
-let s:ConstantPool = {
-      \   'count': v:t_number,
-      \   'entries': {v:t_number: v:t_dict},
-      \ }
-
-let s:Attribute = [
+let s:Constants = bss#Type([
       \   {
       \     'T': 'Class',
       \     'name': v:t_string,
@@ -67,11 +62,18 @@ let s:Attribute = [
       \     'T': 'InvokeDynamic',
       \     'bootstrap_method_attr': v:t_string,
       \     'name_and_type': {'T': 'NameAndType'},
-      \   }
-      \ ]
+      \   },
+      \   {
+      \     'T': v:t_string,
+      \   },
+      \ ])
 
-let s:Attribute = {
-      \   'RuntimeVisibleAnnotations': {
+let s:Attributes = [
+      \   {
+      \     'info': v:t_blob,
+      \   },
+      \   {
+      \     'T': 'RuntimeVisibleAnnotations',
       \     'annotations': [{
       \       'type': v:t_string,
       \       'element_value_pairs': [{
@@ -82,44 +84,28 @@ let s:Attribute = {
       \       }],
       \     }],
       \   },
-      \ }
+      \ ]
 
-let s:Attributes = {
-      \   'count': v:t_number,
-      \   'entries': [s:Attribute],
-      \ }
-
-let s:Field = {
+let s:Fields = bss#Type([{
       \   'access_flags': v:t_number,
       \   'name': v:t_string,
-      \   'descripto': v:t_string,
+      \   'descriptor': v:t_string,
       \   'attributes': s:Attributes,
-      \ }
+      \ }])
 
-let s:Fields = {
-      \   'count': v:t_number,
-      \   'entries': [s:Field],
-      \   'attributes': s:Attributes,
-      \ }
-
-let s:Method = {
+let s:Methods = bss#Type([{
       \   'access_flags': v:t_number,
       \   'name': v:t_string,
-      \   'descripto': v:t_string,
+      \   'descriptor': v:t_string,
       \   'attributes': s:Attributes,
-      \ }
+      \ }])
 
-let s:Methods = {
-      \   'count': v:t_number,
-      \   'entries': [s:Method],
-      \   'attributes': s:Attributes,
-      \ }
 
 let s:ClassFile = {
       \   'magic': v:t_blob,
       \   'minor_version': v:t_number,
       \   'major_version': v:t_number,
-      \   'constants': s:ConstantPool,
+      \   'constants': s:Constants,
       \   'access_flags': v:t_number,
       \   'this_class': v:t_string,
       \   'super_class': v:t_string,
@@ -139,191 +125,156 @@ function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf.magic = a:bytes.ReadExpected(4, 0zCAFEBABE)
   let l:cf.minor_version = a:bytes.U2()
   let l:cf.major_version = a:bytes.U2()
-  let l:cf.constants = s:ParseConstantPool(a:bytes)
+  let l:cf.constants = s:ParseConstants(a:bytes)
   let l:cf.access_flags = a:bytes.U2()
-  let l:ReadName = { -> l:cf.constants.GetClassName(a:bytes.U2()) }
-  let l:cf.this_class = l:ReadName()
-  let l:cf.super_class = l:ReadName()
-  let l:cf.interfaces = range(a:bytes.U2())->map('l:ReadName()')
-  let l:cf.fields = s:ParseFields(a:bytes, l:cf.constants)
-  let l:cf.methods = s:ParseMethods(a:bytes, l:cf.constants)
-  let l:cf.attributes = s:ParseAttributes(a:bytes, l:cf.constants)
-  return l:cf
+  let l:cf.this_class = l:cf.GetClassName(a:bytes.U2())
+  let l:cf.super_class = l:cf.GetClassName(a:bytes.U2())
+  let l:cf.interfaces = range(a:bytes.U2())->map('l:cf.GetClassName(a:bytes.U2())')
+  let l:cf.fields = s:ParseFields(a:bytes, l:cf)
+  let l:cf.methods = s:ParseMethods(a:bytes, l:cf)
+  let l:cf.attributes = s:ParseAttributes(a:bytes, l:cf)
+  return bss#Typed(s:ClassFile, l:cf)
 endfunction
 
+let s:ConstantParsers = {
+      \   7: {b -> [{
+      \     'T': 'Class',
+      \     'name': b.Idx(),
+      \   }]},
+      \   9: {b -> [{
+      \     'T': 'Fieldref',
+      \     'class': b.Idx(),
+      \     'name_and_type': b.Idx(),
+      \   }]},
+      \   10: {b -> [{
+      \     'T': 'Methodref',
+      \     'class': b.Idx(),
+      \     'name_and_type': b.Idx(),
+      \   }]},
+      \   11: {b -> [{
+      \     'T': 'InterfaceMethodref',
+      \     'class': b.Idx(),
+      \     'name_and_type': b.Idx(),
+      \   }]},
+      \   8: {b -> [{
+      \     'T': 'String',
+      \     'string': b.Idx(),
+      \   }]},
+      \   3: {b -> [{
+      \     'T': 'Integer',
+      \     'value': b.U4(),
+      \   }]},
+      \   4: {b -> [{
+      \     'T': 'Float',
+      \     'bytes': b.Read(4),
+      \   }]},
+      \   5: {b -> [{
+      \     'T': 'Long',
+      \     'high_bytes': b.Read(4),
+      \     'low_bytes': b.Read(4),
+      \   }, {
+      \     'T': 'None'
+      \   }]},
+      \   6: {b -> [{
+      \     'T': 'Double',
+      \     'high_bytes': b.Read(4),
+      \     'low_bytes': b.Read(4),
+      \   }, {
+      \     'T': 'None'
+      \   }]},
+      \   12: {b -> [{
+      \     'T': 'NameAndType',
+      \     'name': b.Idx(),
+      \     'desc': b.Idx(),
+      \   }]},
+      \   1: {b -> [{
+      \     'T': 'Utf8',
+      \     'bytes': b.Utf8(),
+      \   }]},
+      \   15: {b -> [{
+      \     'T': 'MethodHandle',
+      \     'kind': b.U1(),
+      \     'ref': b.Idx(),
+      \   }]},
+      \   16: {b -> [{
+      \     'T': 'MethodType',
+      \     'desc': b.Idx(),
+      \   }]},
+      \   18: {b -> [{
+      \     'T': 'InvokeDynamic',
+      \     'bootstrap_method_attr': b.Idx(),
+      \     'name_and_type': b.Idx(),
+      \   }]},
+      \ }
 
-" i is a blob and Parser is a function that accepts bytes and returns a
-" dictionary.
-let s:Parser = {i, Parser -> #{id: i, Parse: Parser}}
-let s:ConstantParsers = [
-      \   s:Parser(0z07, {b -> #{
-      \     T: 'Class',
-      \     name: b.Idx(),
-      \   }}),
-      \   s:Parser(0z09, {b -> #{
-      \     T: 'Fieldref',
-      \     class: b.Idx(),
-      \     name_and_type: b.Idx(),
-      \   }}),
-      \   s:Parser(0z0a, {b -> #{
-      \     T: 'Methodref',
-      \     class: b.Idx(),
-      \     name_and_type: b.Idx(),
-      \   }}),
-      \   s:Parser(0z0b, {b -> #{
-      \     T: 'InterfaceMethodref',
-      \     class: b.Idx(),
-      \     name_and_type: b.Idx(),
-      \   }}),
-      \   s:Parser(0z08, {b -> #{
-      \     T: 'String',
-      \     string: b.Idx(),
-      \   }}),
-      \   s:Parser(0z03, {b -> #{
-      \     T: 'Integer',
-      \     value: b.U4(),
-      \   }}),
-      \   s:Parser(0z04, {b -> #{
-      \     T: 'Float',
-      \     bytes: b.Read(4),
-      \   }}),
-      \   s:Parser(0z05, {b -> #{
-      \     T: 'Long',
-      \     high_bytes: b.Read(4),
-      \     low_bytes: b.Read(4),
-      \   }}),
-      \   s:Parser(0z06, {b -> #{
-      \     T: 'Double',
-      \     high_bytes: b.Read(4),
-      \     low_bytes: b.Read(4),
-      \   }}),
-      \   s:Parser(0z0c, {b -> #{
-      \     T: 'NameAndType',
-      \     name: b.Idx(),
-      \     desc: b.Idx(),
-      \   }}),
-      \   s:Parser(0z01, {b -> #{
-      \     T: 'Utf8',
-      \     bytes: b.Utf8(),
-      \   }}),
-      \   s:Parser(0z0f, {b -> #{
-      \     T: 'MethodHandle',
-      \     kind: b.U1(),
-      \     ref: b.Idx(),
-      \   }}),
-      \   s:Parser(0z10, {b -> #{
-      \     T: 'MethodType',
-      \     desc: b.Idx(),
-      \   }}),
-      \   s:Parser(0z12, {b -> #{
-      \     T: 'InvokeDynamic',
-      \     bootstrap_method_attr: b.Idx(),
-      \     name_and_type: b.Idx(),
-      \   }}),
-      \ ]
-unlet s:Parser
+" {idx}: 1-indexed constant entry index
+function! s:ClassFile.GetConstant(idx) abort dict
+  if a:idx > len(self.constants)
+    throw 'ERROR(ArgumentError): Invalid constant index ' .. a:idx
+  endif
+  return self.constants->get(a:idx)
+endfunction
 
-" Handler accepts 2 args: the {id} and {const} dict
-function! s:ConstantPool.ForEach(Handler) abort dict
-  for l:id in range(1, self.count + 1)
-    if has_key(self.entries, l:id)
-      call a:Handler(l:id, self.entries[l:id])
-    endif
+function! s:ClassFile.GetTypedConstant(T, idx) abort dict
+  let l:const = self.GetConstant(a:idx)
+  if l:const.T !=# a:T
+    throw printf(
+          \ 'ERROR(TypeError): Expected %s at index %s, but got %s',
+          \ a:T, a:idx, l:const.T)
+  endif
+  return l:const
+endfunction
+
+function! s:ClassFile.GetClassName(idx) abort dict
+  return self.GetTypedConstant('Class', a:idx).name
+endfunction
+
+function! s:ClassFile.GetString(idx) abort dict
+  return self.GetTypedConstant('Utf8', a:idx).bytes
+endfunction
+
+function! s:ParseConstants(bytes) abort
+  let l:constants = [{'T': 'None'}]
+  for _ in range(a:bytes.U2() - 1)
+    eval l:constants->extend(s:ConstantParsers[a:bytes.U1()](a:bytes))
   endfor
-endfunction
-
-function! s:ConstantPool.GetClassName(idx) abort dict
-  if !has_key(self.entries, a:idx)
-    throw 'Invalid index!'
-  endif
-  let l:v = self.entries->get(a:idx)
-  if l:v.T != 'Class'
-    throw 'Not a class!'
-  endif
-  return l:v.name
-endfunction
-
-function! s:ConstantPool.GetString(idx) abort dict
-  if !has_key(self.entries, a:idx)
-    throw 'Invalid index!'
-  endif
-  let l:v = self.entries->get(a:idx)
-  if l:v.T != 'Utf8'
-    throw 'Not a Utf8 constant!'
-  endif
-  return l:v.bytes
-endfunction
-
-function! s:ParseConstantPool(bytes) abort
-  " Parse Values
-  let l:constants = copy(s:ConstantPool)
-  let l:constants.entries = {}
-  let l:constants.count = a:bytes.U2() - 1
-  let l:next = 1
-  while l:next < (l:constants.count + 1)
-    let l:id = a:bytes.Read(1)
-    let l:result = filter(copy(s:ConstantParsers), {k, v -> v.id == l:id})
-    if len(l:result) != 1
-      throw 'ERROR(InvalidFormat): Wrong number of matches? '
-            \ .. string(l:result)
-            \ .. ' for id ' .. string(l:id)
-    endif
-    let l:const = l:result[0].Parse(a:bytes)
-    let l:constants.entries[l:next] = l:const
-    let l:next += 1
-    if l:const.T == 'Long' || l:const.T == 'Double'
-      let l:constants.entries[l:next] = {'T': 'None'}
-      let l:next += 1
-    endif
-  endwhile
-
-  " Replace Indexes with values
-  for [l:n, l:constant] in items(l:constants.entries)
-    for [l:field, l:value] in items(l:constant)
-      if type(l:value) isnot v:t_dict
-        continue
-      endif
-      let l:keys = keys(l:value)
-      if len(l:keys) == 1 && l:keys[0] == 'i'
-        let l:insert_constant = l:constants.entries[l:value.i]
-        if l:insert_constant.T == 'Utf8'
-          let l:constant[l:field] = l:insert_constant.bytes
-        else
-          let l:constant[l:field] = l:insert_constant
-        endif
-      endif
+  for l:const in l:constants
+    for [l:key, l:index] in copy(l:const)
+          \->filter({_, v -> type(v) == v:t_dict && keys(v) == ['&']})
+          \->items()
+      let l:value = l:constants[l:index['&']]
+      let l:const[l:key] = (l:value.T == 'Utf8') ? l:value.bytes : l:value
     endfor
   endfor
-
   return l:constants
 endfunction
 
-function! s:ParseAnnotation(bytes, constants) abort
+function! s:ParseAnnotation(bytes, cf) abort
   return {
-      \   'type': a:constants.GetString(a:bytes.U2()),
+      \   'type': a:cf.GetString(a:bytes.U2()),
       \   'element_value_pairs': range(a:bytes.U2())->map({i, v -> {
-      \     'name': a:constants.GetString(a:bytes.U2()),
-      \     'value': s:ParseElementValue(a:bytes, a:constants),
+      \     'name': a:cf.GetString(a:bytes.U2()),
+      \     'value': s:ParseElementValue(a:bytes, a:cf),
       \   }}),
       \ }
 endfunction
 
-function! s:ParseElementValue(bytes, constants) abort
+function! s:ParseElementValue(bytes, cf) abort
   let l:ev = {}
   let l:ev.tag = nr2char(a:bytes.U1())
   if l:ev.tag =~# '[BCDFIJSZs]'
-    let l:ev.const_value = a:constants.entries->get(a:bytes.U2())
+    let l:ev.const_value = a:cf.constants->get(a:bytes.U2())
   elseif l:ev.tag =~# '[e]'
     let l:ev.enum_const_value = {
-          \   'type_name': a:constants.GetString(a:bytes.U2()),
-          \   'const_name': a:constants.GetString(a:bytes.U2()),
+          \   'type_name': a:cf.GetString(a:bytes.U2()),
+          \   'const_name': a:cf.GetString(a:bytes.U2()),
           \ }
   elseif l:ev.tag =~# '[c]'
-    let l:ev.const_value = a:constants.GetString(a:bytes.U2())
+    let l:ev.const_value = a:cf.GetString(a:bytes.U2())
   elseif l:ev.tag =~# '[@]'
-    let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:constants)
+    let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:cf)
   elseif l:ev.tag =~# '\['
-    let l:ev.array_value = s:ParseElementValue(a:bytes, a:constants)
+    let l:ev.array_value = s:ParseElementValue(a:bytes, a:cf)
   endif
   return l:ev
 endfunction
@@ -334,38 +285,38 @@ let s:AttributeParsers = {
       \   }},
       \ }
 
-function! s:ParseAttributes(bytes, constants) abort
-  let l:attrs = copy(s:Attributes)
-  let l:attrs.count = a:bytes.U2()
-  let l:attrs.entries = []
-  for l:i in range(l:attrs.count)
-    let l:attr = {}
-    let l:attr.name = a:constants.GetString(a:bytes.U2())
-    let l:attr.length = a:bytes.U4()
-    if has_key(s:AttributeParsers, l:attr.name)
-      call extend(l:attr, s:AttributeParsers->get(l:attr.name)(a:bytes, a:constants))
+function! s:ParseAttributes(bytes, cf) abort
+  let l:attributes = []
+  for _ in range(a:bytes.U2())
+    let l:attr = {
+          \   'T': a:cf.GetString(a:bytes.U2()),
+          \   'length': a:bytes.U4(),
+          \ }
+    if has_key(s:AttributeParsers, l:attr.T)
+      call extend(l:attr, s:AttributeParsers->get(l:attr.T)(a:bytes, a:cf))
     else
       let l:attr.info = a:bytes.Read(l:attr.length)
     endif
-    call add(l:attrs.entries, l:attr)
+    eval l:attributes->add(l:attr)
   endfor
-  return l:attrs
+  return l:attributes
 endfunction
 
-function! s:ParseFields(bytes, constants) abort
-  return range(a:bytes.U2())->map({i, v -> {
+function! s:ParseFields(bytes, cf) abort
+  return s:Fields(range(a:bytes.U2())->map({i, v -> {
         \   'access_flags': a:bytes.U2(),
-        \   'name': a:constants.GetString(a:bytes.U2()),
-        \   'descriptor': a:constants.GetString(a:bytes.U2()),
-        \   'attributes': s:ParseAttributes(a:bytes, a:constants),
-        \ }})
+        \   'name': a:cf.GetString(a:bytes.U2()),
+        \   'descriptor': a:cf.GetString(a:bytes.U2()),
+        \   'attributes': s:ParseAttributes(a:bytes, a:cf),
+        \ }}))
 endfunction
 
-function! s:ParseMethods(bytes, constants) abort
-  return range(a:bytes.U2())->map({i, v -> {
+function! s:ParseMethods(bytes, cf) abort
+  return s:Methods(range(a:bytes.U2())->map({i, v -> {
         \   'access_flags': a:bytes.U2(),
-        \   'name': a:constants.GetString(a:bytes.U2()),
-        \   'descriptor': a:constants.GetString(a:bytes.U2()),
-        \   'attributes': s:ParseAttributes(a:bytes, a:constants),
-        \ }})
+        \   'name': a:cf.GetString(a:bytes.U2()),
+        \   'descriptor': a:cf.GetString(a:bytes.U2()),
+        \   'attributes': s:ParseAttributes(a:bytes, a:cf),
+        \ }}))
 endfunction
+

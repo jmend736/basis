@@ -51,7 +51,7 @@ function! s:Bytes.U1() abort dict
 endfunction
 
 function! s:Bytes.Idx() abort dict
-  return {'i': self.U2()}
+  return {'&': self.U2()}
 endfunction
 
 function! s:Bytes.Utf8() abort dict

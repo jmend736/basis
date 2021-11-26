@@ -63,7 +63,10 @@ function! bss#type#Type(Desc) abort
 endfunction
 
 function! bss#type#Typed(Desc, value) abort
-  return bss#type#Type(a:Desc)(extend(copy(a:Desc), a:value))
+  if type(a:value) is v:t_dict
+    return bss#type#Type(a:Desc)(extend(copy(a:Desc), a:value))
+  endif
+  return bss#type#Type(a:Desc)(a:value)
 endfunction
 
 " Returns function that accepts { path, value -> v:none }
