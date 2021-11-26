@@ -1,5 +1,8 @@
 let s:Constants = bss#Type([
       \   {
+      \     'T': 'None',
+      \   },
+      \   {
       \     'T': 'Class',
       \     'name': v:t_string,
       \   },
@@ -63,13 +66,11 @@ let s:Constants = bss#Type([
       \     'bootstrap_method_attr': v:t_string,
       \     'name_and_type': {'T': 'NameAndType'},
       \   },
-      \   {
-      \     'T': v:t_string,
-      \   },
       \ ])
 
 let s:Attributes = [
       \   {
+      \     'T': v:t_string,
       \     'info': v:t_blob,
       \   },
       \   {

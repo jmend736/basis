@@ -123,7 +123,7 @@ endfunction
 
 function! s:CheckString(desc, path, value) abort
   call s:CheckType(v:t_string, a:path, a:value)
-  if a:desc ==# a:value
+  if a:desc !=# a:value
     throw printf(
           \ 'ERROR(Type): At %s expected string value of "%s", but got "%s".',
           \ s:PathString(a:path), a:desc, a:value)
