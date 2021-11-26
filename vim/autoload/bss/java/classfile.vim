@@ -68,6 +68,23 @@ let s:Constants = bss#Type([
       \   },
       \ ])
 
+let s:Annotations = [
+      \   {
+      \     'type': v:t_string,
+      \     'element_value_pairs': [{
+      \       'name': v:t_string,
+      \       'value': {
+      \         'tag': v:t_string,
+      \       },
+      \     }],
+      \   }
+      \ ]
+
+""
+" RuntimeVisibleAnnotations:
+"   - Limited to class, field or method annotations
+"   - At most 1 of these can be present per structure
+"
 let s:Attributes = [
       \   {
       \     'T': v:t_string,
@@ -75,15 +92,11 @@ let s:Attributes = [
       \   },
       \   {
       \     'T': 'RuntimeVisibleAnnotations',
-      \     'annotations': [{
-      \       'type': v:t_string,
-      \       'element_value_pairs': [{
-      \         'name': v:t_string,
-      \         'value': {
-      \           'tag': v:t_string,
-      \         },
-      \       }],
-      \     }],
+      \     'annotations': s:Annotations,
+      \   },
+      \   {
+      \     'T': 'RuntimeInvisibleAnnotations',
+      \     'annotations': s:Annotations,
       \   },
       \ ]
 
@@ -282,6 +295,9 @@ endfunction
 
 let s:AttributeParsers = {
       \   'RuntimeVisibleAnnotations': {b, c -> {
+      \     'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
+      \   }},
+      \   'RuntimeInvisibleAnnotations': {b, c -> {
       \     'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
       \   }},
       \ }
