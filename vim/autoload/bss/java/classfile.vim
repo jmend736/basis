@@ -98,6 +98,18 @@ let s:Attributes = [
       \     'T': 'RuntimeInvisibleAnnotations',
       \     'annotations': s:Annotations,
       \   },
+      \   {
+      \     'T': 'RuntimeVisibleParameterAnnotations',
+      \     'parameters': [{
+      \       'annotations': s:Annotations,
+      \     }],
+      \   },
+      \   {
+      \     'T': 'RuntimeInvisibleParameterAnnotations',
+      \     'parameters': [{
+      \       'annotations': s:Annotations,
+      \     }],
+      \   },
       \ ]
 
 let s:Fields = bss#Type([{
@@ -299,6 +311,16 @@ let s:AttributeParsers = {
       \   }},
       \   'RuntimeInvisibleAnnotations': {b, c -> {
       \     'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
+      \   }},
+      \   'RuntimeVisibleParameterAnnotations': {b, c -> {
+      \     'parameters': range(b.U1())->map({ -> {
+      \       'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
+      \     }})
+      \   }},
+      \   'RuntimeInvisibleParameterAnnotations': {b, c -> {
+      \     'parameters': range(b.U1())->map({ -> {
+      \       'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
+      \     }})
       \   }},
       \ }
 
