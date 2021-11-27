@@ -1,4 +1,4 @@
-function! bss#ClassFile(fname) abort
+function! bss#ParseClassFile(fname) abort
   return bss#java#classfile#Parse(a:fname)
 endfunction
 
@@ -9,3 +9,8 @@ endfunction
 function! bss#Typed(Desc, value) abort
   return bss#type#Typed(a:Desc, a:value)
 endfunction
+
+function! bss#ClassFiles() abort
+  return bss#java#classfiles#Open()
+endfunction
+
