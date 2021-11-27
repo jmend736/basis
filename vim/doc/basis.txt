@@ -177,24 +177,31 @@ buffer/window will be created, and the cursor will be left in the new window.
 
 OVERVIEW
 
-bss#view#View()		Create a new view
-bss#view#TermView()	Create a new term view
+bss#view#View()         Create a new view
+bss#view#TermView()     Create a new term view
+bss#view#ScratchView()  Create a new scratch view
 
-View.bufnr		The view's buffer number
-View.winid		The view's window id
-View.options		The local options to apply on the view
+View.bufnr              The view's buffer number
+View.winid              The view's window id
+View.options            The local options to apply on the view
+View.vars               The variables to expose as buffer-locals (see |b:|)
 
-View.Run({cmd})		Run a `:term` using the view as the output
-View.Exec({cmd})	Execute (`:execute`) the command in the view window
-View.AddOption({opt})	Add {opt} to the |View.options| list
-View.ApplyOptions()	Apply the |View.options| entries
+View.Open()             Ensure the window/buffer is opened
+View.Setup()            Apply the |View.options| and |View.vars|
+View.Run({cmd})         Run a `:term` using the view as the output
+View.Exec({cmd})        Execute (`:execute`) the command in the view window
+View.Call({Func})       Call (`:call`) the function in the view window
+View.Clear()            If valid, clear all lines in view buffer
+View.Append({line})     If valid, append {line} to view buffer
+View.SetLines({lines})  If valid, replace all lines in view buffer
+View.Get({varname})     Get buffer-local variable from view buffer
 
 CONSTRUCTORS
 
-bss#view#View([{fields}]) -> |View{}|                          *bss#view#View()*
+bss#view#View({fields}) -> |View{}|                           *bss#view#View()*
 
-    Creates an unopened |View{}|. If the optional |dict| {fields} argument is
-    present, then the view instance is extended (|extend()|) with the {fields}
+    Creates an unopened |View{}|. If the |dict| {fields} argument is present,
+    then the view instance is extended (|extend()|) with the {fields}
     argument.
 >
         " Create a new view
@@ -211,6 +218,10 @@ bss#view#TermView() -> |View{}|                            *bss#view#TermView()*
 
     Creates a |View{}| meant for holding output from a `:term` execution.
 
+bss#view#ScratchView() -> |View{}|                      *bss#view#ScratchView()*
+
+    Creates a |View{}| with a scratch buffer (no file, no swap, unlisted)
+
 FIELDS
 
 bufnr                                                             *View.bufnr*
@@ -224,7 +235,12 @@ winid                                                             *View.winid*
 options                                                         *View.options*
 
     A |list| of |string| which specifies options. Each entry of this list will
-    be applied by |View.ApplyOptions()| using `:setlocal`.
+    be applied by |View.Setup()| using `:setlocal`.
+
+vars                                                               *View.vars*
+
+    A |dict| of arbitray values which specifies options. Each item of this
+    dict will be exposed as a buffer local by |View.Setup()|.
 
 METHODS
 
@@ -237,13 +253,33 @@ View.Run({cmd}) -> |View{}|                                         *View.Run()*
 
     Run `:term {cmd}` within the |View{}|.
 
-View.AddOption({opt}) -> |View{}|                             *View.AddOption()*
+View.Call({Func}) -> |View{}|                                       *View.Call()*
 
-    Add an option to the |View.options| list.
+    Call `:call` the {Func} within the |View{}|.
 
-View.ApplyOptions() -> nothing                           *View.ApplyOptions()*
+View.Setup() -> nothing                                         *View.Setup()*
 
     For each entry in |View.options|, apply it using `:setlocal` on the
-    current window.
+    current window. For each item in |View.vars|, expose it as a buffer-local
+    in the current buffer.
+
+View.Clear() -> nothing                                         *View.Clear()*
+
+    If the |View{}| is valid, clear all lines in the view buffer.
+
+View.Append({line}) -> |View{}|                                  *View.Append()*
+
+    If the |View{}| is valid, append the {line} (a |string|) to the view
+    buffer.
+
+View.SetLines({lines}) -> |View{}|                             *View.SetLines()*
+
+    If the |View{}| is valid, replace all lines in the view buffer with the
+    {lines}, which can be either a string or a list of string.
+
+View.Get({varname}) -> T                                          *View.Get()*
+
+    If the |View{}| is valid, return the buffer-local value of {varname},
+    otherwise return |v:none|.
 
 vim:tw=78:ts=8:sw=4:ft=help:norl:cocu=nic:

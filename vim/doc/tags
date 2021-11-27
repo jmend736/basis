@@ -1,11 +1,16 @@
 Cursor.Restore()	basis.txt	/*Cursor.Restore()*
 Cursor{}	basis.txt	/*Cursor{}*
-View.AddOption()	basis.txt	/*View.AddOption()*
-View.ApplyOptions()	basis.txt	/*View.ApplyOptions()*
+View.Append()	basis.txt	/*View.Append()*
+View.Call()	basis.txt	/*View.Call()*
+View.Clear()	basis.txt	/*View.Clear()*
 View.Exec()	basis.txt	/*View.Exec()*
+View.Get()	basis.txt	/*View.Get()*
 View.Run()	basis.txt	/*View.Run()*
+View.SetLines()	basis.txt	/*View.SetLines()*
+View.Setup()	basis.txt	/*View.Setup()*
 View.bufnr	basis.txt	/*View.bufnr*
 View.options	basis.txt	/*View.options*
+View.vars	basis.txt	/*View.vars*
 View.winid	basis.txt	/*View.winid*
 View{}	basis.txt	/*View{}*
 basis	basis.txt	/*basis*
@@ -22,6 +27,7 @@ bss	basis.txt	/*bss*
 bss#cursor#Save()	basis.txt	/*bss#cursor#Save()*
 bss#type#Type()	basis.txt	/*bss#type#Type()*
 bss#type#Typed()	basis.txt	/*bss#type#Typed()*
+bss#view#ScratchView()	basis.txt	/*bss#view#ScratchView()*
 bss#view#TermView()	basis.txt	/*bss#view#TermView()*
 bss#view#View()	basis.txt	/*bss#view#View()*
 bss-type-descriptor	basis.txt	/*bss-type-descriptor*

@@ -2,6 +2,7 @@ let s:View = {
       \   'bufnr': v:none,
       \   'winid': v:none,
       \   'options': [],
+      \   'vars': {},
       \ }
 
 function! bss#view#View(args) abort
@@ -11,6 +12,20 @@ endfunction
 function! bss#view#TermView() abort
   return bss#view#View({
         \   'options': [
+        \     'nobuflisted',
+        \     'winfixwidth',
+        \     'nonumber',
+        \     'norelativenumber',
+        \   ],
+        \ })
+endfunction
+
+function! bss#view#ScratchView() abort
+  return bss#view#View({
+        \   'options': [
+        \     'bufhidden=wipe'
+        \     'buftype=nofile'
+        \     'noswapfile'
         \     'nobuflisted',
         \     'winfixwidth',
         \     'nonumber',
@@ -32,6 +47,9 @@ endfunction
 function! s:View.Setup() abort dict
   for l:opt in self.options
     execute printf('setlocal %s', l:opt)
+  endfor
+  for [l:key, l:value] in items(self.vars)
+    let b:[l:key] = l:value
   endfor
 endfunction
 
@@ -113,4 +131,11 @@ function! s:View.SetLines(lines) abort
     call deletebufline(self.bufnr, 1)
   endif
   return self
+endfunction
+
+function! s:View.Get(name) abort
+  if self.IsValid()
+    return getbufvar(self.bufnr, a:name, v:none)
+  endif
+  return v:none
 endfunction
