@@ -6,35 +6,46 @@ Basis                                                            *bss* *basis*
 
 1. Description                                  |basis-desc|
    1.1 Requirements                             |basis-reqs|
-2. Misc. Functions                              |basis-misc|
+2. Functions                                    |basis-misc|
+3. Types                                        |basis-types|
+   3.1 Type Definitions                         |basis-typedef|
+   3.2 Type{}                                   |basis-type|
+   3.3 Cursor{}                                 |basis-cursor|
+   3.4 View{}                                   |basis-view|
 
 ==============================================================================
-I. Description                                                    *basis-desc*
+1. Description                                                    *basis-desc*
 
 Basis is my "standard-library" of sorts. Mostly a collection of fun vimscript.
+
+Uses RFC 2119 key words: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" and "OPTIONAL".
 
 1.1 Requirements                                                  *basis-reqs*
 ----------------
 
-This plugin works with Vim version 7.4. It only works if the 'compatible'
-setting is not set.
+A Vim version 8.0 or later is REQUIRED. The option 'compatible' MUST NOT be
+set.
 
 ==============================================================================
-2. Misc. Functions                                                *basis-misc*
+2. Functions                                                      *basis-misc*
 
 USAGE                            RESULT         DESCRIPTION
 
 bss#cursor#Save()                |Cursor{}|       Save the cursor
+bss#type#Type()                  |Type()|         Get type checking function
+bss#type#Typed()                 T              Check obj against type desc
 bss#view#View()                  |View{}|         Create a new view
 bss#view#TermView()              |View{}|         Create a view for `:term`
+bss#view#ScratchView()           |View{}|         Create a scratch buffer view
 
 DEFINITIONS
 
 ==============================================================================
 3. Types                                                         *basis-types*
 
-3.0 Type Defintion                                                *basis-type*
-------------------
+3.1 Type Defintions                                            *basis-typedef*
+-------------------
 
 You can't define new types in vimscript, so for this section a type refers to
 a |dict| with a specified set of fields and methods. The name of a type will
@@ -43,7 +54,90 @@ be suffixed by curly-braces, eg. |Cursor{}|.
 In general fields will use lower snake-case, while methods will be upper camel
 case.
 
-3.1 Cursor{}                                           *basis-cursor* *Cursor{}*
+To support this |basis-type| defines a set of helper functions which accept
+|bss-descriptors| and define checkers which assert that a passed value matches
+the declared description.
+
+
+3.2 Type                                                          *basis-type*
+--------
+
+The core idea behind the type system defined by |bss#type#Type()| is:
+
+    1. User provides a declarative descriptor of the type.
+>
+        let s:Cursor = bss#type#Type({'Restore': v:t_func})
+<
+    2. Define a checker function
+>
+        let l:value = s:Cursor({'Restore': function('s:Restore')})
+<
+    3. Assert where necessary
+        - Users SHOULD check at API boundaries
+        - Users MAY check internally
+
+All of this functionality is disabled by default, and must be enabled using
+|bss#type#Enable()| (Likewise use |bss#type#Disable()| to disable it).
+
+FUNCTIONS
+
+bss#type#Type({desc}) -> |Type()|                              *bss#type#Type()*
+
+    Defines a "Checker" |Funcref| that ensures values passed to it match the
+    |bss-type-descriptor| {desc}. The returned |Funcref| accepts a single
+    argument, and will throw a 'ERROR(Type)'-prefixed exception if the value
+    isn't matched (assuming type checking is enabled).
+
+bss#type#Typed({desc}, {value}) -> type({value})            *bss#type#Typed()*
+
+    Runs the checker defined by {desc} (see |bss#type#Type()|) against the
+    {value}, returning the {value} if it matches, otherwise throwing
+    'ERROR(Type)'.
+
+
+3.2.1 Type Descriptors                                   *bss-type-descriptor*
+----------------------
+
+A type descriptor is a declarative way to define a type. An instance of the
+type simply means a value which matches the descriptor's "shape". What the
+descriptor means depends on the type of the descriptor value:
+
+DESCRIPTOR
+
+|Number| / |v:t_TYPE|   When a |Number| is encountered, it is interpreted as a
+                    vim type (see |v:t_TYPE| and |type()|) and the
+                    corresponding checker will assert that checked value:
+                        1. Has |type()| that matches the descriptor's
+                           |Number|.
+
+|String|              Defines a checker which asserts the checked value:
+                        1. Has |type()| of |v:t_string|.
+                        2. Equals the descritor |String| literally and with
+                           case sensitivity.
+
+|Dictionary|          Defines a checker which asserts the checked value:
+                        1. Has |type()| of |v:t_dict|.
+                        2. Has |keys()| which are a super-set of the
+                           descriptor's |keys()|.
+                        3. Every matching key must match the value of the
+                           corresponding key in the descriptor.
+
+|List|                Defines a checker which asserts the checked value:
+                        1. Has |type()| of |v:t_list|.
+                        2. Has values which all match any of the descriptor's
+                           entries. So an empty list applies no constraints,
+                           allowing any values.
+
+Checker |Func|        Defines a checker which asserts the checked value:
+                        1. Matches the supplied checker's original descriptor.
+                    The user MUST NOT alter the |Funcref| returned by
+                    |bss#type#Type()| in order to use it in another
+                    descriptor.
+
+Non-Checker |Func|    Defines a checker which asserts the checked value:
+                        1. Has |type()| of |v:t_func|.
+
+3.3 Cursor{}                                           *basis-cursor* *Cursor{}*
 ------------
 
 This represents a saved location of a cursor. To create an instance, use the
@@ -58,7 +152,7 @@ This represents a saved location of a cursor. To create an instance, use the
 
 CONSTRUCTORS
 
-bss#cursor#Save() -> |Cursor{}|                            *bss#cursor#Save()*
+bss#cursor#Save() -> |Cursor{}|                              *bss#cursor#Save()*
 
     Saves the current cursor location (window, line and column) and returns a
     |Cursor{}| which can be used to restore the cursor to this location.
@@ -73,7 +167,7 @@ Cursor.Restore() -> nothing                                 *Cursor.Restore()*
 
     Restore the location of the cursor to the location where it was saved.
 
-3.2 View{}                                               *basis-view* *View{}*
+3.4 View{}                                               *basis-view* *View{}*
 ----------
 
 This represents a reusable buffer and window combination. If the view is still
@@ -97,7 +191,7 @@ View.ApplyOptions()	Apply the |View.options| entries
 
 CONSTRUCTORS
 
-bss#view#View([{fields}]) -> |View{}|                        *bss#view#View()*
+bss#view#View([{fields}]) -> |View{}|                          *bss#view#View()*
 
     Creates an unopened |View{}|. If the optional |dict| {fields} argument is
     present, then the view instance is extended (|extend()|) with the {fields}
@@ -113,7 +207,7 @@ bss#view#View([{fields}]) -> |View{}|                        *bss#view#View()*
         let l:view = bss#view#View({'options': ['nobuflisted']})
 <
 
-bss#view#TermView() -> |View{}|                          *bss#view#TermView()*
+bss#view#TermView() -> |View{}|                            *bss#view#TermView()*
 
     Creates a |View{}| meant for holding output from a `:term` execution.
 
@@ -134,16 +228,16 @@ options                                                         *View.options*
 
 METHODS
 
-View.Exec({cmd}) -> |View{}|                                     *View.Exec()*
+View.Exec({cmd}) -> |View{}|                                       *View.Exec()*
 
     `:execute` the specified EX command in the |View{}|'s window. {cmd} must
     be a |string|.
 
-View.Run({cmd}) -> |View{}|                                       *View.Run()*
+View.Run({cmd}) -> |View{}|                                         *View.Run()*
 
     Run `:term {cmd}` within the |View{}|.
 
-View.AddOption({opt}) -> |View{}|                           *View.AddOption()*
+View.AddOption({opt}) -> |View{}|                             *View.AddOption()*
 
     Add an option to the |View.options| list.
 
@@ -152,4 +246,4 @@ View.ApplyOptions() -> nothing                           *View.ApplyOptions()*
     For each entry in |View.options|, apply it using `:setlocal` on the
     current window.
 
-vim:tw=78:ts=8:sw=4:ft=help:norl:
+vim:tw=78:ts=8:sw=4:ft=help:norl:cocu=nic:
