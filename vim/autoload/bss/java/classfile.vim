@@ -1,3 +1,18 @@
+" TODO:
+" [ ] Attributes.StackMapTable
+" [ ] Attributes.Exceptions
+" [ ] Attributes.InnerClasses
+" [ ] Attributes.EnclosingMethod
+" [ ] Attributes.Synthetic
+" [ ] Attributes.Signature
+" [ ] Attributes.SourceDebugExtension
+" [ ] Attributes.LineNumberTable
+" [ ] Attributes.LocalVariableTable
+" [ ] Attributes.LocalVariableTypeTable
+" [ ] Attributes.Deprecated
+" [ ] Attributes.AnnotationDefault
+" [ ] Attributes.BootstrapMethods
+
 let s:Constants = bss#Type([
       \   {
       \     'T': 'None',
@@ -113,6 +128,10 @@ let s:Attributes = [
       \   {
       \     'T': 'SourceFile',
       \     'sourcefile': v:t_string,
+      \   },
+      \   {
+      \     'T': 'ConstantValue',
+      \     'value': v:t_dict,
       \   },
       \   {
       \     'T': 'Code',
@@ -366,6 +385,9 @@ let s:AttributeParsers = {
       \   }},
       \   'SourceFile': {b, c -> {
       \     'sourcefile': c.GetString(b.U2()),
+      \   }},
+      \   'ConstantValue': {b, c -> {
+      \     'value': c.GetConstant(b.U2()),
       \   }},
       \   'Code': {b, c -> {
       \     'max_stack': b.U2(),
