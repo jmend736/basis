@@ -22,12 +22,12 @@ let s:Constants = bss#Type([
       \     'name': v:t_string,
       \   },
       \   {
-      \     'T': 'FieldRef',
+      \     'T': 'Fieldref',
       \     'class': {'T': 'Class'},
       \     'name_and_type': {'T': 'NameAndType'},
       \   },
       \   {
-      \     'T': 'MethodRef',
+      \     'T': 'Methodref',
       \     'class': {'T': 'Class'},
       \     'name_and_type': {'T': 'NameAndType'},
       \   },
@@ -165,7 +165,20 @@ let s:Fields = bss#Type([{
       \ }])
 
 let s:Methods = bss#Type([{
-      \   'access_flags': v:t_number,
+      \   'access_flags': [
+      \     'PUBLIC',
+      \     'PRIVATE',
+      \     'PROTECTED',
+      \     'STATIC',
+      \     'FINAL',
+      \     'SYNCHRONIZED',
+      \     'BRIDGE',
+      \     'VARARGS',
+      \     'NATIVE',
+      \     'ABSTRACT',
+      \     'STRICT',
+      \     'SYNTHETIC',
+      \   ],
       \   'name': v:t_string,
       \   'descriptor': v:t_string,
       \   'attributes': s:Attributes,
@@ -177,19 +190,16 @@ let s:ClassFile = {
       \   'minor_version': v:t_number,
       \   'major_version': v:t_number,
       \   'constants': s:Constants,
-      \   'access_flags': {
-      \     'value': v:t_number,
-      \     'values': [
-      \       'PUBLIC',
-      \       'FINAL',
-      \       'SUPER',
-      \       'INTERFACE',
-      \       'ABSTRACT',
-      \       'SYNTHETIC',
-      \       'ANNOTATION',
-      \       'ENUM',
-      \     ],
-      \   },
+      \   'access_flags': [
+      \     'PUBLIC',
+      \     'FINAL',
+      \     'SUPER',
+      \     'INTERFACE',
+      \     'ABSTRACT',
+      \     'SYNTHETIC',
+      \     'ANNOTATION',
+      \     'ENUM',
+      \   ],
       \   'this_class': v:t_string,
       \   'super_class': v:t_string,
       \   'interfaces': [v:t_string],
@@ -209,9 +219,7 @@ function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf.minor_version = a:bytes.U2()
   let l:cf.major_version = a:bytes.U2()
   let l:cf.constants = s:ParseConstants(a:bytes)
-  let l:cf.access_flags = {}
-  let l:cf.access_flags.value = a:bytes.U2()
-  let l:cf.access_flags.values = items({
+  let l:cf.access_flags = s:ParseAccessFlags({
         \   'PUBLIC': 0x0001,
         \   'FINAL': 0x0010,
         \   'SUPER': 0x0020,
@@ -220,9 +228,7 @@ function! bss#java#classfile#ParseBytes(bytes) abort
         \   'SYNTHETIC': 0x1000,
         \   'ANNOTATION': 0x2000,
         \   'ENUM': 0x4000,
-        \ })
-        \->filter('and(v:val[1], l:cf.access_flags.value) != 0')
-        \->map('v:val[0]')
+        \ }, a:bytes.U2())
   let l:cf.this_class = l:cf.GetClassName(a:bytes.U2())
   let l:cf.super_class = l:cf.GetClassName(a:bytes.U2())
   let l:cf.interfaces = range(a:bytes.U2())->map('l:cf.GetClassName(a:bytes.U2())')
@@ -415,7 +421,7 @@ let s:AttributeParsers = {
       \       'inner_class_info': {i -> i ? c.GetConstant(i) : {}}(b.U2()),
       \       'outer_class_info': {i -> i ? c.GetConstant(i) : {}}(b.U2()),
       \       'inner_name': {i -> i ? c.GetString(i) : ""}(b.U2()),
-      \       'inner_name_access_flags': b.U2(),
+      \       'inner_class_access_flags': b.U2(),
       \     }}),
       \   }},
       \ }
@@ -446,12 +452,33 @@ function! s:ParseFields(bytes, cf) abort
         \ }}))
 endfunction
 
+let s:MethodAccessFlags = {
+      \ 'PUBLIC': 0x0001,
+      \ 'PRIVATE': 0x0002,
+      \ 'PROTECTED': 0x0004,
+      \ 'STATIC': 0x0008,
+      \ 'FINAL': 0x0010,
+      \ 'SYNCHRONIZED': 0x0020,
+      \ 'BRIDGE': 0x0040,
+      \ 'VARARGS': 0x0080,
+      \ 'NATIVE': 0x0100,
+      \ 'ABSTRACT': 0x0400,
+      \ 'STRICT': 0x0800,
+      \ 'SYNTHETIC': 0x1000,
+      \ }
+
 function! s:ParseMethods(bytes, cf) abort
   return s:Methods(range(a:bytes.U2())->map({i, v -> {
-        \   'access_flags': a:bytes.U2(),
+        \   'access_flags': s:ParseAccessFlags(
+        \       s:MethodAccessFlags, a:bytes.U2()),
         \   'name': a:cf.GetString(a:bytes.U2()),
         \   'descriptor': a:cf.GetString(a:bytes.U2()),
         \   'attributes': s:ParseAttributes(a:bytes, a:cf),
         \ }}))
 endfunction
 
+function! s:ParseAccessFlags(format, flags) abort
+  return items(a:format)
+        \->filter('and(v:val[1], a:flags) != 0')
+        \->map('v:val[0]')
+endfunction
