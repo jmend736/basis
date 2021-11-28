@@ -25,36 +25,17 @@ function! s:ClassFiles_Load(fname) abort dict
 endfunction
 
 function! s:ClassFiles_Query(cls, ...) abort dict
+  echom bss#data#LQuery(self.loaded[a:cls], a:000).data
 endfunction
 
-function! s:ClassFiles_QueryComplete(arg, args, pos) abort
-  let l:args = split(a:args)[1:]
-  if empty(l:args)
-    return keys(b:classfiles.loaded)->filter({_, v -> v =~# a:arg})
-  elseif has_key(b:classfiles.loaded, l:args[0])
-    let l:ptr = b:classfiles.loaded[l:args[0]]
-    for l:key in l:args[1:]
-      if empty(l:key)
-        continue
-      elseif has_key(l:ptr, l:key)
-        let l:ptr = l:ptr[l:key]
-      else
-        return keys(l:ptr)->filter({_, v -> v =~# l:key})
-      endif
-
-      if type(l:ptr) != v:t_dict
-        return []
-      endif
-    endfor
-    return keys(l:ptr)
-  endif
-  return []
+function! s:ClassFiles_QueryComplete(...) abort
+  return bss#data#DataComplete(b:classfiles.loaded, a:000)
 endfunction
 
 function! s:Setup() abort
-  command! -buffer -nargs=1 -complete=file CfLoad
+  command! -buffer -nargs=1 -complete=file Load
         \ eval b:classfiles.Load(<q-args>)
 
-  command! -buffer -nargs=* -complete=customlist,<SID>ClassFiles_QueryComplete CfQuery
-        \ eval b:classfiles.Query(<q-args>)
+  command! -buffer -nargs=* -complete=customlist,<SID>ClassFiles_QueryComplete Query
+        \ eval b:classfiles.Query(<f-args>)
 endfunction
