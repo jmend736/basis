@@ -23,16 +23,10 @@
 ""
 " jmend's vimrc!
 "
-" ===== IMPORTANT NOTE =====
-" = Before using this .vimrc, you must:
-" = 1. Run :DownloadPlug (or manually run `$ curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`)
-" = 2. Restart vim
-" = 3. Run :PlugInstall
-" ==========================
-"
-" Commands:
-" :Man ~ Search man pages within vim
-" :Term ~ Without args, run the 'shell', otherwise run the specified command
+" Required Dependency:
+"   1. Install vim-plug: https://github.com/junegunn/vim-plug
+"   2. Run :PlugInstall
+"   3. Restart vim
 
 " Notes {{{
 " Misc:
@@ -91,15 +85,10 @@
 "
 " }}} Notes
 
-" Quite Important: ----------------------
-" I use the <localleader> to replace the leader usage in all file-specific
-" commands. So basically all commands which are set with autocommand (au) will
-" be utilizing localleader. An example of this is <localleader>r which is
-" usually used to run files.
-"
-" I've defaulted it to the same value as leader, but I recommend changing this
-" to "\<space>" in order to mentally separate the two. I'm not your mom
-" though, so you do you.
+" Command Prefix:
+"   <leader>      : used for global mappings
+"   <localleader> : used for buffer-local mappings
+let mapleader = '\'
 let maplocalleader = '\'
 
 " System Dependencies: {{{
@@ -160,14 +149,12 @@ let g:jm_vimrc.java_import_cache = #{
 " }}}
 
 " Playground: {{{
-command! Latest view /mnt/c/Users/jmend/AppData/Roaming/.minecraft/logs/latest.log
-
 for [key, path] in items(#{
       \   v: '~/.vimrc',
       \   l: '~/minecraft/logs/latest.log',
       \   j: '~/state/jems',
       \ })
-  execute printf('nnoremap <localleader>e%s :edit %s<cr>', key, path)
+  execute printf('nnoremap <leader>e%s :edit %s<cr>', key, path)
 endfor
 " }}} Playground
 
@@ -212,30 +199,7 @@ Plug 'jmend736/basis', { 'rtp': 'vim' }
 call plug#end()
 
 if !exists('g:loaded_plug')
-  command! DownloadPlug call s:DownloadPlug()
-  function! s:DownloadPlug()
-    let l:curl_cmd = g:jm_vimrc.deps.curl
-          \ .. ' -fLo ~/.vim/autoload/plug.vim'
-          \ .. ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-    let l:choices = [v:none, 'yes', 'no']
-    let l:choice = confirm(
-          \ 'Please confirm, about to run: ' .. l:curl_cmd,
-          \ join(l:choices[1:], "\n"))
-    let l:should_run = l:choice == 1
-    echom printf('Ok %srunning', l:should_run ? '' : 'not ', )
-    if l:choice == 1
-      echom '...'
-      silent let l:output = system(l:curl_cmd)
-      if v:shell_error
-        echom "Oh no! Something went wrong!"
-      else
-        echom "Done! Please restart vim."
-      endif
-    endif
-  endfunction
-  echom ">>>>>>>>>>>>>>>> Please run :DownloadPlug, restart then :PlugInstall <<<<<<<<<<<<<<<<"
-  echom ">>>>>>>>>>>>>>>> Alternatively, see comments in the .vimrc.          <<<<<<<<<<<<<<<<"
+  echoerr "ERROR: vim-plug is REQUIRED https://github.com/junegunn/vim-plug"
   finish
 endif
 
