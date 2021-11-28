@@ -361,7 +361,7 @@ function! s:ParseElementValue(bytes, cf) abort
   elseif l:ev.tag =~# '[@]'
     let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:cf)
   elseif l:ev.tag =~# '\['
-    let l:ev.array_value = s:ParseElementValue(a:bytes, a:cf)
+    let l:ev.array_value = range(a:bytes.U2())->map({-> s:ParseElementValue(a:bytes, a:cf)})
   endif
   return l:ev
 endfunction
