@@ -102,12 +102,12 @@
 " though, so you do you.
 let maplocalleader = '\'
 
+" System Dependencies: {{{
 let g:jm_vimrc = {}
 
 " A variety of dependencies on the system
 let g:jm_vimrc.deps = #{
       \   jshell: '/usr/bin/jshell',
-      \   buildozer: '/home/jmend/go/bin/buildozer',
       \   curl: '/usr/bin/curl',
       \   blaze: '/usr/bin/blaze',
       \   javap: '/usr/bin/javap',
@@ -157,11 +157,11 @@ let g:jm_vimrc.java_import_cache = #{
       \   ElementsIntoSet: 'dagger.multibindings.ElementsIntoSet',
       \   MapKey: 'dagger.MapKey',
       \ }
-
+" }}}
 
 " Playground: {{{
 command! Latest view /mnt/c/Users/jmend/AppData/Roaming/.minecraft/logs/latest.log
-"
+
 for [key, path] in items(#{
       \   v: '~/.vimrc',
       \   l: '~/minecraft/logs/latest.log',
@@ -173,8 +173,6 @@ endfor
 
 " Plugins (vim-plug): {{{
 call plug#begin('~/.vim/bundle')
-
-let g:polyglot_disabled = ['tex', 'latex', 'c', 'python']
 
 " Plugins:
 Plug 'morhetz/gruvbox'
@@ -197,7 +195,6 @@ Plug 'pangloss/vim-javascript'
 Plug 'nelstrom/vim-markdown-folding'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'jpalardy/vim-slime'
-"Plug 'sheerun/vim-polyglot'
 Plug 'itchyny/lightline.vim'
 Plug 'ap/vim-buftabline'
 Plug 'airblade/vim-gitgutter'
@@ -206,7 +203,8 @@ Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
-" Plug 'fatih/vim-go'
+"Plug 'sheerun/vim-polyglot'
+"Plug 'fatih/vim-go'
 "Plug 'davidhalter/jedi-vim'
 "Plug 'ervandew/supertab'
 "Plug 'w0rp/ale'
@@ -309,7 +307,7 @@ set smartcase
 
 " Other
 set fileencodings=utf-8
-set tags=.tags
+set tags=tags
 set printoptions=number:y,duplex:long,paper:letter
 set clipboard=unnamedplus
 set errorbells
@@ -323,10 +321,6 @@ set bg=dark
 " }}} General Settings
 
 " Plugin Settings: {{{
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:ycm_python_binary_path = '/usr/bin/python'
-"let g:SuperTabDefaultCompletionType = '<C-n>'
 
 let g:lightline = {
             \   'active': {
@@ -433,18 +427,10 @@ if !exists('g:jm_term')
 endif
 command! -nargs=* Term call g:jm_term.Run([<f-args>])
 
-command! -nargs=+ -complete=customlist,<SID>CompleteTargets Doz
-      \ call g:jm_term.Run([g:jm_vimrc.deps.buildozer, <q-args>])
-command! -nargs=+ -complete=customlist,<SID>CompleteTargets Dep
-      \ call g:jm_term.Run([g:jm_vimrc.deps.buildozer, "add deps " .. <q-args>, BlazeTarget()])
 command! SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
 command! SetupTargetClasspath
       \ let $CLASSPATH = s:TargetClasspath()
-command! SetupMake
-      \ windo ReplaceR make
-command! SetupBracketFolds
-      \ set foldmethod=marker | set foldmarker={,}
 command! -nargs=+ Man
       \ Term env MANPAGER=cat man <args>
 command! -nargs=+ Jsh
@@ -497,8 +483,6 @@ augroup ft_c
                 \ :make<CR>
     autocmd FileType c nnoremap <buffer> <localleader>R
                 \ :Term gcc -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
-    autocmd FileType c nnoremap <buffer> <localleader>d
-                \ :YcmCompleter GoTo<cr>
 augroup END
 
 
@@ -509,8 +493,6 @@ augroup ft_cc
                 \ :make<CR>
     autocmd FileType cpp nnoremap <buffer> <localleader>R
                 \ :Term g++ -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
-    autocmd FileType cpp nnoremap <buffer> <localleader>d
-                \ :YcmCompleter GoTo<cr>
 augroup END
 
 augroup ft_python
@@ -551,8 +533,6 @@ augroup ft_javascript
           \ :w<CR> :!node %<CR>
     autocmd FileType javascript nnoremap <buffer> <localleader>R
           \ :Term webpack<CR>
-    autocmd FileType javascript nnoremap <buffer> <localleader>d
-          \ :YcmCompleter GoTo<CR>
 augroup END
 
 augroup ft_markdown
@@ -586,6 +566,12 @@ augroup end
 
 " Misc: {{{
 
+" :FindImport {Classname}
+"   Attempt to find and a Java import statement for the {Classname}
+"     1. Try the `g:jm_vimrc.java_import_cache`
+"     2. Search the CWD using `ag` for an `import .*\.{ClassName};`
+"     3. Finally, search `g:jm_vimrc.deps.JavaClassnameList()`
+" {{{
 nnoremap <space>t :call <SID>FindImport(expand('<cword>'))<CR>
 command -nargs=1 FindImport call <SID>FindImport(<q-args>)
 function! s:FindImport(word) abort
@@ -622,7 +608,11 @@ function! s:AddImport(import) abort
     execute '1,1FormatLines'
     echom "Adding: " .. a:import
 endfunction
+" }}}
 
+" :Javap {qualified-classname}
+"   Run `javap` against the provided classname
+" {{{
 command! -nargs=? -complete=customlist,<SID>JavapComplete -bang
       \ Javap call <SID>Javap(<q-args>, "<bang>" ==# '!')
 function! s:Javap(arg, search) abort
@@ -658,7 +648,12 @@ endfunction
 function! s:JavapOpen(cls) abort
   execute 'Javap ' .. a:cls
 endfunction
+" }}}
 
+" :MavenSearch {query}
+" :M {query}
+"   Run a maven query, and show results in a selector window
+" {{{
 command! -nargs=1 MavenSearch call <SID>MavenSearch(<q-args>)
 command! -nargs=1 M MavenSearch <args>
 function! s:MavenSearch(query) abort
@@ -692,7 +687,24 @@ function! s:Insert(msg) abort
   let l:spaces = getline('.')->matchstr('^\s*')
   call append(line('.'), printf("%simplementation '%s'", l:spaces, a:msg))
 endfunction
+" }}}
 
+" Bazel/Blaze helper functions
+"
+"   s:BlazeTargets({fname})
+"     Return the targets that depend on {fname} directly
+"
+"   BlazeTarget()
+"     Returns the first target for the current file
+"
+"   s:TargetClasspath()
+"     Returns the classpath for BlazeTarget()
+"
+"   s:CompleteTargets({arg_lead}, {cmd_line}, {cursor_pos})
+"     A -complete=customlist compatible function that simply filters the
+"     commandline against all targets
+"
+" {{{
 function! s:BlazeTargets(fname) abort
   let l:query = printf(
         \   'same_pkg_direct_rdeps("//%s:%s")',
@@ -707,6 +719,10 @@ function! s:BlazeTargets(fname) abort
         \ )
   echom l:command
   return filter(systemlist(l:command), 'v:val =~# "^//"')
+endfunction
+
+function! BlazeTarget() abort
+  return get(s:BlazeTargets(expand('%:p')), 0, "???")
 endfunction
 
 function! s:TargetClasspath() abort
@@ -728,14 +744,5 @@ function! s:CompleteTargets(arg_lead, cmd_line, cursor_pos) abort
           \->filter('v:val =~# "' .. a:arg_lead .. '"')
   endif
 endfunction
-
-function! BlazeTarget() abort
-  return get(s:BlazeTargets(expand('%:p')), 0, "???")
-endfunction
-
-" ISO 8601 datetime string parsable by python
-function! Datetime() abort
-  return strftime("%FT%R%z")
-endfunction
-
+" }}}
 " }}} Misc

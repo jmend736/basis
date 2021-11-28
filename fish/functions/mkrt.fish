@@ -9,6 +9,7 @@ function mkrt --description 'Make a random temporary directory'
   if set -q _flag_help
     string collect -- $args
   else if set -q _flag_complete
+    complete -c mkrt -f
     for arg in $args
       set -l arg_help (string split -m1 ' ' $arg)
       set -l parts (string split '/' $arg_help[1])
@@ -17,9 +18,10 @@ function mkrt --description 'Make a random temporary directory'
   else if set -q _flag_java
     mkrt
     touch Main.java
-    echo '.PHONY: all
+    echo '.PHONY: build run
       all:
       	javac Main.java
+      run:
       	java Main' | string trim -c' ' >> Makefile
   else
     pushd (mktemp -d /tmp/pg-XXXX)
