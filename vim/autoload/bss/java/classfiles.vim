@@ -40,9 +40,8 @@ endfunction
 
 function! s:ClassFiles_Query(cls, ...) abort dict
   let l:result = bss#data#LQuery(self.loaded[a:cls], a:000)
-  echom '==' l:result.path
   if l:result.T is v:t_list
-    echom '['
+    echom join(l:result.path, '.') '= ['
     let l:n = 0
     for l:v in l:result.data
       echom printf('  %2d: %s', l:n, l:v)
@@ -50,13 +49,16 @@ function! s:ClassFiles_Query(cls, ...) abort dict
     endfor
     echom ']'
   elseif l:result.T is v:t_dict
-    echom '{'
+    echom join(l:result.path, '.') '= {'
     for [l:k, l:V] in items(l:result.data)
+      if type(l:V) is v:t_func
+        continue
+      endif
       echom printf('  %s: %s', string(l:k), l:V)
     endfor
     echom '}'
   else
-    echom string(l:result.data)
+    echom join(l:result.path, '.') '= ' string(l:result.data)
   endif
 endfunction
 
