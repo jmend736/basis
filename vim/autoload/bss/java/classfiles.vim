@@ -42,8 +42,8 @@ function! s:ClassFiles_Query(cls, ...) abort dict
       echom l:v
     endfor
   elseif l:result.T is v:t_dict
-    for [l:k, l:v] in items(l:result.data)
-      echom l:k l:v
+    for [l:k, l:V] in items(l:result.data)
+      echom l:k l:V
     endfor
   else
     echom string(l:result.data)

@@ -110,6 +110,23 @@ let s:Attributes = [
       \       'annotations': s:Annotations,
       \     }],
       \   },
+      \   {
+      \     'T': 'SourceFile',
+      \     'sourcefile': v:t_string,
+      \   },
+      \   {
+      \     'T': 'Code',
+      \     'max_stack': v:t_number,
+      \     'max_locals': v:t_number,
+      \     'code': v:t_blob,
+      \     'exception_table': [{
+      \       'start_pc': v:t_number,
+      \       'end_pc': v:t_number,
+      \       'handler_pc': v:t_number,
+      \       'catch_type': v:t_number,
+      \     }],
+      \     'attributes': v:t_list,
+      \   },
       \ ]
 
 let s:Fields = bss#Type([{
@@ -321,6 +338,21 @@ let s:AttributeParsers = {
       \     'parameters': range(b.U1())->map({ -> {
       \       'annotations': range(b.U2())->map('s:ParseAnnotation(b, c)'),
       \     }})
+      \   }},
+      \   'SourceFile': {b, c -> {
+      \     'sourcefile': c.GetString(b.U2()),
+      \   }},
+      \   'Code': {b, c -> {
+      \     'max_stack': b.U2(),
+      \     'max_locals': b.U2(),
+      \     'code': b.Read(b.U4()),
+      \     'exception_table': range(b.U2())->map({-> {
+      \       'start_pc': b.U2(),
+      \       'end_pc': b.U2(),
+      \       'handler_pc': b.U2(),
+      \       'catch_type': b.U2(),
+      \     }}),
+      \     'attributes': s:ParseAttributes(b, c),
       \   }},
       \ }
 
