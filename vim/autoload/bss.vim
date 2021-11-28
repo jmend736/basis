@@ -10,7 +10,7 @@ function! bss#Typed(Desc, value) abort
   return bss#type#Typed(a:Desc, a:value)
 endfunction
 
-function! bss#ClassFiles() abort
-  return bss#java#classfiles#Open()
+function! bss#ClassFiles(files) abort
+  return bss#java#classfiles#Open(a:files)
 endfunction
 

@@ -1,10 +1,11 @@
 " TODO:
-"   [ ] Figure out how to handle list data (indexes?)
+"   [X] Figure out how to handle list data (indexes?)
 "       Can completions include extra text somehow?
 
 let s:QueryResult = bss#Type({
       \   'ok': v:t_bool,
       \   'data': v:none,
+      \   'path': v:t_list,
       \   'T': v:t_number,
       \ })
 
@@ -15,17 +16,23 @@ endfunction
 function! bss#data#LQuery(data, path) abort
   let l:ptr = a:data
   for l:part in a:path
-    if (type(l:ptr) isnot v:t_dict) || (!has_key(l:ptr, l:part))
+    if (type(l:ptr) is v:t_dict) && (has_key(l:ptr, l:part))
+      let l:ptr = l:ptr[l:part]
+    elseif (type(l:ptr) is v:t_list)
+          \  && (str2nr(l:part) >= 0 && str2nr(l:part) < len(l:ptr))
+      let l:ptr = l:ptr[str2nr(l:part)]
+    else
       return s:QueryResult({
             \   'ok': v:false,
+            \   'path': a:path,
             \   'data': v:none,
             \   'T': v:t_none
             \ })
     endif
-    let l:ptr = l:ptr[l:part]
   endfor
   return s:QueryResult({
         \   'ok': v:true,
+        \   'path': a:path,
         \   'data': l:ptr,
         \   'T': type(l:ptr),
         \ })
@@ -36,8 +43,10 @@ function! bss#data#DataComplete(data, args) abort
   let l:result = bss#data#LQuery(a:data, l:path)
   if l:result.ok
     return (l:result.T is v:t_dict)
-          \ ? keys(l:result.data)->filter('v:val =~# l:last')
-          \ : []
+          \ ? keys(l:result.data)->filter('v:val =~# "^" .. l:last')
+          \ : ((l:result.T is v:t_list)
+          \   ? range(len(l:result.data))->map({_, v -> string(v)})
+          \   : [])
   endif
   return []
 endfunction

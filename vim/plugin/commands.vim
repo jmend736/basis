@@ -3,4 +3,4 @@ if exists('g:loaded_basis')
 endif
 let g:loaded_basis = v:true
 
-command! -nargs=0 CF call bss#ClassFiles()
+command! -nargs=* -complete=file CF call bss#ClassFiles([<f-args>])

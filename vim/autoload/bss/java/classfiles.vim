@@ -1,4 +1,4 @@
-function! bss#java#classfiles#Open() abort
+function! bss#java#classfiles#Open(files) abort
   let l:view = bss#view#View({
         \   'options': [
         \     'nobuflisted',
@@ -19,6 +19,9 @@ function! bss#java#classfiles#Open() abort
         \.Call({-> s:Setup()})
   let l:view.vars.classfiles.view = l:view
   call l:view.vars.classfiles.Update()
+  for l:file in a:files
+    call l:view.vars.classfiles.Load(l:file)
+  endfor
 endfunction
 
 function! s:Setup() abort
@@ -37,14 +40,21 @@ endfunction
 
 function! s:ClassFiles_Query(cls, ...) abort dict
   let l:result = bss#data#LQuery(self.loaded[a:cls], a:000)
+  echom '==' l:result.path
   if l:result.T is v:t_list
+    echom '['
+    let l:n = 0
     for l:v in l:result.data
-      echom l:v
+      echom printf('  %2d: %s', l:n, l:v)
+      let l:n += 1
     endfor
+    echom ']'
   elseif l:result.T is v:t_dict
+    echom '{'
     for [l:k, l:V] in items(l:result.data)
-      echom l:k l:V
+      echom printf('  %s: %s', string(l:k), l:V)
     endfor
+    echom '}'
   else
     echom string(l:result.data)
   endif
