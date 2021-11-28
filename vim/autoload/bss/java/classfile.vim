@@ -149,7 +149,19 @@ let s:ClassFile = {
       \   'minor_version': v:t_number,
       \   'major_version': v:t_number,
       \   'constants': s:Constants,
-      \   'access_flags': v:t_number,
+      \   'access_flags': {
+      \     'value': v:t_number,
+      \     'values': [
+      \       'PUBLIC',
+      \       'FINAL',
+      \       'SUPER',
+      \       'INTERFACE',
+      \       'ABSTRACT',
+      \       'SYNTHETIC',
+      \       'ANNOTATION',
+      \       'ENUM',
+      \     ],
+      \   },
       \   'this_class': v:t_string,
       \   'super_class': v:t_string,
       \   'interfaces': [v:t_string],
@@ -169,7 +181,20 @@ function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf.minor_version = a:bytes.U2()
   let l:cf.major_version = a:bytes.U2()
   let l:cf.constants = s:ParseConstants(a:bytes)
-  let l:cf.access_flags = a:bytes.U2()
+  let l:cf.access_flags = {}
+  let l:cf.access_flags.value = a:bytes.U2()
+  let l:cf.access_flags.values = items({
+        \   'PUBLIC': 0x0001,
+        \   'FINAL': 0x0010,
+        \   'SUPER': 0x0020,
+        \   'INTERFACE': 0x0200,
+        \   'ABSTRACT': 0x0400,
+        \   'SYNTHETIC': 0x1000,
+        \   'ANNOTATION': 0x2000,
+        \   'ENUM': 0x4000,
+        \ })
+        \->filter('and(v:val[1], l:cf.access_flags.value) != 0')
+        \->map('v:val[0]')
   let l:cf.this_class = l:cf.GetClassName(a:bytes.U2())
   let l:cf.super_class = l:cf.GetClassName(a:bytes.U2())
   let l:cf.interfaces = range(a:bytes.U2())->map('l:cf.GetClassName(a:bytes.U2())')
