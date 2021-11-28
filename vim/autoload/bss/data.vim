@@ -1,3 +1,7 @@
+" TODO:
+"   [ ] Figure out how to handle list data (indexes?)
+"       Can completions include extra text somehow?
+
 let s:QueryResult = bss#Type({
       \   'ok': v:t_bool,
       \   'data': v:none,
