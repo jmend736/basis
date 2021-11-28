@@ -1,7 +1,7 @@
 " TODO:
 " [ ] Attributes.StackMapTable
 " [ ] Attributes.Exceptions
-" [ ] Attributes.InnerClasses
+" [X] Attributes.InnerClasses
 " [ ] Attributes.EnclosingMethod
 " [ ] Attributes.Synthetic
 " [ ] Attributes.Signature
@@ -145,6 +145,15 @@ let s:Attributes = [
       \       'catch_type': v:t_number,
       \     }],
       \     'attributes': v:t_list,
+      \   },
+      \   {
+      \     'T': 'InnerClasses',
+      \     'classes': [{
+      \       'inner_class_info': v:t_dict,
+      \       'outer_class_info': v:t_dict,
+      \       'inner_name': v:t_string,
+      \       'inner_class_access_flags': v:t_number,
+      \     }],
       \   },
       \ ]
 
@@ -400,6 +409,14 @@ let s:AttributeParsers = {
       \       'catch_type': b.U2(),
       \     }}),
       \     'attributes': s:ParseAttributes(b, c),
+      \   }},
+      \   'InnerClasses': {b, c -> {
+      \     'classes': range(b.U2())->map({-> {
+      \       'inner_class_info': c.GetConstant(b.U2()),
+      \       'outer_class_info': c.GetConstant(b.U2()),
+      \       'inner_name': c.GetString(b.U2()),
+      \       'inner_name_access_flags': b.U2(),
+      \     }}),
       \   }},
       \ }
 
