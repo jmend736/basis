@@ -71,7 +71,9 @@ endfunction
 
 " Returns function that accepts { path, value -> v:none }
 function! s:Checker(Desc) abort
-  if type(a:Desc) == v:t_number
+  if type(a:Desc) is v:none
+    return function('s:CheckNothing', [])
+  elseif type(a:Desc) == v:t_number
     return function('s:CheckType', [a:Desc])
   elseif type(a:Desc) == v:t_string
     return function('s:CheckString', [a:Desc])
@@ -90,6 +92,10 @@ function! s:Checker(Desc) abort
     return function('s:CheckType', [v:t_func])
   endif
   throw 'Invalid descriptor: ' .. string(a:Desc)
+endfunction
+
+function! s:CheckNothing(path, value) abort
+  return a:value
 endfunction
 
 function! s:CheckType(type, path, value) abort
