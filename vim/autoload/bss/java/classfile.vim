@@ -412,9 +412,9 @@ let s:AttributeParsers = {
       \   }},
       \   'InnerClasses': {b, c -> {
       \     'classes': range(b.U2())->map({-> {
-      \       'inner_class_info': c.GetConstant(b.U2()),
-      \       'outer_class_info': c.GetConstant(b.U2()),
-      \       'inner_name': c.GetString(b.U2()),
+      \       'inner_class_info': {i -> i ? c.GetConstant(i) : {}}(b.U2()),
+      \       'outer_class_info': {i -> i ? c.GetConstant(i) : {}}(b.U2()),
+      \       'inner_name': {i -> i ? c.GetString(i) : ""}(b.U2()),
       \       'inner_name_access_flags': b.U2(),
       \     }}),
       \   }},

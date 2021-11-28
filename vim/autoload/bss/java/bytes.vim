@@ -6,6 +6,20 @@ function! bss#java#bytes#Bytes(fname) abort
         \  {'ptr': l:bytes, 'root': copy(l:bytes)})
 endfunction
 
+function! bss#java#bytes#Jar(fname) abort
+  let l:files = systemlist('unzip -Z1 ' .. a:fname)
+  let l:archive = {}
+  for l:file in l:files->filter('v:val =~# "\.class$"')
+    let l:job = job_start(
+          \ 'unzip -p ' .. a:fname .. ' ' .. l:file,
+          \ {'out_mode': 'raw'})
+    let l:bytes = ch_readblob(l:job)
+    let l:archive[l:file] = bss#Typed(s:Bytes,
+        \  {'ptr': l:bytes, 'root': copy(l:bytes)})
+  endfor
+  return l:archive
+endfunction
+
 " Read n bytes off the front of the blob
 function! s:Bytes.Read(n) abort dict
   if a:n == 0

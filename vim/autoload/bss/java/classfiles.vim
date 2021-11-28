@@ -33,8 +33,16 @@ function! s:Setup() abort
 endfunction
 
 function! s:ClassFiles_Load(fname) abort dict
-  let l:cf = bss#ParseClassFile(a:fname)
-  let self.loaded[l:cf.this_class] = l:cf
+  if a:fname =~# '\.jar$'
+    let l:archive = bss#java#bytes#Jar(a:fname)
+    for [l:name, l:bytes] in items(l:archive)
+      let self.loaded[l:name] =
+            \ bss#java#classfile#ParseBytes(l:bytes)
+    endfor
+  else
+    let l:cf = bss#ParseClassFile(a:fname)
+    let self.loaded[l:cf.this_class] = l:cf
+  endif
   call self.Update()
 endfunction
 
