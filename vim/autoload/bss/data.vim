@@ -43,12 +43,16 @@ function! bss#data#DataComplete(data, args) abort
   let l:result = bss#data#LQuery(a:data, l:path)
   if l:result.ok
     return (l:result.T is v:t_dict)
-          \ ? keys(l:result.data)->filter('v:val =~# "^" .. l:last')
+          \ ? s:NonFuncKeys(l:result.data)->filter('v:val =~# "^" .. l:last')
           \ : ((l:result.T is v:t_list)
           \   ? range(len(l:result.data))->map({_, v -> string(v)})
           \   : [])
   endif
   return []
+endfunction
+
+function! s:NonFuncKeys(dict) abort
+  return keys(a:dict)->filter('type(a:dict[v:val]) isnot v:t_func')
 endfunction
 
 function! s:SeparateArgs(args) abort
