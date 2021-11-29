@@ -1,6 +1,5 @@
 " TODO:
-"   [X] Figure out how to handle list data (indexes?)
-"       Can completions include extra text somehow?
+"   [X] Allow method calls
 
 let s:QueryResult = bss#Type({
       \   'ok': v:t_bool,
@@ -14,13 +13,20 @@ function! bss#data#Query(data, ...) abort
 endfunction
 
 function! bss#data#LQuery(data, path) abort
-  let l:ptr = a:data
+  let l:Ptr = a:data
   for l:part in a:path
-    if (type(l:ptr) is v:t_dict) && (has_key(l:ptr, l:part))
-      let l:ptr = l:ptr[l:part]
-    elseif (type(l:ptr) is v:t_list)
-          \  && (str2nr(l:part) >= 0 && str2nr(l:part) < len(l:ptr))
-      let l:ptr = l:ptr[str2nr(l:part)]
+    let l:is_func = (l:part =~# '\w\+(.*)$')
+    let l:args = '()'
+    if l:is_func
+      let l:args = matchstr(l:part, '\w\+\zs(.*)$')
+      let l:part = matchstr(l:part, '\w\+\ze(')
+    endif
+
+    if (type(l:Ptr) is v:t_dict) && (has_key(l:Ptr, l:part))
+      let l:Ptr = l:Ptr[l:part]
+    elseif (type(l:Ptr) is v:t_list)
+          \  && (str2nr(l:part) >= 0 && str2nr(l:part) < len(l:Ptr))
+      let l:Ptr = l:Ptr[str2nr(l:part)]
     else
       return s:QueryResult({
             \   'ok': v:false,
@@ -29,12 +35,20 @@ function! bss#data#LQuery(data, path) abort
             \   'T': v:t_none
             \ })
     endif
+
+    if l:is_func
+      if type(l:Ptr) isnot v:t_func
+        throw 'ERROR(Type): Expected func ptr!'
+      endif
+      execute 'let l:Ptr = l:Ptr' .. l:args
+    endif
+
   endfor
   return s:QueryResult({
         \   'ok': v:true,
         \   'path': a:path,
-        \   'data': l:ptr,
-        \   'T': type(l:ptr),
+        \   'data': l:Ptr,
+        \   'T': type(l:Ptr),
         \ })
 endfunction
 
@@ -43,16 +57,12 @@ function! bss#data#DataComplete(data, args) abort
   let l:result = bss#data#LQuery(a:data, l:path)
   if l:result.ok
     return (l:result.T is v:t_dict)
-          \ ? s:NonFuncKeys(l:result.data)->filter('v:val =~# "^" .. l:last')
+          \ ? keys(l:result.data)->filter('v:val =~# "^" .. l:last')
           \ : ((l:result.T is v:t_list)
           \   ? range(len(l:result.data))->map({_, v -> string(v)})
           \   : [])
   endif
   return []
-endfunction
-
-function! s:NonFuncKeys(dict) abort
-  return keys(a:dict)->filter('type(a:dict[v:val]) isnot v:t_func')
 endfunction
 
 function! s:SeparateArgs(args) abort
