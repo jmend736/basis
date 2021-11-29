@@ -337,9 +337,10 @@ endfunction
 
 function! s:ParseConstants(bytes) abort
   let l:constants = [{'T': 'None'}]
-  for _ in range(a:bytes.U2() - 1)
+  let l:max = a:bytes.U2()
+  while len(l:constants) < l:max
     eval l:constants->extend(s:ConstantParsers[a:bytes.U1()](a:bytes))
-  endfor
+  endwhile
   for l:const in l:constants
     for [l:key, l:index] in copy(l:const)
           \->filter({_, v -> type(v) == v:t_dict && keys(v) == ['&']})
