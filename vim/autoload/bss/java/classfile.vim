@@ -155,6 +155,10 @@ let s:Attributes = [
       \       'inner_class_access_flags': v:t_number,
       \     }],
       \   },
+      \   {
+      \     'T': 'Signature',
+      \     'signature': v:t_string,
+      \   },
       \ ]
 
 let s:Fields = bss#Type([{
@@ -424,6 +428,9 @@ let s:AttributeParsers = {
       \       'inner_name': {i -> i ? c.GetString(i) : ""}(b.U2()),
       \       'inner_class_access_flags': b.U2(),
       \     }}),
+      \   }},
+      \   'Signature': {b, c -> {
+      \     'signature': c.GetString(b.U2()),
       \   }},
       \ }
 
