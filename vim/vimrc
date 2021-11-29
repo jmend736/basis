@@ -190,12 +190,15 @@ Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
-"Plug 'sheerun/vim-polyglot'
-"Plug 'fatih/vim-go'
-"Plug 'davidhalter/jedi-vim'
-"Plug 'ervandew/supertab'
-"Plug 'w0rp/ale'
-"Plug 'Valloric/YouCompleteMe'
+" Plug 'mattn/emmet-vim'
+" Plug 'sheerun/vim-polyglot'
+" Plug 'fatih/vim-go'
+" Plug 'davidhalter/jedi-vim'
+" Plug 'ervandew/supertab'
+" Plug 'w0rp/ale'
+" Plug 'Valloric/YouCompleteMe'
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" http://eclim.org
 call plug#end()
 
 if !exists('g:loaded_plug')

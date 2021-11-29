@@ -39,7 +39,7 @@ DESCRIPTION
   end
 
   if not set -q -U _sowed
-    echo 'You must sow before reaping!' >&2
+    echo -s (set_color red) ERROR (set_color normal) ' You must sow before reaping!' >&2
     return 1
   end
   string collect -- $_sowed

@@ -33,7 +33,9 @@ help:
 
 .PHONY: sync
 sync:
-	cat ~/.vimrc | sed "s:'~/basis/vim':'jmend736/basis', { 'rtp'\: 'vim' }:" > vim/vimrc
+	cat ~/.vimrc \
+		| sed "s:'~/basis/vim':'jmend736/basis', { 'rtp'\: 'vim' }:" \
+		> vim/vimrc
 	cp ~/.tmux.conf tmux/tmux.conf
 	$(FISH) fish/scripts/sync.fish
 
