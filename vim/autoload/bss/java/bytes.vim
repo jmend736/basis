@@ -7,16 +7,19 @@ function! bss#java#bytes#Bytes(fname) abort
 endfunction
 
 function! bss#java#bytes#Jar(fname) abort
-  let l:files = systemlist('unzip -Z1 ' .. a:fname)
+  let l:temp = tempname()
+  call system('mkdir -p ' .. l:temp)
+  call system(printf(
+        \   'unzip %s -d %s',
+        \   a:fname,
+        \   l:temp
+        \ ))
+  let l:files = globpath(l:temp, '**/*.class', v:false, v:true)
   let l:archive = {}
-  for l:file in l:files->filter('v:val =~# "\.class$"')
-    let l:job = job_start(
-          \ 'unzip -p ' .. a:fname .. ' ' .. l:file,
-          \ {'out_mode': 'raw'})
-    let l:bytes = ch_readblob(l:job)
-    let l:archive[l:file] = bss#Typed(s:Bytes,
-        \  {'ptr': l:bytes, 'root': copy(l:bytes)})
+  for l:file in l:files
+    let l:archive[l:file] = bss#java#bytes#Bytes(l:file)
   endfor
+  call delete(l:temp, 'rf')
   return l:archive
 endfunction
 

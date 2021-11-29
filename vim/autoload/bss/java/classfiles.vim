@@ -36,8 +36,12 @@ function! s:ClassFiles_Load(fname) abort dict
   if a:fname =~# '\.jar$'
     let l:archive = bss#java#bytes#Jar(a:fname)
     for [l:path, l:bytes] in items(l:archive)
-      let l:cf = bss#java#classfile#ParseBytes(l:bytes)
-      let self.loaded[l:cf.this_class] = l:cf
+      try
+        let l:cf = bss#java#classfile#ParseBytes(l:bytes)
+        let self.loaded[l:cf.this_class] = l:cf
+      catch /.*/
+        echo 'ERROR(CFLoadError):' l:path '=>' v:exception
+      endtry
     endfor
   else
     let l:cf = bss#ParseClassFile(a:fname)
