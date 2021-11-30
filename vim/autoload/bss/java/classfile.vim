@@ -4,7 +4,7 @@
 " [X] Attributes.InnerClasses
 " [ ] Attributes.EnclosingMethod
 " [ ] Attributes.Synthetic
-" [ ] Attributes.Signature
+" [X] Attributes.Signature
 " [ ] Attributes.SourceDebugExtension
 " [ ] Attributes.LineNumberTable
 " [ ] Attributes.LocalVariableTable
@@ -12,6 +12,7 @@
 " [ ] Attributes.Deprecated
 " [ ] Attributes.AnnotationDefault
 " [ ] Attributes.BootstrapMethods
+" [ ] Field access flags
 
 let s:Constants = bss#Type([
       \   {
@@ -239,8 +240,50 @@ function! bss#java#classfile#ParseBytes(bytes) abort
   let l:cf.fields = s:ParseFields(a:bytes, l:cf)
   let l:cf.methods = s:ParseMethods(a:bytes, l:cf)
   let l:cf.attributes = s:ParseAttributes(a:bytes, l:cf)
+  let l:cf.query = extend(s:Query, {'cf': l:cf})
   return bss#Typed(s:ClassFile, l:cf)
 endfunction
+
+" {idx}: 1-indexed constant entry index
+function! s:ClassFile.GetConstant(idx) abort dict
+  if a:idx > len(self.constants)
+    throw 'ERROR(ArgumentError): Invalid constant index ' .. a:idx
+  endif
+  return self.constants->get(a:idx)
+endfunction
+
+function! s:ClassFile.GetTypedConstant(T, idx) abort dict
+  let l:const = self.GetConstant(a:idx)
+  if l:const.T !=# a:T
+    throw printf(
+          \ 'ERROR(TypeError): Expected %s at index %s, but got %s',
+          \ a:T, a:idx, l:const.T)
+  endif
+  return l:const
+endfunction
+
+function! s:ClassFile.GetClassName(idx) abort dict
+  return self.GetTypedConstant('Class', a:idx).name
+endfunction
+
+function! s:ClassFile.GetString(idx) abort dict
+  return self.GetTypedConstant('Utf8', a:idx).bytes
+endfunction
+
+function! s:ClassFile.GetTypedConstants(T) abort dict
+  return copy(self.constants)
+        \->filter('v:val.T ==# a:T')
+endfunction
+
+" QUERY API ==================================================================
+
+let s:Query = {}
+
+function! s:Query.Hierarchy() abort dict
+  return {self.cf.this_class: [self.cf.super_class] + self.cf.interfaces}
+endfunction
+
+" PARSING ====================================================================
 
 let s:ConstantParsers = {
       \   7: {b -> [{
@@ -312,32 +355,6 @@ let s:ConstantParsers = {
       \     'name_and_type': b.Idx(),
       \   }]},
       \ }
-
-" {idx}: 1-indexed constant entry index
-function! s:ClassFile.GetConstant(idx) abort dict
-  if a:idx > len(self.constants)
-    throw 'ERROR(ArgumentError): Invalid constant index ' .. a:idx
-  endif
-  return self.constants->get(a:idx)
-endfunction
-
-function! s:ClassFile.GetTypedConstant(T, idx) abort dict
-  let l:const = self.GetConstant(a:idx)
-  if l:const.T !=# a:T
-    throw printf(
-          \ 'ERROR(TypeError): Expected %s at index %s, but got %s',
-          \ a:T, a:idx, l:const.T)
-  endif
-  return l:const
-endfunction
-
-function! s:ClassFile.GetClassName(idx) abort dict
-  return self.GetTypedConstant('Class', a:idx).name
-endfunction
-
-function! s:ClassFile.GetString(idx) abort dict
-  return self.GetTypedConstant('Utf8', a:idx).bytes
-endfunction
 
 function! s:ParseConstants(bytes) abort
   let l:constants = [{'T': 'None'}]
