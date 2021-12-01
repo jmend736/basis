@@ -24,28 +24,28 @@ set nocompatible
 filetype plugin indent on
 syntax on
 
-set fileencodings=utf-8
 set hidden
-set ruler showcmd  wildmenu
+set fileencodings=utf-8
+set ruler showcmd wildmenu
 set number relativenumber numberwidth=4
 set incsearch hlsearch ignorecase smartcase
 set tabstop=2 shiftwidth=2 expandtab smarttab
 set backspace=start,indent,eol
 set background=dark
 set laststatus=2
-
 let &statusline = ' %f%m%r%h%w%=%{win_getid()}:%02{bufnr()}:%04l:%02c (%p%%) '
 
-" <leader>r   Runs a command
-" :ReplaceR   Sets the command locally
-" :ReplaceR!  Sets the command globally
+" <leader>r   Tries to run b:cmd, falls back to g:cmd
+" :ReplaceR   Sets the buffer cmd (b:cmd)
+" :ReplaceR!  Sets the global cmd (g:cmd)
 nnoremap <leader>r
-      \ :execute get(b:, 'cmd', get(g:, 'cmd', 'echo "Set ReplaceR"'))<cr>
-command! -nargs=* -bang ReplaceR
+      \ :silent execute get(b:, 'cmd', get(g:, 'cmd', 'echo "Call :ReplaceR"'))<cr>
+command! -nargs=+ -bang ReplaceR
       \ call extend('<bang>' == '!' ? g: : b:, {'cmd': <q-args>})
 
-" :Term <cmd>
+" :Term {cmd} Runs the {cmd} in a :term window, but nicer
 command! TermCfg
-      \ autocmd TerminalOpen * ++once setlocal nobuflisted bufhidden=wipe
-command! -nargs=* Term
+      \ exec 'autocmd TerminalOpen * ++once setlocal nobuflisted bufhidden=wipe' |
+      \ exec 'autocmd TerminalOpen * ++once wincmd p'
+command! -nargs=* -complete=shellcmd Term
       \ botright 10 new +TermCfg | term ++curwin <args>
