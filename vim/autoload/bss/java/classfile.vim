@@ -1,4 +1,8 @@
 " TODO:
+" [ ] Constants.MethodHandle
+" [ ] Constants.Dynamic
+" [ ] Constants.Module
+" [ ] Constants.Package
 " [ ] Attributes.StackMapTable
 " [ ] Attributes.Exceptions
 " [X] Attributes.InnerClasses
@@ -275,12 +279,29 @@ function! s:ClassFile.GetTypedConstants(T) abort dict
         \->filter('v:val.T ==# a:T')
 endfunction
 
+function! s:ClassFile.GetAttribute(T) abort dict
+  let l:attrs = self.GetAttributes(a:T)
+  if len(l:attrs) != 1
+    throw 'More than 1 attribute matching ' .. a:T
+  endif
+  return l:attrs[0]
+endfunction
+
+function! s:ClassFile.GetAttributes(T) abort dict
+  return copy(self.attributes)
+        \->filter('v:val.T ==# a:T')
+endfunction
+
 " QUERY API ==================================================================
 
 let s:Query = {}
 
 function! s:Query.Hierarchy() abort dict
   return {self.cf.this_class: [self.cf.super_class] + self.cf.interfaces}
+endfunction
+
+function! s:Query.Signature() abort dict
+  return self.cf.GetAttribute('Signature')
 endfunction
 
 " PARSING ====================================================================
@@ -371,36 +392,6 @@ function! s:ParseConstants(bytes) abort
     endfor
   endfor
   return l:constants
-endfunction
-
-function! s:ParseAnnotation(bytes, cf) abort
-  return {
-      \   'type': a:cf.GetString(a:bytes.U2()),
-      \   'element_value_pairs': range(a:bytes.U2())->map({i, v -> {
-      \     'name': a:cf.GetString(a:bytes.U2()),
-      \     'value': s:ParseElementValue(a:bytes, a:cf),
-      \   }}),
-      \ }
-endfunction
-
-function! s:ParseElementValue(bytes, cf) abort
-  let l:ev = {}
-  let l:ev.tag = nr2char(a:bytes.U1())
-  if l:ev.tag =~# '[BCDFIJSZs]'
-    let l:ev.const_value = a:cf.constants->get(a:bytes.U2())
-  elseif l:ev.tag =~# '[e]'
-    let l:ev.enum_const_value = {
-          \   'type_name': a:cf.GetString(a:bytes.U2()),
-          \   'const_name': a:cf.GetString(a:bytes.U2()),
-          \ }
-  elseif l:ev.tag =~# '[c]'
-    let l:ev.const_value = a:cf.GetString(a:bytes.U2())
-  elseif l:ev.tag =~# '[@]'
-    let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:cf)
-  elseif l:ev.tag =~# '\['
-    let l:ev.array_value = range(a:bytes.U2())->map({-> s:ParseElementValue(a:bytes, a:cf)})
-  endif
-  return l:ev
 endfunction
 
 let s:AttributeParsers = {
