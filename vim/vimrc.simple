@@ -39,8 +39,8 @@ let &statusline = ' %f%m%r%h%w%=%{win_getid()}:%02{bufnr()}:%04l:%02c (%p%%) '
 " :ReplaceR   Sets the buffer cmd (b:cmd)
 " :ReplaceR!  Sets the global cmd (g:cmd)
 nnoremap <leader>r
-      \ :silent execute get(b:, 'cmd', get(g:, 'cmd', 'echo "Call :ReplaceR"'))<cr>
-command! -nargs=+ -bang ReplaceR
+      \ :execute get(b:, 'cmd', get(g:, 'cmd', 'echo "Call :ReplaceR"'))<cr>
+command! -nargs=+ -bang -complete=command ReplaceR
       \ call extend('<bang>' == '!' ? g: : b:, {'cmd': <q-args>})
 
 " :Term {cmd} Runs the {cmd} in a :term window, but nicer
@@ -49,3 +49,29 @@ command! TermCfg
       \ exec 'autocmd TerminalOpen * ++once wincmd p'
 command! -nargs=* -complete=shellcmd Term
       \ botright 10 new +TermCfg | term ++curwin <args>
+
+" Mappings: {{{
+nnoremap <C-h> <C-W>h
+nnoremap <C-j> <C-W>j
+nnoremap <C-k> <C-W>k
+nnoremap <C-l> <C-W>l
+
+nnoremap <leader>w :nohlsearch<Bar>:echo<cr>
+
+nnoremap <leader>q :bdelete<cr>
+nnoremap <leader>' :Sexplore<cr>
+nnoremap <leader>" :Sexplore<cr>
+
+nnoremap <C-p> :find 
+" }}}
+
+augroup ft_vim
+    autocmd!
+    autocmd FileType vim ReplaceR source %
+augroup END
+
+augroup ft_java
+    autocmd!
+    autocmd FileType java ReplaceR make
+augroup END
+
