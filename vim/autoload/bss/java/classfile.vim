@@ -1,8 +1,7 @@
 " TODO:
-" [ ] Constants.MethodHandle
-" [ ] Constants.Dynamic
-" [ ] Constants.Module
-" [ ] Constants.Package
+" [X] Constants.Dynamic
+" [X] Constants.Module
+" [X] Constants.Package
 " [ ] Attributes.StackMapTable
 " [ ] Attributes.Exceptions
 " [X] Attributes.InnerClasses
@@ -85,6 +84,19 @@ let s:Constants = bss#Type([
       \     'T': 'InvokeDynamic',
       \     'bootstrap_method_attr': v:t_string,
       \     'name_and_type': {'T': 'NameAndType'},
+      \   },
+      \   {
+      \     'T': 'Dynamic',
+      \     'bootstrap_method_attr': v:t_string,
+      \     'name_and_type': {'T': 'NameAndType'},
+      \   },
+      \   {
+      \     'T': 'Module',
+      \     'name': v:t_string,
+      \   },
+      \   {
+      \     'T': 'Package',
+      \     'name': v:t_string,
       \   },
       \ ])
 
@@ -374,6 +386,19 @@ let s:ConstantParsers = {
       \     'T': 'InvokeDynamic',
       \     'bootstrap_method_attr': b.Idx(),
       \     'name_and_type': b.Idx(),
+      \   }]},
+      \   17: {b -> [{
+      \     'T': 'Dynamic',
+      \     'bootstrap_method_attr': b.Idx(),
+      \     'name_and_type': b.Idx(),
+      \   }]},
+      \   19: {b -> [{
+      \     'T': 'Module',
+      \     'name': b.Idx(),
+      \   }]},
+      \   20: {b -> [{
+      \     'T': 'Package',
+      \     'name': b.Idx(),
       \   }]},
       \ }
 
