@@ -465,7 +465,105 @@ let s:AttributeParsers = {
       \   'Signature': {b, c -> {
       \     'signature': c.GetString(b.U2()),
       \   }},
+      \   'RuntimeVisibleTypeAnnotations': {b, c -> {
+      \     'type_annotation': range(b.U2())->map({-> {
+      \       'target': s:TypeAnnotationTargetParsers->get(b.U1())(b, c),
+      \       'target_path': {
+      \         'path': range(b.U1())->map({-> {
+      \           'kind': b.U1(),
+      \           'arg_index': b.U1(),
+      \         }}),
+      \       },
+      \       'type': c.GetString(b.U2()),
+      \       'element_value_pairs': range(a:bytes.U2())->map({i, v -> {
+      \         'name': c.GetString(b.U2()),
+      \         'value': s:ParseElementValue(b, c),
+      \       }}),
+      \     }})
+      \   }},
       \ }
+
+let s:TypeAnnotationTargetParsers = {
+      \   0x00: {b, c -> {
+      \     'T': 'type_parameter',
+      \     'tag': 0x00,
+      \     'type_parameter_index': b.U1(),
+      \   }},
+      \   0x01: {b, c -> {
+      \     'T': 'type_parameter',
+      \     'tag': 0x01,
+      \     'type_parameter_index': b.U1(),
+      \   }},
+      \   0x10: {b, c -> {
+      \     'T': 'supertype',
+      \     'tag': 0x10,
+      \     'supertype_index': b.U2(),
+      \   }},
+      \   0x11: {b, c -> {
+      \     'T': 'type_parameter_bound_target',
+      \     'tag': 0x11,
+      \     'type_parameter_index': b.U1(),
+      \     'bound_index': b.U1(),
+      \   }},
+      \   0x12: {b, c -> {
+      \     'T': 'type_parameter_bound_target',
+      \     'tag': 0x12,
+      \     'type_parameter_index': b.U1(),
+      \     'bound_index': b.U1(),
+      \   }},
+      \   0x13: {b, c -> {
+      \     'T': 'empty_target',
+      \     'tag': 0x13,
+      \   }},
+      \   0x14: {b, c -> {
+      \     'T': 'empty_target',
+      \     'tag': 0x14,
+      \   }},
+      \   0x15: {b, c -> {
+      \     'T': 'empty_target',
+      \     'tag': 0x15,
+      \   }},
+      \   0x16: {b, c -> {
+      \     'T': 'formal_parameter_target',
+      \     'tag': 0x16,
+      \     'formal_parameter_index': b.U1(),
+      \   }},
+      \   0x17: {b, c -> {
+      \     'T': 'throws_target',
+      \     'tag': 0x17,
+      \     'throws_type_index': b.U2(),
+      \   }},
+      \ }
+
+function! s:ParseAnnotation(bytes, cf) abort
+  return {
+      \   'type': a:cf.GetString(a:bytes.U2()),
+      \   'element_value_pairs': range(a:bytes.U2())->map({i, v -> {
+      \     'name': a:cf.GetString(a:bytes.U2()),
+      \     'value': s:ParseElementValue(a:bytes, a:cf),
+      \   }}),
+      \ }
+endfunction
+
+function! s:ParseElementValue(bytes, cf) abort
+  let l:ev = {}
+  let l:ev.tag = nr2char(a:bytes.U1())
+  if l:ev.tag =~# '[BCDFIJSZs]'
+    let l:ev.const_value = a:cf.constants->get(a:bytes.U2())
+  elseif l:ev.tag =~# '[e]'
+    let l:ev.enum_const_value = {
+          \   'type_name': a:cf.GetString(a:bytes.U2()),
+          \   'const_name': a:cf.GetString(a:bytes.U2()),
+          \ }
+  elseif l:ev.tag =~# '[c]'
+    let l:ev.const_value = a:cf.GetString(a:bytes.U2())
+  elseif l:ev.tag =~# '[@]'
+    let l:ev.annotation_value = s:ParseAnnotation(a:bytes, a:cf)
+  elseif l:ev.tag =~# '\['
+    let l:ev.array_value = range(a:bytes.U2())->map({-> s:ParseElementValue(a:bytes, a:cf)})
+  endif
+  return l:ev
+endfunction
 
 function! s:ParseAttributes(bytes, cf) abort
   let l:attributes = []
