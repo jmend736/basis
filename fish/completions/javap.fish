@@ -67,11 +67,18 @@ complete -c javap \
 
 complete -c javap \
   -n 'not string match -rq "(-cp|-classpat/)" (commandline)' \
-  -a '(cat /home/jmend/.vim/java-classnames)'
+  -a '(_javap_classes)'
 
 complete -c javap \
   -n 'string match -rq "(-cp|-classpat/)" (commandline)' \
   -xa '(_javap_cp)'
+
+function _javap_classes
+  set -l base (dirname (dirname (realpath (which java))))
+  cat $base/lib/classlist \
+    | string match -ve '#' \
+    | string replace -ra '(\/|\$)' '.'
+end
 
 function _javap_cp
   set -l next_cp

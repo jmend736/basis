@@ -36,6 +36,11 @@
 "   script: <SNR>139_Foo
 "   lambda: {'<lambda>42'}
 "   numbered: {'42'}
+" Motions:
+"   inclusive:
+"     $ g_ f t e E %
+"   exclusive:
+"     ...
 " Folds:
 "   foldlevels:
 "     zX -- apply foldlevel
@@ -280,6 +285,17 @@ set clipboard=unnamedplus
 set errorbells
 set laststatus=2
 set cursorline
+set sessionoptions=
+      \buffers,
+      \blank,
+      \curdir,
+      \folds,
+      \help,
+      \localoptions,
+      \options,
+      \tabpages,
+      \winsize,
+      \terminal
 
 " Themes
 colorscheme gruvbox
@@ -357,16 +373,21 @@ nnoremap <C-p> :Files<cr>
 
 nnoremap <silent> <leader>w :nohlsearch<Bar>:echo<cr>
 
-nnoremap <space> za
-vnoremap <space> zf
-
 noremap <F11> :syntax spell toplevel<cr>
 noremap <F12> :setlocal spell! spelllang=en_us<cr>
 
 nnoremap <leader>j :Javap! <cword><CR>
 nnoremap <leader>g :Git<cr>
 
+nnoremap <C-w><C-z> :Sz 10<cr>
+nnoremap <C-w>z :Sz 10<cr>
+
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+nnoremap <leader>t :tags<cr>
+nnoremap <leader><leader> :tags<cr>
+
+nnoremap <leader>S :mksession<cr>
 
 nmap <leader>1 <Plug>BufTabLine.Go(1)
 nmap <leader>2 <Plug>BufTabLine.Go(2)
@@ -402,6 +423,14 @@ command! -nargs=+ Man
       \ Term env MANPAGER=cat man <args>
 command! -nargs=+ Jsh
       \ call g:jm_term.Run([g:jm_vimrc.deps.jshell])
+command! -nargs=1 Sz
+      \ resize <args> | set winfixheight
+
+command! WtfMark
+      \ echo "'[ '] prev. changed or yanked yext" |
+      \ echo "'< '> prev. selected visual area" |
+      \ echo "'.    Last change start" |
+      \ echo "]' [' Move to next/prev mark"
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
 function! s:ReplaceR(cmd) abort
@@ -510,8 +539,8 @@ augroup ft_markdown
     autocmd FileType markdown highlight htmlH2 ctermfg=DarkCyan
     autocmd FileType markdown highlight htmlH3 ctermfg=DarkGreen
     autocmd FileType markdown highlight htmlH4 ctermfg=LightGray
-    autocmd FileType markdown highlight link markdownCodeBlock NONE
     autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
+    autocmd FileType markdown syntax clear markdownCodeBlock
     autocmd FileType markdown nnoremap <buffer> <leader>r
                 \ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
 augroup END
