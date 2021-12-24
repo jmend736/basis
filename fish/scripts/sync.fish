@@ -20,20 +20,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-if not set -l basis_path (git rev-parse --show-toplevel)
-    echo "Must be run from from the basis repo directory!"
-    exit 1
-end
+function sync
+    switch $argv[1]
 
-set -l fpaths $basis_path/fish/functions/*
-set -l fnames (basename -s .fish $fpaths)
+        # For every file present in {to} that's in {from} and has been
+        # modified, copy the file from {from} to {to}.
+        case execute
+            argparse 'f/from=' 't/to=' -- $argv[2..]
+            pushd $_flag_to
+            for fname in *
+                if not diff $_flag_from/$fname $_flag_to/$fname >/dev/null
+                    printf 'sync: Updating %s\n  from: %s\n  to: %s\n' \
+                        $fname $_flag_from $_flag_to
+                    cp $_flag_from/$fname $_flag_to/$fname
+                end
+            end
+            popd
 
-for fname in $fnames
-    set -l basis_fpath $basis_path/fish/functions/$fname.fish
-    if not diff (functions --no-details $fname | psub) $basis_fpath >/dev/null
-        echo '['(colored green '!')']' $fname
-        functions --no-details $fname >$basis_fpath
-    else
-        echo '['(colored yellow '-')']' $fname
+        # Get the current basename
+        case basepath
+            if not set -l basis_path (git rev-parse --show-toplevel)
+                echo "Must be run from from the basis repo directory!"
+                return 1
+            end
+            echo $basis_path
+
     end
 end
+
+sync execute \
+    --from=$HOME/.config/fish/functions \
+    --to=(sync basepath)/fish/functions
+
+sync execute \
+    --from=$HOME/.config/fish/completions \
+    --to=(sync basepath)/fish/completions

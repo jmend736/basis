@@ -66,11 +66,11 @@ complete -c javap \
     -rF
 
 complete -c javap \
-    -n 'not string match -rq "(-cp|-classpat/)" (commandline)' \
+    -n 'not string match -rq "(-cp|-classpath)" (commandline)' \
     -a '(_javap_classes)'
 
 complete -c javap \
-    -n 'string match -rq "(-cp|-classpat/)" (commandline)' \
+    -n 'string match -rq "(-cp|-classpath)" (commandline)' \
     -xa '(_javap_cp)'
 
 function _javap_classes
