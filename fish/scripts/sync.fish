@@ -21,17 +21,28 @@
 # SOFTWARE.
 
 function sync
-    switch $argv[1]
+    set -l cmd $argv[1]
+    set -l args $argv[2..]
+    switch $cmd
+
+        # Entrypoint
+        case ''
+            sync syncdir \
+                --from=$HOME/.config/fish/functions \
+                --to=(sync basepath)/fish/functions
+
+            sync syncdir \
+                --from=$HOME/.config/fish/completions \
+                --to=(sync basepath)/fish/completions
 
         # For every file present in {to} that's in {from} and has been
         # modified, copy the file from {from} to {to}.
-        case execute
-            argparse 'f/from=' 't/to=' -- $argv[2..]
+        case syncdir
+            argparse 'f/from=' 't/to=' -- $args
             pushd $_flag_to
             for fname in *
                 if not diff $_flag_from/$fname $_flag_to/$fname >/dev/null
-                    printf 'sync: Updating %s\n  from: %s\n  to: %s\n' \
-                        $fname $_flag_from $_flag_to
+                    printf 'sync %s updated.' $_flag_to/$fname
                     cp $_flag_from/$fname $_flag_to/$fname
                 end
             end
@@ -48,10 +59,4 @@ function sync
     end
 end
 
-sync execute \
-    --from=$HOME/.config/fish/functions \
-    --to=(sync basepath)/fish/functions
-
-sync execute \
-    --from=$HOME/.config/fish/completions \
-    --to=(sync basepath)/fish/completions
+sync
