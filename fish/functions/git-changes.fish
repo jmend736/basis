@@ -1,3 +1,3 @@
 function git-changes
-  git log --format=reference $argv
+    git log --format=reference $argv
 end

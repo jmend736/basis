@@ -1,5 +1,5 @@
 function reap
-  set -l helptext '
+    set -l helptext '
     reap - Consume a sowed value
 
 SYNOPSIS
@@ -26,24 +26,24 @@ DESCRIPTION
 
     *   ( -p | --peek ) read the current value(s) without consuming it.
 '
-  argparse -s 'q/query' 'p/peek' 'h/help' -- $argv
+    argparse -s q/query p/peek h/help -- $argv
 
-  if set -q _flag_help
-    echo $helptext
-    return
-  end
+    if set -q _flag_help
+        echo $helptext
+        return
+    end
 
-  if set -q _flag_query
-    set -q -U _sowed
-    return $status
-  end
+    if set -q _flag_query
+        set -q -U _sowed
+        return $status
+    end
 
-  if not set -q -U _sowed
-    echo -s (set_color red) ERROR (set_color normal) ' You must sow before reaping!' >&2
-    return 1
-  end
-  string collect -- $_sowed
-  if not set -q _flag_peek
-    set -e -U _sowed
-  end
+    if not set -q -U _sowed
+        echo -s (set_color red) ERROR (set_color normal) ' You must sow before reaping!' >&2
+        return 1
+    end
+    string collect -- $_sowed
+    if not set -q _flag_peek
+        set -e -U _sowed
+    end
 end

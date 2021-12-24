@@ -24,11 +24,11 @@ set -l script (realpath (status filename))
 set -l functions (dirname (dirname $script))/functions
 
 if functions -q save
-  functions save
-  if test (read -n 1 -P 'Override current save command? y/[n]: ') != 'y'
-    echo "Ok stopping..."
-    exit
-  end
+    functions save
+    if test (read -n 1 -P 'Override current save command? y/[n]: ') != y
+        echo "Ok stopping..."
+        exit
+    end
 end
 
 source (echo '

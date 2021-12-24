@@ -1,5 +1,5 @@
 function sow
-  set -l helptext '
+    set -l helptext '
     sow - Store a value, to be reaped later
 
 SYNOPSIS
@@ -23,18 +23,18 @@ OPTIONS
 
     *   ( -a | --append ) do not overwrite current value, append instead
 '
-  argparse -s 'a/append' 'h/help' -- $argv
+    argparse -s a/append h/help -- $argv
 
-  if set -q _flag_help
-    echo $helptext
-    return
-  end
-
-  set -l args $argv
-  if test -z "$args"
-    while read line
-      set -a args $line
+    if set -q _flag_help
+        echo $helptext
+        return
     end
-  end
-  set $_flag_append -U _sowed $args
+
+    set -l args $argv
+    if test -z "$args"
+        while read line
+            set -a args $line
+        end
+    end
+    set $_flag_append -U _sowed $args
 end

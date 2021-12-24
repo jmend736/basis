@@ -21,19 +21,19 @@
 # SOFTWARE.
 
 if not set -l basis_path (git rev-parse --show-toplevel)
-  echo "Must be run from from the basis repo directory!"
-  exit 1
+    echo "Must be run from from the basis repo directory!"
+    exit 1
 end
 
 set -l fpaths $basis_path/fish/functions/*
 set -l fnames (basename -s .fish $fpaths)
 
 for fname in $fnames
-  set -l basis_fpath $basis_path/fish/functions/$fname.fish
-  if not diff (functions --no-details $fname | psub) $basis_fpath >/dev/null
-    echo '['(colored green '!')']' $fname
-    functions --no-details $fname > $basis_fpath
-  else
-    echo '['(colored yellow '-')']' $fname
-  end
+    set -l basis_fpath $basis_path/fish/functions/$fname.fish
+    if not diff (functions --no-details $fname | psub) $basis_fpath >/dev/null
+        echo '['(colored green '!')']' $fname
+        functions --no-details $fname >$basis_fpath
+    else
+        echo '['(colored yellow '-')']' $fname
+    end
 end

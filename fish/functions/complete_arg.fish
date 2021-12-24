@@ -1,5 +1,5 @@
 function complete_arg
-  set -l helptext '
+    set -l helptext '
     complete_arg - Convert argparse pattern to complete arg
 
 SYNOPSIS
@@ -38,37 +38,37 @@ ARGSTRING
       justlong=?
       justlong=+
 '
-  argparse 'h/help' -- $argv
+    argparse h/help -- $argv
 
-  if set -q _flag_help
-    echo $helptext
-    return
-  end
-
-  for fmt in $argv
-    if set -l match (string match -r '([a-zA-Z0-9])([/-])([a-zA-Z0-9_-]*)(=|=\?|=\+)?' $fmt)
-      # a/abc=
-      test $match[3] = '/'; and echo '-s'$match[2]
-      echo '-l'$match[4]
-      switch $match[5]
-        case '=' '=\+'
-          echo '-r'
-      end
-    else if set -l match (string match -r '([a-zA-Z0-9_-])(=|=\?|=\+)?' $fmt)
-      # a=
-      echo '-s'$match[2]
-      switch $match[3]
-        case '=' '=\+'
-          echo '-r'
-      end
-    else if set -l match (string match -r '([a-zA-Z0-9_-]+)(=|=\?|=\+)?' $fmt)
-      # abc=
-      echo '-l'$match[2]
-      switch $match[3]
-        case '=' '=\+'
-          echo '-r'
-      end
+    if set -q _flag_help
+        echo $helptext
+        return
     end
-  end
-  return
+
+    for fmt in $argv
+        if set -l match (string match -r '([a-zA-Z0-9])([/-])([a-zA-Z0-9_-]*)(=|=\?|=\+)?' $fmt)
+            # a/abc=
+            test $match[3] = /; and echo '-s'$match[2]
+            echo '-l'$match[4]
+            switch $match[5]
+                case '=' '=\+'
+                    echo -r
+            end
+        else if set -l match (string match -r '([a-zA-Z0-9_-])(=|=\?|=\+)?' $fmt)
+            # a=
+            echo '-s'$match[2]
+            switch $match[3]
+                case '=' '=\+'
+                    echo -r
+            end
+        else if set -l match (string match -r '([a-zA-Z0-9_-]+)(=|=\?|=\+)?' $fmt)
+            # abc=
+            echo '-l'$match[2]
+            switch $match[3]
+                case '=' '=\+'
+                    echo -r
+            end
+        end
+    end
+    return
 end

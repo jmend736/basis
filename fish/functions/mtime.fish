@@ -1,3 +1,3 @@
 function mtime
-  stat -c %Y $argv
+    stat -c %Y $argv
 end
