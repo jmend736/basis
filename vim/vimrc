@@ -554,7 +554,7 @@ augroup END
 
 augroup ft_fish
     autocmd!
-    autocmd FileType fish setlocal tabstop=4 shiftwidth=4
+    autocmd FileType fish setlocal tabstop=4 shiftwidth=4 smartindent
     autocmd FileType fish nnoremap <buffer> <space>f
           \ :0,$!fish_indent<cr>
 augroup END
