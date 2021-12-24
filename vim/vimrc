@@ -552,6 +552,13 @@ augroup ft_vim
           \ :source %<cr>
 augroup END
 
+augroup ft_fish
+    autocmd!
+    autocmd FileType fish setlocal tabstop=4 shiftwidth=4
+    autocmd FileType fish nnoremap <buffer> <space>f
+          \ :0,$!fish_indent<cr>
+augroup END
+
 " Use quickfix window when using :make
 augroup cfg_quickfix_fix
     autocmd QuickFixCmdPost [^l]* nested cwindow
