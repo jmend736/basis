@@ -1,13 +1,13 @@
+# Defined via `source`
 function classpath
-    set -l subcommands \
-        "setup\t'Set global \$CLASSPATH to \$jars'" \
-        "add\t'Select jar from .gradle to track in \$jars'" \
-        "reset\t'Clear \$jars'" \
-        "list\t'List tracked \$jars'" \
-        "help\t'Print this help'"
     switch $argv[1]
         case help
-            string replace '\t' '	' $subcommands
+            string collect -- \
+                "setup	'Set global \$CLASSPATH to \$jars'" \
+                "add	'Select jar from .gradle to track in \$jars'" \
+                "reset	'Clear \$jars'" \
+                "list	'List tracked \$jars'" \
+                "help	'Print this help'"
         case setup
             set -xg CLASSPATH $jars
         case add
@@ -16,16 +16,15 @@ function classpath
             popd
         case reset
             set -Ue jars
-            classpath add
         case list
             string collect -- $jars
-        case __complete
+        case _complete
             complete -c classpath -e
             complete -c classpath \
-                -n "not __fish_seen_subcommand_from (fw $subcommands)" \
-                -xa "$subcommands"
+                -n "not __fish_seen_subcommand_from (classpath help | string replace \t '\t')" \
+                -xa "(classpath help | string split -f1 \t)"
         case '*'
-            echo Missing subcommand! Choose one of:
-            string replace '\t' '	' $subcommands
+            echo 'Invalid subcommand'
+            return 1
     end
 end
