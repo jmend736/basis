@@ -72,9 +72,7 @@ function! s:View.GoToWindow() abort
 endfunction
 
 function! s:View.Run(cmd) abort dict
-  let l:cmd = empty(a:cmd)
-        \ ? [&shell]
-        \ : (type(a:cmd) is v:t_list) ? a:cmd : split(a:cmd)
+  let l:cmd = empty(a:cmd) ? [&shell] : a:cmd
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()

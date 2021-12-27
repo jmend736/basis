@@ -414,7 +414,7 @@ nmap <leader>0 <Plug>BufTabLine.Go(10)
 if !exists('g:jm_term')
   let g:jm_term = bss#view#TermView()
 endif
-command! -nargs=* Term call g:jm_term.Run([<f-args>])
+command! -nargs=* Term call g:jm_term.Run(<q-args>)
 
 command! SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
