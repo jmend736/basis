@@ -1,12 +1,13 @@
-function complete_arg
+# Defined via `source`
+function argparse_complete
     set -l helptext '
-    complete_arg - Convert argparse pattern to complete arg
+    argparse_complete - Complete using argparse format strings
 
 SYNOPSIS
 
-    complete_arg <argstring>...
+    argparse_complete -c <command> <argstring>...
 
-    complete_arg [--help]
+    argparse_complete [--help]
 
 DESCRIPTION
 
@@ -38,7 +39,12 @@ ARGSTRING
       justlong=?
       justlong=+
 '
-    argparse h/help -- $argv
+    argparse h/help c/command= -- $argv
+
+    if not set -q _flag_command
+        echo 'Missing -c/--command argument!'
+        return 1
+    end
 
     if set -q _flag_help
         echo $helptext
@@ -46,29 +52,31 @@ ARGSTRING
     end
 
     for fmt in $argv
+        set -l args
         if set -l match (string match -r '([a-zA-Z0-9])([/-])([a-zA-Z0-9_-]*)(=|=\?|=\+)?' $fmt)
             # a/abc=
-            test $match[3] = /; and echo '-s'$match[2]
-            echo '-l'$match[4]
+            test $match[3] = / && set -a args '-s'$match[2]
+            set -a args '-l'$match[4]
             switch $match[5]
                 case '=' '=\+'
-                    echo -r
+                    set -a args '-r'
             end
         else if set -l match (string match -r '([a-zA-Z0-9_-])(=|=\?|=\+)?' $fmt)
             # a=
-            echo '-s'$match[2]
+            set -a args '-s'$match[2]
             switch $match[3]
                 case '=' '=\+'
-                    echo -r
+                    set -a args '-r'
             end
         else if set -l match (string match -r '([a-zA-Z0-9_-]+)(=|=\?|=\+)?' $fmt)
             # abc=
-            echo '-l'$match[2]
+            set -a args '-l'$match[2]
             switch $match[3]
                 case '=' '=\+'
-                    echo -r
+                    set -a args '-r'
             end
         end
+        complete -c $_flag_command $args
     end
     return
 end
