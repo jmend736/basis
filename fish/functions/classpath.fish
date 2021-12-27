@@ -1,5 +1,4 @@
-# Defined via `source`
-function classpath
+function classpath --description '$CLASSPATH management'
     switch $argv[1]
         case help
             string collect -- \
