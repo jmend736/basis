@@ -30,8 +30,17 @@
 
 " Notes {{{
 " Misc:
-"   :exusage ~ List ex commands
-"   :h :t{:r :e} ~ expand() stuff
+"   :exusage   ~ List ex commands
+"   :h:t{:r:e} ~ expand() stuff
+"   line()     ~ Accepts . $ 'x
+"     getline()
+"     getpos()
+"   bufname()  ~ Accepts '' % #
+"     {get,append,delete}bufline()
+"     {get,set}bufvar()
+"     bufnr()
+"     bufwinid()
+"     getbufinfo()
 " Functions:
 "   normal: Foo
 "   script: <SNR>139_Foo
@@ -554,6 +563,7 @@ augroup ft_fish
     autocmd FileType fish setlocal tabstop=4 shiftwidth=4 smartindent
     autocmd FileType fish nnoremap <buffer> <space>f
           \ :0,$!fish_indent<cr>
+    autocmd FileType fish setlocal omnifunc=bss#fish#Complete
 augroup END
 
 " Use quickfix window when using :make
