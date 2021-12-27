@@ -31,6 +31,7 @@
 " Notes {{{
 " Misc:
 "   :exusage ~ List ex commands
+"   :h :t{:r :e} ~ expand() stuff
 " Functions:
 "   normal: Foo
 "   script: <SNR>139_Foo
@@ -108,7 +109,7 @@ let g:jm_vimrc.deps = #{
       \   ag: '/usr/bin/ag',
       \   JavaClassnameList: {-> readfile('/home/jmend/.vim/java-classnames')},
       \   ClasspathJarList: {-> systemlist('fish -c "classpath list"')},
-      \   google_java_executable: '/usr/lib/jvm/java-14-openjdk-amd64/bin/java -jar /home/jmend/.vim/google-java-format-1.9-all-deps.jar --skip-javadoc-formatting',
+      \   google_java_executable: 'google-java-format --skip-javadoc-formatting',
       \ }
 
 " Defines the import cache used for Java import search, if an attempt to
@@ -419,10 +420,6 @@ command! SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
 command! SetupTargetClasspath
       \ let $CLASSPATH = s:TargetClasspath()
-command! -nargs=+ Man
-      \ Term env MANPAGER=cat man <args>
-command! -nargs=+ Jsh
-      \ call g:jm_term.Run([g:jm_vimrc.deps.jshell])
 command! -nargs=1 Sz
       \ resize <args> | set winfixheight
 
@@ -748,4 +745,22 @@ function! s:CompleteTargets(arg_lead, cmd_line, cursor_pos) abort
   endif
 endfunction
 " }}}
+
+" :Touch {path}...
+"   Like `$ touch`, but also create directories if necessary
+" {{{
+command! -nargs=* Touch call s:Touch([<f-args>])
+function! s:Touch(paths) abort
+  for l:path in a:paths
+    let l:dir = fnamemodify(l:path, ':h')
+    if l:dir !=# '.' && !isdirectory(l:dir)
+      call system('mkdir -p ' .. shellescape(l:dir))
+    endif
+    if !filereadable(l:path)
+      call system('touch ' .. shellescape(l:path))
+    endif
+  endfor
+endfunction
+" }}}
+
 " }}} Misc
