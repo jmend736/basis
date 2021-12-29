@@ -1,4 +1,3 @@
-# Defined via `source`
 function argparse_complete
     set -l helptext '
     argparse_complete - Complete using argparse format strings
