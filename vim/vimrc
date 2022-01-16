@@ -32,9 +32,12 @@
 " Misc:
 "   :exusage   ~ List ex commands
 "   :h:t{:r:e} ~ expand() stuff
+"   '[ ']      ~ last changed or yanked area
+"   '>         ~ last visual area
 "   line()     ~ Accepts . $ 'x
 "     getline()
 "     getpos()
+"     indent()
 "   bufname()  ~ Accepts '' % #
 "     {get,append,delete}bufline()
 "     {get,set}bufvar()
@@ -203,6 +206,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'google/vim-maktaba'
 Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
+Plug 'frazrepo/vim-rainbow'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
 " Plug 'mattn/emmet-vim'
@@ -500,7 +504,8 @@ augroup END
 augroup ft_python
     autocmd!
     autocmd FileType python nnoremap <buffer> <localleader>r
-                \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+                \ :execute "Term python " .. expand('%')<cr>
+               "\ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     autocmd FileType python nnoremap <buffer> <localleader>t
                 \ :execute "Term mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
     autocmd FileType python nnoremap <buffer> <localleader>f
@@ -592,10 +597,13 @@ function! s:FindImport(word) abort
   endif
 
   " Next find an import statement in the current directory
-  let l:results = systemlist(printf(
-        \ '%s --nofilename --nobreak ''import .+\b%s\b;''',
+  let l:results = printf(
+        \ '%s --nofilename --nobreak %s',
         \ g:jm_vimrc.deps.ag,
-        \ a:word))->sort()->uniq()
+        \ shellescape(printf('import .+\b%s\b;', a:word)))
+        \->systemlist()
+        \->sort()
+        \->uniq()
 
   " Finally, fallback to classname list
   if empty(l:results)

@@ -20,8 +20,8 @@ function classpath --description '$CLASSPATH management'
         case _complete
             complete -c classpath -e
             complete -c classpath \
-                -n "not __fish_seen_subcommand_from (classpath help | string replace \t '\t')" \
-                -xa "(classpath help | string split -f1 \t)"
+                -n "not __fish_seen_subcommand_from (classpath help | string split -f1 \t)" \
+                -xa "(classpath help | string replace \t "\\t")"
         case '*'
             echo 'Invalid subcommand'
             return 1
