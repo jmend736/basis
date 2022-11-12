@@ -30,6 +30,8 @@
 
 " Notes {{{
 " Misc:
+"   :Tab fmt   ~ Field delimiter is treated also a field!
+"   D C Y      ~ Delete to EOL...
 "   :exusage   ~ List ex commands
 "   :h:t{:r:e} ~ expand() stuff
 "   '[ ']      ~ last changed or yanked area
@@ -119,7 +121,7 @@ let g:jm_vimrc.deps = #{
       \   blaze: '/usr/bin/blaze',
       \   javap: '/usr/bin/javap',
       \   ag: '/usr/bin/ag',
-      \   JavaClassnameList: {-> readfile('/home/jmend/.vim/java-classnames')},
+      \   JavaClassnameList: {-> []},
       \   ClasspathJarList: {-> systemlist('fish -c "classpath list"')},
       \   google_java_executable: 'google-java-format --skip-javadoc-formatting',
       \ }
@@ -381,7 +383,8 @@ nnoremap <leader>' :NERDTreeToggle<cr>
 nnoremap <leader>" :NERDTreeFind<cr>
 nnoremap <leader><tab> :TagbarToggle<cr>
 
-inoremap <C-r><C-f> <C-r>=expand('%:t:r')<cr>
+inoremap <C-r><C-f> <C-r>=expand('%:p:t:r')<cr>
+cnoremap <C-r><C-f> <C-r>=expand('%:p:t:r')<cr>
 
 nnoremap <C-p> :Files<cr>
 
@@ -392,6 +395,8 @@ noremap <F12> :setlocal spell! spelllang=en_us<cr>
 
 nnoremap <leader>j :Javap! <cword><CR>
 nnoremap <leader>g :Git<cr>
+
+nnoremap <leader>D :TimeDiff<cr>
 
 nnoremap <C-w><C-z> :Sz 10<cr>
 nnoremap <C-w>z :Sz 10<cr>
@@ -436,6 +441,12 @@ command! SetupTargetClasspath
 command! -nargs=1 Sz
       \ resize <args> | set winfixheight
 
+command! SetupTermRainbow
+      \ autocmd TerminalOpen * RainbowLoad
+
+command! SetupNote
+      \ match GruvboxYellowBold /^[A-Z ]\+:/
+
 command! WtfMark
       \ echo "'[ '] prev. changed or yanked yext" |
       \ echo "'< '> prev. selected visual area" |
@@ -477,9 +488,9 @@ endif
 augroup ft_latex
     autocmd!
     autocmd FileType tex setlocal nocursorline
-    autocmd FileType tex setlocal tabstop=2 shiftwidth=2
+    autocmd FileType tex setlocal tabstop=4 shiftwidth=4
     autocmd FileType tex nnoremap <buffer> <localleader>r
-                \ :Term pdflatex -halt-on-error %<cr>
+                \ :execute 'Term fish -c "mkt ' .. expand('%') .. '"'<cr>
 augroup END
 
 augroup ft_c
@@ -504,12 +515,13 @@ augroup END
 augroup ft_python
     autocmd!
     autocmd FileType python nnoremap <buffer> <localleader>r
-                \ :execute "Term python " .. expand('%')<cr>
-               "\ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+          \ :execute "Term python " .. expand('%')<cr>
+    autocmd FileType python nnoremap <buffer> <localleader>R
+          \ :execute "Term python -m pytest " .. expand('%')<cr>
     autocmd FileType python nnoremap <buffer> <localleader>t
-                \ :execute "Term mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
-    autocmd FileType python nnoremap <buffer> <localleader>f
-                \ :FormatCode<cr>
+          \ :execute "Term python -m mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
+    autocmd FileType python nnoremap <buffer> <space>f
+          \ :FormatCode<CR>:w
 augroup END
 
 augroup ft_scheme
@@ -552,6 +564,7 @@ augroup ft_markdown
     autocmd FileType markdown highlight htmlH4 ctermfg=LightGray
     autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
     autocmd FileType markdown syntax clear markdownCodeBlock
+    autocmd FileType markdown highlight link markdownError NONE
     autocmd FileType markdown nnoremap <buffer> <leader>r
                 \ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
 augroup END
@@ -569,6 +582,12 @@ augroup ft_fish
     autocmd FileType fish nnoremap <buffer> <space>f
           \ :0,$!fish_indent<cr>
     autocmd FileType fish setlocal omnifunc=bss#fish#Complete
+augroup END
+
+augroup ft_make
+    autocmd!
+    autocmd FileType make nnoremap <buffer> <localleader>r
+          \ :Term make<cr>
 augroup END
 
 " Use quickfix window when using :make
@@ -694,16 +713,41 @@ function! s:MavenSearch(query) abort
   endif
   let l:docs = l:resp.docs
   const l:mappings = {
-        \   '<cr>': [function("s:Insert")->get("name"), 'Close', 'Insert below'],
+        \   '<cr>': [function("s:MInsert")->get("name"), 'Close', 'Insert below'],
+        \   'D': [function("s:MDownload")->get("name"), 'Close', 'Insert below'],
         \ }
-  call maktaba#ui#selector#Create(map(l:docs, 'v:val.id .. ":" .. v:val.latestVersion'))
+  call maktaba#ui#selector#Create(map(l:docs, 'v:val.id .. ":" ..  v:val.latestVersion'))
         \.WithMappings(l:mappings)
         \.Show()
 endfunction
 
-function! s:Insert(msg) abort
+function! s:MInsert(msg) abort
   let l:spaces = getline('.')->matchstr('^\s*')
   call append(line('.'), printf("%simplementation '%s'", l:spaces, a:msg))
+endfunction
+
+function! s:MDownload(msg) abort
+  let [l:package, l:name, l:version] = split(a:msg, ':')
+  let l:url_package = substitute(l:package, '\.', '/', 'g')
+  let l:url = printf('https://repo1.maven.org/maven2/%s/%s/%s/',
+        \  l:url_package,
+        \  l:name,
+        \  l:version)
+  let l:file = printf('%s-%s.jar', l:name, l:version)
+  let l:file_url = l:url .. l:file
+  echom l:url .. l:file
+
+  const l:cmd = join([
+        \   g:jm_vimrc.deps.curl,
+        \   '-o',
+        \   shellescape(l:file),
+        \   '-s',
+        \   shellescape(l:file_url),
+        \ ])
+  silent call system(l:cmd)
+  if v:shell_error
+    echom 'ERROR: Could not download! ' .. l:file_url
+  endif
 endfunction
 " }}}
 
@@ -778,6 +822,33 @@ function! s:Touch(paths) abort
       call system('touch ' .. shellescape(l:path))
     endif
   endfor
+endfunction
+" }}}
+
+" :CurrentHLGroup
+"   Print the highlight Group under cursor
+" {{{
+command! CurrentHLGroup echo s:SyntaxItem()
+function! s:SyntaxItem()
+  return synIDattr(synID(line("."), col("."), 1), "name")
+endfunction
+" }}}
+
+" :TimeDiff
+"   Difference of an ISO timestamp under cursor with now
+" {{{
+command! TimeDiff call s:TimeDiff()
+command! TD TimeDiff
+function! s:TimeDiff()
+  let l:now = str2nr(systemlist('date +%s')[0])
+  let l:last = str2nr(systemlist('date -d ' .. expand('<cWORD>') .. ' +%s')[0])
+  let l:diff_s = l:now - l:last
+  let l:diff_h = l:diff_s / 3600.0
+  if l:diff_h < 24
+    echom printf("%.2fh", l:diff_h)
+  else
+    echom printf("%.2fd", l:diff_h / 24.0)
+  endif
 endfunction
 " }}}
 
