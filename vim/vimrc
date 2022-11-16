@@ -139,6 +139,7 @@ let g:jm_vimrc.java_import_cache = #{
       \   Optional: 'java.util.Optional',
       \   HashSet: 'java.util.HashSet',
       \   HashMap: 'java.util.HashMap',
+      \   Arrays: 'java.util.Arrays',
       \   Collection: 'java.util.Collection',
       \   Consumer: 'java.util.function.Consumer',
       \   Function: 'java.util.function.Function',
@@ -165,6 +166,9 @@ let g:jm_vimrc.java_import_cache = #{
       \   ClassKey: 'dagger.multibindings.ClassKey',
       \   ElementsIntoSet: 'dagger.multibindings.ElementsIntoSet',
       \   MapKey: 'dagger.MapKey',
+      \   Path: 'java.nio.file.Path',
+      \   Files: 'java.nio.file.Files',
+      \   SeekableByteChannel: 'java.nio.channel.SeekableByteChannel',
       \ }
 " }}}
 
@@ -312,6 +316,8 @@ set sessionoptions=
       \tabpages,
       \winsize,
       \terminal
+
+set directory=~/.swaps//
 
 " Themes
 colorscheme gruvbox
