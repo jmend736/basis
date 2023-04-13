@@ -1,0 +1,102 @@
+extends python
+
+global !p
+class Arg(object):
+	def __init__(self, arg):
+		self.arg = arg
+		name_and_type = arg.split('=')[0].split(':')
+		self.name = name_and_type[0].strip()
+		self.type = name_and_type[1].strip() if len(name_and_type) == 2 else None
+
+	def __str__(self):
+		return self.name
+
+	def __unicode__(self):
+		return self.name
+
+	def is_kwarg(self):
+		return '=' in self.arg
+
+	def is_vararg(self):
+		return '*' in self.name
+
+	def __repr__(self):
+		return str(self)
+
+
+def get_args(arglist):
+	args = []
+	n = len(arglist)
+	i = 0
+	while i < n:
+		l_bracket = 0
+		start = i
+		while i < n and (l_bracket > 0 or arglist[i] != ','):
+			if arglist[i] == '[':
+				l_bracket += 1
+			elif arglist[i] == ']' and l_bracket > 0:
+				l_bracket -= 1
+			i += 1
+		arg = arglist[start:i]
+		if arg:
+			args.append(Arg(arg))
+		i += 1
+
+	args = [arg for arg in args if arg.name != 'self']
+
+	return args
+endglobal
+
+snippet ii
+import numpy as np
+import numpy.linalg as la
+from matplotlib import pyplot as plt
+import networkx as nx
+endsnippet
+
+snippet inp
+import numpy as np
+import numpy.linalg as la
+import numpy.typing as npt
+endsnippet
+
+snippet iplt
+from matplotlib import pyplot as plt
+endsnippet
+
+snippet ipath
+from pathlib import Path
+endsnippet
+
+snippet idt
+from datetime import datetime as dt, timedelta as td
+endsnippet
+
+snippet plts
+plt.savefig("/mnt/c/Users/jmend/Desktop/img.png")
+endsnippet
+
+snippet now "" i
+`!p if not snip.c: snip.rv = "'{}'".format(__import__('datetime').datetime.now().isoformat()[:16])`
+endsnippet
+
+snippet f ""
+f'{$1}'$0
+endsnippet
+
+global !p
+def to_spaces(s):
+	return ' '*len(t[2])
+def first_line(s):
+	return '' if not s else s.splitlines()[0]
+endglobal
+
+snippet np
+${2:A} = np.array([$1,
+`!p snip.rv = to_spaces(t[2])`             `!p snip.rv = first_line(t[1])`,
+`!p snip.rv = to_spaces(t[2])`             `!p snip.rv = first_line(t[1])`])
+endsnippet
+
+snippet npa
+np.array($1)$0
+endsnippet

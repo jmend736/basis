@@ -481,6 +481,11 @@ let s:AttributeParsers = {
       \       }}),
       \     }})
       \   }},
+      \   'Exceptions': {b, c -> {
+      \     'exceptions': range(b.U2())->map({->
+      \       c.GetClassName(b.U2())
+      \     }),
+      \   }},
       \ }
 
 let s:TypeAnnotationTargetParsers = {

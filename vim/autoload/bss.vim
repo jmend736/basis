@@ -25,8 +25,11 @@ function! bss#E(fmt, ...) abort
   let l:msg = (type(a:fmt) is v:t_string)
         \ ? call('printf', [a:fmt] + a:000)
         \ : printf("%s", a:fmt)
-  if l:msg[-1] == '\n'
-    
-  endif
   echoerr l:msg
+endfunction
+
+function! bss#PP(data) abort
+  for l:line in bss#pretty#PPLines(a:data)
+    echom l:line
+  endfor
 endfunction
