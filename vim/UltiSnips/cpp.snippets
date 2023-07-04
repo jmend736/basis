@@ -1,0 +1,46 @@
+snippet inc
+#include <${1:iostream}>$0
+endsnippet
+
+snippet pp
+std::cout << ${1:"${2:Hello world}"} << std::endl;$0
+endsnippet
+
+snippet pf
+std::cout << fmt::format("{}", ${1:"${2:Hello world}"}) << std::endl;$0
+endsnippet
+
+snippet pe_
+std::cout << "$1 = \\\\\n" << ${1:x} << std::endl;$0
+endsnippet
+
+snippet pe
+std::cout << "$1 = " << ${1:x} << std::endl;$0
+endsnippet
+
+snippet main
+int main(int argc, char *argv[]) {
+  $0
+  return 0;
+}
+endsnippet
+
+snippet fori
+for (int i{}; i < ${1:10}; i++) {
+  $0
+}
+endsnippet
+
+snippet be "" i
+std::begin(${1:x}), std::end($1)$0
+endsnippet
+
+snippet o<<
+std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
+  return o << ${3:$2};
+}$0
+endsnippet
+
+snippet td
+template <typename...> struct TD;$0
+endsnippet
