@@ -41,6 +41,10 @@ std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
 }$0
 endsnippet
 
+snippet td()
+template <typename...> void td() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
+endsnippet
+
 snippet td
-template <typename...> struct TD;$0
+td<decltype(${1:int})>();$0
 endsnippet

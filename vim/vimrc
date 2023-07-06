@@ -23,6 +23,8 @@
 ""
 " jmend's vimrc!
 "
+" Self Link: jmend.io/vimrc
+"
 " Required Dependency:
 "   1. Install vim-plug: https://github.com/junegunn/vim-plug
 "   2. Run :PlugInstall
@@ -30,32 +32,51 @@
 
 " Notes {{{
 " Misc:
-"   :Tab fmt   ~ Field delimiter is treated also a field!
-"   D C Y      ~ Delete to EOL...
-"   :exusage   ~ List ex commands
-"   :h:t{:r:e} ~ expand() stuff
-"   '[ ']      ~ last changed or yanked area
-"   '>         ~ last visual area
-"   line()     ~ Accepts . $ 'x
+"   :Tab fmt    ~ Field delimiter is treated also a field!
+"   D C Y       ~ Delete to EOL...
+"   i_<C-(t|d)> ~ Increase/decrease indent of current line
+"   :exusage    ~ List ex commands
+"   :h:t{:r:e}  ~ expand() stuff
+"   %           ~ Use when ex cmd accepts path/file
+"   '[ ']       ~ last changed or yanked area
+"   '>          ~ last visual area
+"
+"   :redir      ~ Redirect messages to various places:
+"     END       ~ Stop redirecting
+"     > {file}  ~ Write to file
+"     >> {file} ~ Append to file
+"     @[a-z]    ~ Registers
+"     @[a-z]>
+"     @[a-z]>>
+"     @*>       ~ Clipboard
+"     => {var}  ~ Write {var}
+"     =>> {var} ~ Append to {var}
+"
+"   :filter /{pat}/ {command}
+"
+"   line()      ~ Accepts . $ 'x
 "     getline()
 "     getpos()
 "     indent()
-"   bufname()  ~ Accepts '' % #
+"   bufname()   ~ Accepts '' % #
 "     {get,append,delete}bufline()
 "     {get,set}bufvar()
 "     bufnr()
 "     bufwinid()
 "     getbufinfo()
+"
 " Functions:
 "   normal: Foo
 "   script: <SNR>139_Foo
 "   lambda: {'<lambda>42'}
 "   numbered: {'42'}
+"
 " Motions:
 "   inclusive:
 "     $ g_ f t e E %
 "   exclusive:
 "     ...
+"
 " Folds:
 "   foldlevels:
 "     zX -- apply foldlevel
@@ -66,9 +87,10 @@
 "     zx -- apply foldlevel and zv
 "   misc:
 "     zv -- open folds enough to view cursor
+"
 " Tabs:
 "   'tabstop':
-"     Number of spaces that a <Tab> in a file counts for.
+"     Number of spaces that a <Tab> character in a file counts for.
 "   'softtabstop':
 "     Number of spaces that a <Tab> counts for while performing
 "     editing operations, like inserting a <Tab> or using <BS>.
@@ -79,6 +101,7 @@
 "     Replaces tab characters with spaces.
 "   'smarttab':
 "     Better tab semantics, especially after new-lines.
+"
 " Channel:
 "   option:
 "     mode:
@@ -90,6 +113,7 @@
 "     drop:
 "       'auto': Drop if no callbacks, keep o/w
 "       'never': Never drop
+"
 " Jobs:
 "   option:
 "     (in|out|err)_mode: See Channel.option.mode
@@ -136,15 +160,20 @@ let g:jm_vimrc.java_import_cache = #{
       \   Collectors: 'java.util.stream.Collectors',
       \   List: 'java.util.List',
       \   ArrayList: 'java.util.ArrayList',
+      \   LinkedList: 'java.util.LinkedList',
+      \   Iterator: 'java.util.Iterator',
       \   Optional: 'java.util.Optional',
       \   HashSet: 'java.util.HashSet',
       \   HashMap: 'java.util.HashMap',
+      \   TreeSet: 'java.util.TreeSet',
       \   Arrays: 'java.util.Arrays',
       \   Collection: 'java.util.Collection',
       \   Consumer: 'java.util.function.Consumer',
+      \   Predicate: 'java.util.function.Predicate',
       \   Function: 'java.util.function.Function',
       \   Supplier: 'java.util.function.Supplier',
       \   ImmutableList: 'com.google.common.collect.ImmutableList',
+      \   Lists: 'com.google.common.collect.Lists',
       \   ImmutableSet: 'com.google.common.collect.ImmutableSet',
       \   toImmutableList: 'static com.google.common.collect.ImmutableList.toImmutableList',
       \   toImmutableSet: 'static com.google.common.collect.ImmutableSet.toImmutableSet',
@@ -169,6 +198,19 @@ let g:jm_vimrc.java_import_cache = #{
       \   Path: 'java.nio.file.Path',
       \   Files: 'java.nio.file.Files',
       \   SeekableByteChannel: 'java.nio.channel.SeekableByteChannel',
+      \   ClassReader: 'org.objectweb.asm.ClassReader',
+      \   ClassWriter: 'org.objectweb.asm.ClassWriter',
+      \   ClassVisitor: 'org.objectweb.asm.ClassVisitor',
+      \   Opcodes: 'org.objectweb.asm.Opcodes',
+      \   FieldVisitor: 'org.objectweb.asm.FieldVisitor',
+      \   MethodVisitor: 'org.objectweb.asm.MethodVisitor',
+      \   TypePath: 'org.objectweb.asm.TypePath',
+      \   Modifier: 'java.lang.reflect.Modifier' ,
+      \   Executable: 'java.lang.reflect.Executable' ,
+      \   Field: 'java.lang.reflect.Field' ,
+      \   Method: 'java.lang.reflect.Method' ,
+      \   Type: 'java.lang.reflect.Type' ,
+      \   AnnotatedElement: 'java.lang.reflect.AnnotatedElement' ,
       \ }
 " }}}
 
@@ -213,6 +255,7 @@ Plug 'google/vim-maktaba'
 Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
 Plug 'frazrepo/vim-rainbow'
+Plug 'AndrewRadev/splitjoin.vim'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
 " Plug 'mattn/emmet-vim'
@@ -235,6 +278,7 @@ endif
 call glaive#Install()
 
 Glaive codefmt google_java_executable=`g:jm_vimrc.deps.google_java_executable`
+      \ clang_format_style='Google'
 
 " }}} Plugins (Vundle)
 
@@ -328,26 +372,32 @@ set bg=dark
 " Plugin Settings: {{{
 
 let g:lightline = {
-            \   'active': {
-            \     'left': [['mode', 'paste'], ['filename', 'modified']],
-            \     'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
-            \   },
-            \   'inactive': {
-            \     'left': [['filename', 'modified']],
-            \     'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
-            \   },
-            \   'component_type': {
-            \     'readonly': 'error',
-            \   },
-            \   'component': {
-            \     'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
-            \   },
-            \ }
+      \   'active': {
+      \     'left': [['mode', 'paste'], ['filename', 'modified']],
+      \     'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
+      \   },
+      \   'inactive': {
+      \     'left': [['filename', 'modified']],
+      \     'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
+      \   },
+      \   'component_type': {
+      \     'readonly': 'error',
+      \   },
+      \   'component': {
+      \     'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
+      \   },
+      \ }
+
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 let g:slime_target = "tmux"
 
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_folding_disabled = 1
+
+let g:NERDCompactSexyComs = v:true
+let g:NERDCommentEmptyLines = v:true
+let g:NERDDefaultAlign = 'left'
 
 " Use ordinal numbers (2) rather than bufnum (1)
 let g:buftabline_numbers = 2
@@ -466,6 +516,30 @@ call execute(printf(
     \ a:cmd))
 endfunction
 
+command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
+function! s:MakeOrSetup(cmds) abort
+  if filereadable('Makefile')
+    Term make
+  else
+    let l:cmds = substitute(a:cmds, '%', expand('%'), 'g')
+    let l:lines = split(l:cmds, ';')->map('trim(v:val)')
+    let l:cursor = bss#cursor#SaveWithBuf()
+    try
+      redir > Makefile
+      silent echo '.PHONY: all'
+      silent echo 'all:'
+      for l:cmd in l:lines
+        silent echo '	' .. l:cmd
+      endfor
+      redir END
+      silent edit Makefile
+      Term make
+    finally
+      call l:cursor.Restore()
+    endtry
+  endif
+endfunction
+
 " The Silver Searcher
 if executable('ag')
     " Use ag over grep
@@ -505,7 +579,7 @@ augroup ft_c
     autocmd FileType c nnoremap <buffer> <localleader>r
                 \ :make<CR>
     autocmd FileType c nnoremap <buffer> <localleader>R
-                \ :Term gcc -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
+                \ :MakeOrSetup gcc -Wall -O3 -o a.out %; ./a.out; rm a.out<cr>
 augroup END
 
 
@@ -513,9 +587,11 @@ augroup ft_cc
     autocmd!
     autocmd FileType cpp setlocal tabstop=2 shiftwidth=2
     autocmd FileType cpp nnoremap <buffer> <localleader>r
-                \ :make<CR>
-    autocmd FileType cpp nnoremap <buffer> <localleader>R
-                \ :Term g++ -Wall -O3 -o a.out %;./a.out;rm a.out<cr>
+                \ :MakeOrSetup g++ -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
+    autocmd FileType cpp let $CFLAGS = '-I/usr/include/opencv4'
+    autocmd FileType cpp let $LDFLAGS = '-lopencv_core'
+    autocmd FileType cpp nnoremap <buffer> <space>f
+          \ :FormatCode<CR>
 augroup END
 
 augroup ft_python
@@ -527,7 +603,7 @@ augroup ft_python
     autocmd FileType python nnoremap <buffer> <localleader>t
           \ :execute "Term python -m mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
     autocmd FileType python nnoremap <buffer> <space>f
-          \ :FormatCode<CR>:w
+          \ :FormatCode<CR>
 augroup END
 
 augroup ft_scheme
@@ -544,7 +620,7 @@ augroup ft_java
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
     autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-          \ :execute "Term make"<cr>
+          \ :execute "Term fish -c pg"<cr>
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
@@ -555,15 +631,32 @@ augroup ft_javascript
     autocmd FileType javascript
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
     autocmd FileType javascript nnoremap <buffer> <localleader>r
-          \ :w<CR> :!node %<CR>
+          \ :execute "Term node " .. expand('%')<cr>
     autocmd FileType javascript nnoremap <buffer> <localleader>R
           \ :Term webpack<CR>
+    autocmd FileType javascript nnoremap <buffer> <space>f
+          \ :FormatCode<CR>
 augroup END
 
 augroup ft_markdown
     autocmd!
+    autocmd FileType markdown set textwidth=72 smartindent
+
     autocmd FileType markdown nnoremap <buffer> ]h :<c-u>call search('\v^#+ ', 'Wz')<cr>
     autocmd FileType markdown nnoremap <buffer> [h :<c-u>call search('\v^#+ ', 'bWz')<cr>
+    "autocmd FileType markdown nnoremap <buffer> <leader>r
+                "\ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
+
+    autocmd FileType markdown nnoremap <buffer> <localleader>r
+          \ :call execute(printf(
+          \     "Term pandoc %s -s --highlight-style kate --pdf-engine=xelatex -o %s.pdf",
+          \     expand('%:p'),
+          \     expand('%:t:r'),
+          \   ))<cr>
+
+    autocmd FileType markdown command! JmMdQuotesAsComments match GruvboxFg3 /^\s*>.*/
+
+    " Some syntax changes
     autocmd FileType markdown highlight htmlH1 ctermfg=DarkRed
     autocmd FileType markdown highlight htmlH2 ctermfg=DarkCyan
     autocmd FileType markdown highlight htmlH3 ctermfg=DarkGreen
@@ -571,8 +664,6 @@ augroup ft_markdown
     autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
     autocmd FileType markdown syntax clear markdownCodeBlock
     autocmd FileType markdown highlight link markdownError NONE
-    autocmd FileType markdown nnoremap <buffer> <leader>r
-                \ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
 augroup END
 
 augroup ft_vim
@@ -647,9 +738,15 @@ function! s:FindImport(word) abort
 endfunction
 
 function! s:AddImport(import) abort
-    call append(1, [a:import])
-    execute '1,1FormatLines'
-    echom "Adding: " .. a:import
+    let l:result = search(a:import, 'nw')
+    if l:result == 0
+      let l:start = search('^import', 'nw')
+      call append(l:start, [a:import])
+      "execute '1,1FormatLines'
+      echom "Adding: " .. a:import
+    else
+      echom "Already Present: " .. a:import
+    endif
 endfunction
 " }}}
 
@@ -856,6 +953,8 @@ function! s:TimeDiff()
     echom printf("%.2fd", l:diff_h / 24.0)
   endif
 endfunction
+
+command! Code Files ~/code
 " }}}
 
 " }}} Misc

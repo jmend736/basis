@@ -33,3 +33,12 @@ function! bss#PP(data) abort
     echom l:line
   endfor
 endfunction
+
+function! bss#UnicodeGraph(...) abort
+  let l:bufnr = bufnr('')
+  let l:view = winsaveview()
+  let l:lnum = l:view.lnum
+  let l:col = l:view.col
+
+  echom l:bufnr l:lnum l:col
+endfunction
