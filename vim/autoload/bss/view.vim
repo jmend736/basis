@@ -34,6 +34,24 @@ function! bss#view#ScratchView() abort
         \ })
 endfunction
 
+function! bss#view#DataView(data, with_methods = v:false) abort
+  let l:view = bss#view#ScratchView()
+  eval l:view.options->extend([
+        \   'ft=vim',
+        \   'foldmethod=expr',
+        \   "foldexpr=bss#fold#FromString('{}[]')",
+        \   'foldcolumn=4'
+        \ ])
+  eval l:view
+        \.Open()
+        \.SetLines(bss#pretty#PPLines(a:data, a:with_methods))
+  return l:view
+endfunction
+
+function! bss#view#JsonView(json, with_methods = v:false) abort
+  return bss#view#DataView(json_decode(a:json))
+endfunction
+
 function! s:View.Open() abort
   let l:cursor = bss#cursor#Save()
   try

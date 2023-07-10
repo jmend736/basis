@@ -59,9 +59,6 @@ function! bss#PP(data, with_methods = v:false) abort
 endfunction
 
 function! bss#PB(data, with_methods = v:false) abort
-  eval bss#view#ScratchView()
-        \.Open()
-        \.Exec("set foldmethod=expr")
-        \.Exec("set foldexpr=bss#fold#FromString('{}[]')")
-        \.SetLines(bss#pretty#PPLines(a:data, a:with_methods))
+  eval bss#view#DataView(a:data, a:with_methods)
+        \.GoToWindow()
 endfunction
