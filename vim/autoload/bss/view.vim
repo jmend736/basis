@@ -77,6 +77,14 @@ function! s:View.IsValid() abort dict
         \ && winbufnr(self.winid) == self.bufnr
 endfunction
 
+function! s:View.CheckValid(name) abort dict
+  let l:valid = self.IsValid()
+  if !l:valid
+    throw "ERROR(InvalidView): " .. a:name .. " must be called while view is valid!"
+  end
+  return l:valid
+endfunction
+
 function! s:View.GoToWindow() abort
   if !self.IsValid()
     botright 10 new
@@ -127,21 +135,21 @@ function! s:View.Call(Fn, ...) abort
 endfunction
 
 function! s:View.Append(msg) abort
-  if self.IsValid()
+  if self.CheckValid("View.Append()")
     call appendbufline(self.bufnr, line('$', self.winid), a:msg)
   endif
   return self
 endfunction
 
 function! s:View.Clear() abort
-  if self.IsValid()
+  if self.CheckValid("View.Clear()")
     call deletebufline(self.bufnr, 1, line('$', self.winid))
   endif
   return self
 endfunction
 
 function! s:View.SetLines(lines) abort
-  if self.IsValid()
+  if self.CheckValid("View.SetLines()")
     call deletebufline(self.bufnr, 1, line('$', self.winid))
     call appendbufline(self.bufnr, 1, a:lines)
     call deletebufline(self.bufnr, 1)
@@ -150,7 +158,7 @@ function! s:View.SetLines(lines) abort
 endfunction
 
 function! s:View.Get(name) abort
-  if self.IsValid()
+  if self.CheckValid("View.Get()")
     return getbufvar(self.bufnr, a:name, v:none)
   endif
   return v:none
