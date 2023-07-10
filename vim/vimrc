@@ -31,114 +31,154 @@
 "   3. Restart vim
 
 " Notes {{{
-" Misc:
-"   gv          ~ Select last visual selection
-"   :Tab fmt    ~ Field delimiter is treated also a field!
-"   [N]wincmd w ~ Increment current winnr or jump to window [N]
-"   D C Y       ~ Delete to EOL...
-"   i_<C-(t|d)> ~ Increase/decrease indent of current line
-"   :exusage    ~ List ex commands
-"   :h:t{:r:e}  ~ expand() stuff
-"   %           ~ Use when ex cmd accepts path/file
-"   '[ ']       ~ last changed or yanked area
-"   '>          ~ last visual area
-"   'conceallevel'
-"               ~ Control syntax-defined character concealment
-"
-"   :redir      ~ Redirect messages to various places:
-"     END       ~ Stop redirecting
-"     > {file}  ~ Write to file
-"     >> {file} ~ Append to file
-"     @[a-z]    ~ Registers
-"     @[a-z]>
-"     @[a-z]>>
-"     @*>       ~ Clipboard
-"     => {var}  ~ Write {var}
-"     =>> {var} ~ Append to {var}
-"
-"   :filter /{pat}/ {command}
-"
-"   line()      ~ Accepts . $ 'x
-"     col()
-"     getline()
-"     getpos()
-"     indent()
-"     virtcol()
-"   bufname()   ~ Accepts '' % #
-"     {get,append,delete}bufline()
-"     {get,set}bufvar()
-"     bufnr()
-"     bufwinid()
-"     getbufinfo()
-"
-" Functions:
-"   normal: Foo
-"   script: <SNR>139_Foo
-"   lambda: {'<lambda>42'}
-"   numbered: {'42'}
-"
-" Motions:
-"   inclusive:
-"     $ g_ f t e E %
-"   exclusive:
-"     ...
-"
-" Folds:
-"   Folds can become desynced from foldlevel.
-"   folds:
-"     z[fd]  -- create/delete fold
-"     z[oca] -- open/close/alternate one fold
-"     z[OCA] -- open/close/alternate folds recursively
-"   foldlevels:
-"     z[rm]  -- add/sub one to/from foldlevel
-"     z[RM]  -- max/min foldlevel
-"     z[xX]  -- apply foldlevel (if zx also call zv)
-"   fold creation:
-"     zD     -- Deletes folds recursively
-"     zE     -- Deletes all folds
-"   misc:
-"     zv     -- open folds enough to view cursor
-"     z[nNi] -- Disable/enable/toggle folding
-"
-" Tabs:
-"   'tabstop':
-"     Number of spaces that a <Tab> character in a file counts for.
-"   'softtabstop':
-"     Number of spaces that a <Tab> counts for while performing
-"     editing operations, like inserting a <Tab> or using <BS>.
-"   'shiftwidth':
-"     Number of spaces to use for each step of (auto)indent.
-"     Used for 'cindent', <<, >>, etc.
-"   'expandtab':
-"     Replaces tab characters with spaces.
-"   'smarttab':
-"     Better tab semantics, especially after new-lines.
-"
-" Channel:
-"   option:
-"     mode:
-"       'json' (ch def), 'js', 'nl' (job def), 'raw'
-"     callback:
-"       { ch, msg -> ... }
-"     close_cb:
-"       { ch -> ... }
-"     drop:
-"       'auto': Drop if no callbacks, keep o/w
-"       'never': Never drop
-"
-" Jobs:
-"   option:
-"     (in|out|err)_mode: See Channel.option.mode
-"     callback: Generic callback
-"       { ch, msg -> ... }
-"     (out|err)_cb: Specific callbacks
-"       { ch, msg -> ... }
-"     close_cb:
-"       { ch -> ... }
-"     exit_cb:
-"       { job, status -> ... }
-"     drop: See Channel.option.drop
-"
+
+let s:Wtf = {}
+command! -nargs=1 -complete=customlist,<SID>WtfComplete Wtf echo join(s:Wtf[<q-args>], "\n")
+function! s:WtfComplete(arg, ...) abort
+  return keys(s:Wtf)->filter({k, v -> !stridx(v, a:arg)})
+endfunction
+let s:Wtf.misc =<< END
+Misc:
+  [i          ~ Display first line with <cword> (incl 'path')
+  [I          ~ Display all line with <cword> (incl 'path')
+  [<C-i>      ~ Jump to first line with <cword> (incl 'path')
+  <C-w><C-i>  ~ New window and jump to first line with <cword> (incl 'path')
+  gv          ~ Select last visual selection
+  :Tab fmt    ~ Field delimiter is treated also a field!
+  [N]wincmd w ~ Increment current winnr or jump to window [N]
+  D C Y       ~ Delete to EOL...
+  i_<C-(t|d)> ~ Increase/decrease indent of current line
+  :exusage    ~ List ex commands
+  :h:t{:r:e}  ~ expand() stuff
+  %           ~ Use when ex cmd accepts path/file
+  '[ ']       ~ last changed or yanked area
+  '>          ~ last visual area
+  'conceallevel'
+              ~ Control syntax-defined character concealment
+END
+let s:Wtf.redir =<< END
+Redir:
+  :redir      ~ Redirect messages to various places:
+    END       ~ Stop redirecting
+    > {file}  ~ Write to file
+    >> {file} ~ Append to file
+    @[a-z]    ~ Registers
+    @[a-z]>
+    @[a-z]>>
+    @*>       ~ Clipboard
+    => {var}  ~ Write {var}
+    =>> {var} ~ Append to {var}
+
+  :filter /{pat}/ {command}
+
+  let {name} =<< EOF
+  ...
+  EOF
+
+  :append
+  ...
+  .
+
+  :insert
+  ...
+  .
+END
+let s:Wtf.args =<< END
+Args:
+  line()      ~ Accepts . $ 'x
+    col()
+    getline()
+    getpos()
+    indent()
+    virtcol()
+  bufname()   ~ Accepts '' % #
+    {get,append,delete}bufline()
+    {get,set}bufvar()
+    bufnr()
+    bufwinid()
+    getbufinfo()
+END
+let s:Wtf.funcs =<< END
+Function Names:
+  normal: Foo
+  script: <SNR>139_Foo
+  lambda: {'<lambda>42'}
+  numbered: {'42'}
+END
+let s:Wtf.prev =<< END
+Previous Actions:
+  gv    ~ select prev. selection
+  '[ '] ~ prev. changed or yanked yext
+  '< '> ~ prev. selected visual area
+  '.    ~ Last change start
+  ]' [' ~ Move to next/prev mark
+END
+let s:Wtf.motions =<< END
+Motions:
+  inclusive:
+    $ g_ f t e E %
+  exclusive:
+    ...
+END
+let s:Wtf.folds =<< END
+Folds:
+  Folds can become desynced from foldlevel.
+  folds:
+    z[fd]  -- create/delete fold
+    z[oca] -- open/close/alternate one fold
+    z[OCA] -- open/close/alternate folds recursively
+  foldlevels:
+    z[rm]  -- add/sub one to/from foldlevel
+    z[RM]  -- max/min foldlevel
+    z[xX]  -- apply foldlevel (if zx also call zv)
+  fold creation:
+    zD     -- Deletes folds recursively
+    zE     -- Deletes all folds
+  misc:
+    zv     -- open folds enough to view cursor
+    z[nNi] -- Disable/enable/toggle folding
+END
+let s:Wtf.tabs =<< END
+Tabs:
+  'tabstop':
+    Number of spaces that a <Tab> character in a file counts for.
+  'softtabstop':
+    Number of spaces that a <Tab> counts for while performing
+    editing operations, like inserting a <Tab> or using <BS>.
+  'shiftwidth':
+    Number of spaces to use for each step of (auto)indent.
+    Used for 'cindent', <<, >>, etc.
+  'expandtab':
+    Replaces tab characters with spaces.
+  'smarttab':
+    Better tab semantics, especially after new-lines.
+END
+let s:Wtf.jobs =<< END
+Channel:
+  option:
+    mode:
+      'json' (ch def), 'js', 'nl' (job def), 'raw'
+    callback:
+      { ch, msg -> ... }
+    close_cb:
+      { ch -> ... }
+    drop:
+      'auto': Drop if no callbacks, keep o/w
+      'never': Never drop
+
+Jobs:
+  option:
+    (in|out|err)_mode: See Channel.option.mode
+    callback: Generic callback
+      { ch, msg -> ... }
+    (out|err)_cb: Specific callbacks
+      { ch, msg -> ... }
+    close_cb:
+      { ch -> ... }
+    exit_cb:
+      { job, status -> ... }
+    drop: See Channel.option.drop
+END
 " }}} Notes
 
 " Command Prefix:
@@ -365,6 +405,7 @@ set smartcase
 " Other
 set fileencodings=utf-8
 set tags=tags
+set tags+=/usr/include/**/tags
 set printoptions=number:y,duplex:long,paper:letter
 set clipboard=unnamedplus
 set errorbells
@@ -518,7 +559,9 @@ command! SetupClasspath
 command! SetupTargetClasspath
       \ let $CLASSPATH = s:TargetClasspath()
 command! SetupCV
-      \ let $LDFLAGS = '-lopencv_core -lopencv_imgcodecs -lopencv_imgproc'
+      \ let $LDFLAGS = '-lopencv_core -lopencv_imgcodecs -lopencv_imgproc' |
+      \ let $CFLAGS = '-I/usr/include/opencv4' |
+      \ let &path ..= ',/usr/include/opencv4,/usr/include/c++/10/'
 command! -nargs=1 Sz
       \ resize <args> | set winfixheight
 command! SetupTermRainbow
@@ -527,36 +570,6 @@ command! SetupNote
       \ match GruvboxYellowBold /^[A-Z ]\+:/
 command! SetupAutoread
       \ set autoread | autocmd FocusGained,BufEnter * checktime
-
-command! WtfVisual
-      \ echo "'[ '] prev. changed or yanked yext" |
-      \ echo "'< '> prev. selected visual area" |
-      \ echo "gv    Select previous selection"
-
-command! WtfMark
-      \ echo "'[ '] prev. changed or yanked yext" |
-      \ echo "'< '> prev. selected visual area" |
-      \ echo "'.    Last change start" |
-      \ echo "]' [' Move to next/prev mark"
-
-command! WtfFolds
-      \ echo "Folds:" |
-      \ echo "  Folds can become desynced from foldlevel." |
-      \ echo "  folds:" |
-      \ echo "    z[fd]  -- create/delete fold" |
-      \ echo "    z[oca] -- open/close/alternate one fold" |
-      \ echo "    z[OCA] -- open/close/alternate folds recursively" |
-      \ echo "  foldlevels:" |
-      \ echo "    z[rm]  -- add/sub one to/from foldlevel" |
-      \ echo "    z[RM]  -- max/min foldlevel" |
-      \ echo "    z[xX]  -- apply foldlevel (if zx also call zv)" |
-      \ echo "  fold creation:" |
-      \ echo "    zD     -- Deletes folds recursively" |
-      \ echo "    zE     -- Deletes all folds" |
-      \ echo "  misc:" |
-      \ echo "    zv     -- open folds enough to view cursor" |
-      \ echo "    z[nNi] -- Disable/enable/toggle folding"
-
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
 function! s:ReplaceR(cmd) abort
@@ -637,10 +650,10 @@ augroup ft_cc
     autocmd FileType cpp setlocal tabstop=2 shiftwidth=2
     autocmd FileType cpp nnoremap <buffer> <localleader>r
                 \ :MakeOrSetup clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
-    autocmd FileType cpp let $CFLAGS = '-I/usr/include/opencv4'
-    autocmd FileType cpp let $LDFLAGS = '-lopencv_core'
     autocmd FileType cpp nnoremap <buffer> <space>f
           \ :FormatCode<CR>
+    autocmd FileType cpp
+          \ let &l:path ..= ',/usr/include/opencv4,/usr/include/c++/10/'
 augroup END
 
 augroup ft_python
