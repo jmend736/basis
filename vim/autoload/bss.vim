@@ -10,8 +10,32 @@ function! bss#Typed(Desc, value) abort
   return bss#type#Typed(a:Desc, a:value)
 endfunction
 
+function! bss#Query(data, ...) abort
+  return bss#data#LQuery(a:data, a:000)
+endfunction
+
+function! bss#LQuery(data, path) abort
+  return bss#data#LQuery(a:data, a:path)
+endfunction
+
 function! bss#ClassFiles(files) abort
   return bss#java#classfiles#Open(a:files)
+endfunction
+
+function! bss#Get(data, index, default = v:none) abort
+  if a:data is v:none
+    return v:none
+  endif
+  return get(a:data, a:index, a:default)
+endfunction
+
+function! bss#SetDefault(data, index, Default = { -> v:none }) abort
+  let l:result = bss#Get(a:data, a:index)
+  if l:result isnot v:none
+    return l:result
+  endif
+  let a:data[a:index] = a:Default()
+  return bss#Get(a:data, a:index)
 endfunction
 
 function! bss#P(fmt, ...) abort
@@ -28,17 +52,16 @@ function! bss#E(fmt, ...) abort
   echoerr l:msg
 endfunction
 
-function! bss#PP(data) abort
-  for l:line in bss#pretty#PPLines(a:data)
+function! bss#PP(data, with_methods = v:false) abort
+  for l:line in bss#pretty#PPLines(a:data, a:with_methods)
     echom l:line
   endfor
 endfunction
 
-function! bss#UnicodeGraph(...) abort
-  let l:bufnr = bufnr('')
-  let l:view = winsaveview()
-  let l:lnum = l:view.lnum
-  let l:col = l:view.col
-
-  echom l:bufnr l:lnum l:col
+function! bss#PB(data, with_methods = v:false) abort
+  eval bss#view#ScratchView()
+        \.Open()
+        \.Exec("set foldmethod=expr")
+        \.Exec("set foldexpr=bss#fold#Fold('{}[]')")
+        \.SetLines(bss#pretty#PPLines(a:data, a:with_methods))
 endfunction

@@ -1,8 +1,8 @@
-*basis.txt*    For Vim version 7.4 or later.
+*basis.txt*    For Vim version 8.0 or later.
 
         basis lib for jmend's vimrc~
 
-Basis                                                            *bss* *basis*
+Basis                                                             *bss* *basis*
 
 1. Description                                  |basis-desc|
    1.1 Requirements                             |basis-reqs|
@@ -22,7 +22,7 @@ Uses RFC 2119 key words: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" and "OPTIONAL".
 
 1.1 Requirements                                                  *basis-reqs*
-----------------
+------------------------------------------------------------------------------
 
 A Vim version 8.0 or later is REQUIRED. The option 'compatible' MUST NOT be
 set.
@@ -32,12 +32,12 @@ set.
 
 USAGE                            RESULT         DESCRIPTION
 
-bss#cursor#Save()                |Cursor{}|       Save the cursor
-bss#type#Type()                  |Type()|         Get type checking function
-bss#type#Typed()                 T              Check obj against type desc
-bss#view#View()                  |View{}|         Create a new view
-bss#view#TermView()              |View{}|         Create a view for `:term`
-bss#view#ScratchView()           |View{}|         Create a scratch buffer view
+bss#cursor#Save()      |Cursor{}| Save the cursor
+bss#type#Type()        |Type()|   Get type checking function
+bss#type#Typed()       T        Check obj against type desc
+bss#view#View()        |View{}|   Create a new view
+bss#view#TermView()    |View{}|   Create a view for `:term`
+bss#view#ScratchView() |View{}|   Create a scratch buffer view
 
 DEFINITIONS
 
@@ -45,7 +45,7 @@ DEFINITIONS
 3. Types                                                         *basis-types*
 
 3.1 Type Defintions                                            *basis-typedef*
--------------------
+------------------------------------------------------------------------------
 
 You can't define new types in vimscript, so for this section a type refers to
 a |dict| with a specified set of fields and methods. The name of a type will
@@ -60,7 +60,7 @@ the declared description.
 
 
 3.2 Type                                                          *basis-type*
---------
+------------------------------------------------------------------------------
 
 The core idea behind the type system defined by |bss#type#Type()| is:
 
@@ -96,7 +96,7 @@ bss#type#Typed({desc}, {value}) -> type({value})            *bss#type#Typed()*
 
 
 3.2.1 Type Descriptors                                   *bss-type-descriptor*
-----------------------
+------------------------------------------------------------------------------
 
 A type descriptor is a declarative way to define a type. An instance of the
 type simply means a value which matches the descriptor's "shape". What the
@@ -138,7 +138,7 @@ Non-Checker |Func|    Defines a checker which asserts the checked value:
                         1. Has |type()| of |v:t_func|.
 
 3.3 Cursor{}                                           *basis-cursor* *Cursor{}*
-------------
+------------------------------------------------------------------------------
 
 This represents a saved location of a cursor. To create an instance, use the
 |bss#cursor#Save()| function.
@@ -168,7 +168,7 @@ Cursor.Restore() -> nothing                                 *Cursor.Restore()*
     Restore the location of the cursor to the location where it was saved.
 
 3.4 View{}                                               *basis-view* *View{}*
-----------
+------------------------------------------------------------------------------
 
 This represents a reusable buffer and window combination. If the view is still
 valid (according to |View.IsValid()|), calling |View.GoToWindow()| will put
@@ -281,5 +281,32 @@ View.Get({varname}) -> T                                          *View.Get()*
 
     If the |View{}| is valid, return the buffer-local value of {varname},
     otherwise return |v:none|.
+
+3.4 Location{}                                     *basis-location* *Location{}*
+------------------------------------------------------------------------------
+
+Represents a specific character location within a buffer.
+
+>
+    let l:location = bss#ug#location#CursorLocation()
+<
+
+CONSTRUCTORS
+
+                                                           *bss#cursor#Save()*
+bss#ug#location#Location({bufnr}, {lnum}, {col}) -> |Location{}|                   
+
+    Saves the current cursor location (buffer, line and column) and returns a
+    |Location{}| which can be used to restore the cursor to this location.
+
+FIELDS
+
+    None
+
+METHODS
+
+Cursor.Restore() -> nothing                                 *Cursor.Restore()*
+
+    Restore the location of the cursor to the location where it was saved.
 
 vim:tw=78:ts=8:sw=4:ft=help:norl:cocu=nic:

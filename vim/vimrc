@@ -32,7 +32,9 @@
 
 " Notes {{{
 " Misc:
+"   gv          ~ Select last visual selection
 "   :Tab fmt    ~ Field delimiter is treated also a field!
+"   [N]wincmd w ~ Increment current winnr or jump to window [N]
 "   D C Y       ~ Delete to EOL...
 "   i_<C-(t|d)> ~ Increase/decrease indent of current line
 "   :exusage    ~ List ex commands
@@ -40,6 +42,8 @@
 "   %           ~ Use when ex cmd accepts path/file
 "   '[ ']       ~ last changed or yanked area
 "   '>          ~ last visual area
+"   'conceallevel'
+"               ~ Control syntax-defined character concealment
 "
 "   :redir      ~ Redirect messages to various places:
 "     END       ~ Stop redirecting
@@ -55,9 +59,11 @@
 "   :filter /{pat}/ {command}
 "
 "   line()      ~ Accepts . $ 'x
+"     col()
 "     getline()
 "     getpos()
 "     indent()
+"     virtcol()
 "   bufname()   ~ Accepts '' % #
 "     {get,append,delete}bufline()
 "     {get,set}bufvar()
@@ -218,9 +224,15 @@ let g:jm_vimrc.java_import_cache = #{
 for [key, path] in items(#{
       \   v: '~/.vimrc',
       \   l: '~/minecraft/logs/latest.log',
-      \   j: '~/state/jems',
       \ })
   execute printf('nnoremap <leader>e%s :edit %s<cr>', key, path)
+endfor
+for [key, path] in items(#{
+      \   c: '~/code',
+      \   n: '~/jmendio/n',
+      \   v: '~/code/opencv/modules/core',
+      \ })
+  execute printf('nnoremap <leader>E%s :Files %s<cr>', key, path)
 endfor
 " }}} Playground
 
@@ -384,7 +396,7 @@ let g:lightline = {
       \     'readonly': 'error',
       \   },
       \   'component': {
-      \     'winid_bufnr': '%{win_getid()}{%{bufnr()}}'
+      \     'winid_bufnr': '%{win_getid()}/%{winnr()}{%{bufnr()}}'
       \   },
       \ }
 
@@ -398,6 +410,8 @@ let g:vim_markdown_folding_disabled = 1
 let g:NERDCompactSexyComs = v:true
 let g:NERDCommentEmptyLines = v:true
 let g:NERDDefaultAlign = 'left'
+
+let g:tagbar_sort = v:false
 
 " Use ordinal numbers (2) rather than bufnum (1)
 let g:buftabline_numbers = 2
@@ -494,14 +508,19 @@ command! SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
 command! SetupTargetClasspath
       \ let $CLASSPATH = s:TargetClasspath()
+command! SetupCV
+      \ let $LDFLAGS = '-lopencv_core -lopencv_imgcodecs -lopencv_imgproc'
 command! -nargs=1 Sz
       \ resize <args> | set winfixheight
-
 command! SetupTermRainbow
       \ autocmd TerminalOpen * RainbowLoad
-
 command! SetupNote
       \ match GruvboxYellowBold /^[A-Z ]\+:/
+
+command! WtfVisual
+      \ echo "'[ '] prev. changed or yanked yext" |
+      \ echo "'< '> prev. selected visual area" |
+      \ echo "gv    Select previous selection"
 
 command! WtfMark
       \ echo "'[ '] prev. changed or yanked yext" |
@@ -587,7 +606,7 @@ augroup ft_cc
     autocmd!
     autocmd FileType cpp setlocal tabstop=2 shiftwidth=2
     autocmd FileType cpp nnoremap <buffer> <localleader>r
-                \ :MakeOrSetup g++ -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
+                \ :MakeOrSetup clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
     autocmd FileType cpp let $CFLAGS = '-I/usr/include/opencv4'
     autocmd FileType cpp let $LDFLAGS = '-lopencv_core'
     autocmd FileType cpp nnoremap <buffer> <space>f
@@ -760,6 +779,7 @@ function! s:Javap(arg, search) abort
     SetupClasspath
   endif
 
+  " Note: Vim Syntax highlighting doesn't like `\->substitute(...)`
   let l:cls = empty(a:arg) ? @" : a:arg
   let l:cls = substitute(l:cls, '\(;\|<.\+>\)', '', 'ga')
 
@@ -953,8 +973,6 @@ function! s:TimeDiff()
     echom printf("%.2fd", l:diff_h / 24.0)
   endif
 endfunction
-
-command! Code Files ~/code
 " }}}
 
 " }}} Misc

@@ -23,9 +23,9 @@ endfunction
 function! bss#view#ScratchView() abort
   return bss#view#View({
         \   'options': [
-        \     'bufhidden=wipe'
-        \     'buftype=nofile'
-        \     'noswapfile'
+        \     'bufhidden=wipe',
+        \     'buftype=nofile',
+        \     'noswapfile',
         \     'nobuflisted',
         \     'winfixwidth',
         \     'nonumber',
