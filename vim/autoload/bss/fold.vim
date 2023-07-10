@@ -1,9 +1,9 @@
-" Example: set foldexpr=bss#fond#Fold('{}[]')
+" Example: set foldexpr=bss#fond#FromString('{}[]')
 "          set foldmethod=expr
 "
 " Even indices correspond to increases of fold, odd indices correspond to
 " decreases of fold.
-function! bss#fold#Fold(types) abort
+function! bss#fold#FromString(types) abort
   let l:line = getline(v:lnum)
   let l:idx = stridx(a:types, l:line[len(l:line) - 1])
   if l:idx == -1
