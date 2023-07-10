@@ -84,15 +84,21 @@
 "     ...
 "
 " Folds:
+"   Folds can become desynced from foldlevel.
+"   folds:
+"     z[fd]  -- create/delete fold
+"     z[oca] -- open/close/alternate one fold
+"     z[OCA] -- open/close/alternate folds recursively
 "   foldlevels:
-"     zX -- apply foldlevel
-"     zM -- set foldlevel to zero
-"     zR -- set foldlevel to deepest level
-"     zr -- add one to foldlevel
-"     zm -- sub one to foldlevel
-"     zx -- apply foldlevel and zv
+"     z[rm]  -- add/sub one to/from foldlevel
+"     z[RM]  -- max/min foldlevel
+"     z[xX]  -- apply foldlevel (if zx also call zv)
+"   fold creation:
+"     zD     -- Deletes folds recursively
+"     zE     -- Deletes all folds
 "   misc:
-"     zv -- open folds enough to view cursor
+"     zv     -- open folds enough to view cursor
+"     z[nNi] -- Disable/enable/toggle folding
 "
 " Tabs:
 "   'tabstop':
@@ -300,6 +306,9 @@ filetype plugin indent on
 
 set t_Co=256
 set t_ut=
+
+" Minimal number of screen lines to keep above/below cursor
+set scrolloff=0
 
 " Sets the shell to use
 set shell=/bin/bash
@@ -516,6 +525,8 @@ command! SetupTermRainbow
       \ autocmd TerminalOpen * RainbowLoad
 command! SetupNote
       \ match GruvboxYellowBold /^[A-Z ]\+:/
+command! SetupAutoread
+      \ set autoread | autocmd FocusGained,BufEnter * checktime
 
 command! WtfVisual
       \ echo "'[ '] prev. changed or yanked yext" |
@@ -527,6 +538,25 @@ command! WtfMark
       \ echo "'< '> prev. selected visual area" |
       \ echo "'.    Last change start" |
       \ echo "]' [' Move to next/prev mark"
+
+command! WtfFolds
+      \ echo "Folds:" |
+      \ echo "  Folds can become desynced from foldlevel." |
+      \ echo "  folds:" |
+      \ echo "    z[fd]  -- create/delete fold" |
+      \ echo "    z[oca] -- open/close/alternate one fold" |
+      \ echo "    z[OCA] -- open/close/alternate folds recursively" |
+      \ echo "  foldlevels:" |
+      \ echo "    z[rm]  -- add/sub one to/from foldlevel" |
+      \ echo "    z[RM]  -- max/min foldlevel" |
+      \ echo "    z[xX]  -- apply foldlevel (if zx also call zv)" |
+      \ echo "  fold creation:" |
+      \ echo "    zD     -- Deletes folds recursively" |
+      \ echo "    zE     -- Deletes all folds" |
+      \ echo "  misc:" |
+      \ echo "    zv     -- open folds enough to view cursor" |
+      \ echo "    z[nNi] -- Disable/enable/toggle folding"
+
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
 function! s:ReplaceR(cmd) abort

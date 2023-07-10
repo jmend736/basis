@@ -59,6 +59,6 @@ function! bss#PP(data, with_methods = v:false) abort
 endfunction
 
 function! bss#PB(data, with_methods = v:false) abort
-  eval bss#view#DataView(a:data, a:with_methods)
+  return bss#view#DataView(a:data, a:with_methods)
         \.GoToWindow()
 endfunction

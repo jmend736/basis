@@ -1,4 +1,5 @@
 "
+"
 " bss#ug#location#Location(bufnr, line, col) returns a Location{}
 "
 " bss#ug#location#CursorLocation()
@@ -8,6 +9,7 @@ let s:Location = {
       \   'lnum': v:t_number,
       \   'col': v:t_number,
       \   'length': v:t_number,
+      \   'View': function('bss#PB'),
       \ }
 
 let s:LocationTrie = {
@@ -54,6 +56,16 @@ function! s:LocationTrie.Query(...) abort dict
   return bss#data#LQuery(self.data, a:000)
 endfunction
 
+function! s:LocationTrie.ForEach(Fn) abort dict
+  for [l:bufnr, l:data_buf] in items(self.data)
+    for [l:lnum, l:data_line] in items(l:data_buf)
+      for [l:col, l:loc] in items(l:data_line)
+        call a:Fn(l:loc)
+      endfor
+    endfor
+  endfor
+endfunction
+
 " LocationTrie{} Update Methods
 " ---------------------------------------------------------------------------
 
@@ -71,17 +83,8 @@ function! s:LocationTrie.AddLocation(loc) abort dict
           \ )
   endfor
   eval l:data->extend(a:loc)
-  eval l:data->extend({'locations': self})
   return self
 endfunction
-
-command! -nargs=* F call s:Foo()
-function! s:Foo() abort
-  let t = bss#ug#location#LocationTrie()
-  call t.Add()
-  PP t
-endfunction
-F
 
 " Location{} Constructors
 " ---------------------------------------------------------------------------
