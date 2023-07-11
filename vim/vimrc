@@ -55,6 +55,7 @@ Misc:
   '>          ~ last visual area
   'conceallevel'
               ~ Control syntax-defined character concealment
+  <Bar>       ~ Used for :map
 END
 let s:Wtf.redir =<< END
 Redir:
@@ -165,7 +166,6 @@ Channel:
     drop:
       'auto': Drop if no callbacks, keep o/w
       'never': Never drop
-
 Jobs:
   option:
     (in|out|err)_mode: See Channel.option.mode
@@ -179,6 +179,7 @@ Jobs:
       { job, status -> ... }
     drop: See Channel.option.drop
 END
+let s:Wtf.channel = s:Wtf.jobs
 " }}} Notes
 
 " Command Prefix:
@@ -412,7 +413,6 @@ set errorbells
 set laststatus=2
 set cursorline
 set sessionoptions=
-      \buffers,
       \blank,
       \curdir,
       \folds,
@@ -436,7 +436,7 @@ set bg=dark
 let g:lightline = {
       \   'active': {
       \     'left': [['mode', 'paste'], ['filename', 'modified']],
-      \     'right': [['winid_bufnr', 'lineinfo'], ['percent'], ['readonly']]
+      \     'right': [['winid_bufnr', 'lineinfo'], ['percent', 'foldlevel'], ['readonly']]
       \   },
       \   'inactive': {
       \     'left': [['filename', 'modified']],
@@ -446,7 +446,8 @@ let g:lightline = {
       \     'readonly': 'error',
       \   },
       \   'component': {
-      \     'winid_bufnr': '%{win_getid()}/%{winnr()}{%{bufnr()}}'
+      \     'winid_bufnr': '[%{winnr()}/%{win_getid()}]{%{bufnr()}}',
+      \     'foldlevel': '%{&foldlevel}f',
       \   },
       \ }
 
@@ -528,6 +529,8 @@ nnoremap <leader><leader> :tags<cr>
 
 nnoremap <leader>S :mksession<cr>
 
+nnoremap <leader><space> :let &l:foldcolumn = (&l:foldcolumn) ? 0 : 3<cr>
+
 nmap <leader>1 <Plug>BufTabLine.Go(1)
 nmap <leader>2 <Plug>BufTabLine.Go(2)
 nmap <leader>3 <Plug>BufTabLine.Go(3)
@@ -554,28 +557,29 @@ if !exists('g:jm_term')
 endif
 command! -nargs=* Term call g:jm_term.Run(<q-args>)
 
-command! SetupClasspath
+" -bar allows these to be followed by | to chain commands (ie. for autocmds)
+command! -bar SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
-command! SetupTargetClasspath
+command! -bar SetupTargetClasspath
       \ let $CLASSPATH = s:TargetClasspath()
-command! SetupCV
+command! -bar SetupCV
       \ let $LDFLAGS = '-lopencv_core -lopencv_imgcodecs -lopencv_imgproc' |
       \ let $CFLAGS = '-I/usr/include/opencv4' |
       \ let &path ..= ',/usr/include/opencv4,/usr/include/c++/10/'
 command! -nargs=1 Sz
       \ resize <args> | set winfixheight
-command! SetupTermRainbow
+command! -bar SetupTermRainbow
       \ autocmd TerminalOpen * RainbowLoad
-command! SetupNote
+command! -bar SetupNote
       \ match GruvboxYellowBold /^[A-Z ]\+:/
-command! SetupAutoread
+command! -bar SetupAutoread
       \ set autoread | autocmd FocusGained,BufEnter * checktime
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
 function! s:ReplaceR(cmd) abort
 call execute(printf(
-    \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
-    \ a:cmd))
+      \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
+      \ a:cmd))
 endfunction
 
 command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
@@ -632,16 +636,16 @@ augroup ft_latex
     autocmd FileType tex setlocal nocursorline
     autocmd FileType tex setlocal tabstop=4 shiftwidth=4
     autocmd FileType tex nnoremap <buffer> <localleader>r
-                \ :execute 'Term fish -c "mkt ' .. expand('%') .. '"'<cr>
+          \ :execute 'Term fish -c "mkt ' .. expand('%') .. '"'<cr>
 augroup END
 
 augroup ft_c
     autocmd!
     autocmd FileType c setlocal tabstop=2 shiftwidth=2
     autocmd FileType c nnoremap <buffer> <localleader>r
-                \ :make<CR>
+          \ :make<CR>
     autocmd FileType c nnoremap <buffer> <localleader>R
-                \ :MakeOrSetup gcc -Wall -O3 -o a.out %; ./a.out; rm a.out<cr>
+          \ :MakeOrSetup gcc -Wall -O3 -o a.out %; ./a.out; rm a.out<cr>
 augroup END
 
 
@@ -649,11 +653,14 @@ augroup ft_cc
     autocmd!
     autocmd FileType cpp setlocal tabstop=2 shiftwidth=2
     autocmd FileType cpp nnoremap <buffer> <localleader>r
-                \ :MakeOrSetup clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
+          \ :MakeOrSetup clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
     autocmd FileType cpp nnoremap <buffer> <space>f
           \ :FormatCode<CR>
     autocmd FileType cpp
-          \ let &l:path ..= ',/usr/include/opencv4,/usr/include/c++/10/'
+          \ if !exists('g:jm_setup_cpp') |
+          \   SetupCV |
+          \   let g:jm_setup_cpp = v:true |
+          \ endif
 augroup END
 
 augroup ft_python
@@ -672,7 +679,7 @@ augroup ft_scheme
     autocmd!
     autocmd FileType scheme setlocal colorcolumn=79
     autocmd FileType scheme nnoremap <buffer> <localleader>r
-                \ :w<CR> :Term mit-scheme --load % <CR>
+          \ :w<CR> :Term mit-scheme --load % <CR>
 augroup END
 
 augroup ft_java
@@ -776,12 +783,12 @@ function! s:FindImport(word) abort
 
   " Next find an import statement in the current directory
   let l:results = printf(
-        \ '%s --nofilename --nobreak %s',
-        \ g:jm_vimrc.deps.ag,
-        \ shellescape(printf('import .+\b%s\b;', a:word)))
-        \->systemlist()
-        \->sort()
-        \->uniq()
+          \ '%s --nofilename --nobreak %s',
+          \ g:jm_vimrc.deps.ag,
+          \ shellescape(printf('import .+\b%s\b;', a:word)))
+          \->systemlist()
+          \->sort()
+          \->uniq()
 
   " Finally, fallback to classname list
   if empty(l:results)
@@ -816,7 +823,7 @@ endfunction
 "   Run `javap` against the provided classname
 " {{{
 command! -nargs=? -complete=customlist,<SID>JavapComplete -bang
-      \ Javap call <SID>Javap(<q-args>, "<bang>" ==# '!')
+        \ Javap call <SID>Javap(<q-args>, "<bang>" ==# '!')
 function! s:Javap(arg, search) abort
   if empty($CLASSPATH)
     SetupClasspath
