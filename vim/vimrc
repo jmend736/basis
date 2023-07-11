@@ -30,158 +30,6 @@
 "   2. Run :PlugInstall
 "   3. Restart vim
 
-" Notes {{{
-
-let s:Wtf = {}
-command! -nargs=1 -complete=customlist,<SID>WtfComplete Wtf echo join(s:Wtf[<q-args>], "\n")
-function! s:WtfComplete(arg, ...) abort
-  return keys(s:Wtf)->filter({k, v -> !stridx(v, a:arg)})
-endfunction
-let s:Wtf.misc =<< END
-Misc:
-  [i          ~ Display first line with <cword> (incl 'path')
-  [I          ~ Display all line with <cword> (incl 'path')
-  [<C-i>      ~ Jump to first line with <cword> (incl 'path')
-  <C-w><C-i>  ~ New window and jump to first line with <cword> (incl 'path')
-  gv          ~ Select last visual selection
-  :Tab fmt    ~ Field delimiter is treated also a field!
-  [N]wincmd w ~ Increment current winnr or jump to window [N]
-  D C Y       ~ Delete to EOL...
-  i_<C-(t|d)> ~ Increase/decrease indent of current line
-  :exusage    ~ List ex commands
-  :h:t{:r:e}  ~ expand() stuff
-  %           ~ Use when ex cmd accepts path/file
-  '[ ']       ~ last changed or yanked area
-  '>          ~ last visual area
-  'conceallevel'
-              ~ Control syntax-defined character concealment
-  <Bar>       ~ Used for :map
-END
-let s:Wtf.redir =<< END
-Redir:
-  :redir      ~ Redirect messages to various places:
-    END       ~ Stop redirecting
-    > {file}  ~ Write to file
-    >> {file} ~ Append to file
-    @[a-z]    ~ Registers
-    @[a-z]>
-    @[a-z]>>
-    @*>       ~ Clipboard
-    => {var}  ~ Write {var}
-    =>> {var} ~ Append to {var}
-
-  :filter /{pat}/ {command}
-
-  let {name} =<< EOF
-  ...
-  EOF
-
-  :append
-  ...
-  .
-
-  :insert
-  ...
-  .
-END
-let s:Wtf.args =<< END
-Args:
-  line()      ~ Accepts . $ 'x
-    col()
-    getline()
-    getpos()
-    indent()
-    virtcol()
-  bufname()   ~ Accepts '' % #
-    {get,append,delete}bufline()
-    {get,set}bufvar()
-    bufnr()
-    bufwinid()
-    getbufinfo()
-END
-let s:Wtf.funcs =<< END
-Function Names:
-  normal: Foo
-  script: <SNR>139_Foo
-  lambda: {'<lambda>42'}
-  numbered: {'42'}
-END
-let s:Wtf.prev =<< END
-Previous Actions:
-  gv    ~ select prev. selection
-  '[ '] ~ prev. changed or yanked yext
-  '< '> ~ prev. selected visual area
-  '.    ~ Last change start
-  ]' [' ~ Move to next/prev mark
-END
-let s:Wtf.motions =<< END
-Motions:
-  inclusive:
-    $ g_ f t e E %
-  exclusive:
-    ...
-END
-let s:Wtf.folds =<< END
-Folds:
-  Folds can become desynced from foldlevel.
-  folds:
-    z[fd]  -- create/delete fold
-    z[oca] -- open/close/alternate one fold
-    z[OCA] -- open/close/alternate folds recursively
-  foldlevels:
-    z[rm]  -- add/sub one to/from foldlevel
-    z[RM]  -- max/min foldlevel
-    z[xX]  -- apply foldlevel (if zx also call zv)
-  fold creation:
-    zD     -- Deletes folds recursively
-    zE     -- Deletes all folds
-  misc:
-    zv     -- open folds enough to view cursor
-    z[nNi] -- Disable/enable/toggle folding
-END
-let s:Wtf.tabs =<< END
-Tabs:
-  'tabstop':
-    Number of spaces that a <Tab> character in a file counts for.
-  'softtabstop':
-    Number of spaces that a <Tab> counts for while performing
-    editing operations, like inserting a <Tab> or using <BS>.
-  'shiftwidth':
-    Number of spaces to use for each step of (auto)indent.
-    Used for 'cindent', <<, >>, etc.
-  'expandtab':
-    Replaces tab characters with spaces.
-  'smarttab':
-    Better tab semantics, especially after new-lines.
-END
-let s:Wtf.jobs =<< END
-Channel:
-  option:
-    mode:
-      'json' (ch def), 'js', 'nl' (job def), 'raw'
-    callback:
-      { ch, msg -> ... }
-    close_cb:
-      { ch -> ... }
-    drop:
-      'auto': Drop if no callbacks, keep o/w
-      'never': Never drop
-Jobs:
-  option:
-    (in|out|err)_mode: See Channel.option.mode
-    callback: Generic callback
-      { ch, msg -> ... }
-    (out|err)_cb: Specific callbacks
-      { ch, msg -> ... }
-    close_cb:
-      { ch -> ... }
-    exit_cb:
-      { job, status -> ... }
-    drop: See Channel.option.drop
-END
-let s:Wtf.channel = s:Wtf.jobs
-" }}} Notes
-
 " Command Prefix:
 "   <leader>      : used for global mappings
 "   <localleader> : used for buffer-local mappings
@@ -201,6 +49,19 @@ let g:jm_vimrc.deps = #{
       \   JavaClassnameList: {-> []},
       \   ClasspathJarList: {-> systemlist('fish -c "classpath list"')},
       \   google_java_executable: 'google-java-format --skip-javadoc-formatting',
+      \ }
+
+" A variety of dependencies on the system
+let g:jm_vimrc.cc_libs = {
+      \   'absl': {
+      \     'CFLAGS': [
+      \       '-L/usr/local/include'
+      \     ],
+      \     'LDFLAGS': [
+      \       '-labsl_base',
+      \       '-labsl_status',
+      \       '-labsl_statusor',
+      \     ]},
       \ }
 
 " Defines the import cache used for Java import search, if an attempt to
@@ -265,6 +126,113 @@ let g:jm_vimrc.java_import_cache = #{
       \   Type: 'java.lang.reflect.Type' ,
       \   AnnotatedElement: 'java.lang.reflect.AnnotatedElement' ,
       \ }
+
+let g:jm_vimrc.cc_import_cache = {
+      \   '<opencv2/core.hpp>': [
+      \     'Mat',
+      \     'Matx',
+      \     'Mat_',
+      \   ],
+      \   '<opencv2/imgcodecs.hpp>': ['imread', 'imwrite'],
+      \   '<opencv2/imgproc.hpp>': ['circle'],
+      \   '<utility>': [
+      \     'forward', 'declval',
+      \     'move', 'swap', 'exchange',
+      \     'integer_sequence', 'make_integer_sequence',
+      \     'index_sequence', 'make_index_sequence',
+      \     'pair', 'make_pair',
+      \   ],
+      \   '<memory>': ['unique_ptr', 'make_unique'],
+      \   '<vector>': ['vector'],
+      \   '<tuple>': [
+      \     'tuple',
+      \     'tuple_size',
+      \     'tuple_element',
+      \     'get',
+      \   ],
+      \   '<array>': ['array'],
+      \   '<valarray>': ['valarray'],
+      \   '<cstddef>': [
+      \     'size_t', 'ptrdiff_t', 'nullptr_t',
+      \   ],
+      \   '<future>': [
+      \     'future', 'promise', 'async', 'launch',
+      \   ],
+      \   '<thread>': [
+      \     'thread', 'this_thread', 'yield', 'get_id', 'sleep_for',
+      \   ],
+      \   '<cstdint>': [
+      \     'int8_t', 'int16_t', 'int32_t', 'int64_t',
+      \     'uint8_t', 'uint16_t', 'uint32_t', 'uint64_t',
+      \   ],
+      \   '<cmath>': [
+      \     'abs',
+      \     'exp', 'log', 'log2', 'log10',
+      \     'pow', 'sqrt', 'hypot',
+      \     'sin', 'cos', 'tan',
+      \     'asin', 'acos', 'atan',
+      \     'sinh', 'cosh', 'tanh',
+      \     'asinh', 'acosh', 'atanh',
+      \     'ceil', 'floor', 'trunc', 'round',
+      \   ],
+      \   '<string>': [
+      \     'string',
+      \     'to_string',
+      \     'stoi', 'stol', 'stoul', 'stoll', 'stoull',
+      \     'stof', 'stod', 'stold',
+      \   ],
+      \   '<map>': ['map'],
+      \   '<unordered_map>': ['unordered_map'],
+      \   '<set>': ['set'],
+      \   '<unordered_set>': ['unordered_set'],
+      \   '<optional>': ['optional'],
+      \   '<complex>': ['complex'],
+      \   '<initializer_list>': ['initializer_list'],
+      \   '<numeric>': [
+      \     'iota',
+      \     'accumulate',
+      \     'reduce',
+      \     'inner_product',
+      \     'adjacent_difference',
+      \     'partial_sum',
+      \   ],
+      \   '<cstdlib>': [
+      \     'system',
+      \     'exit',
+      \     'getenv',
+      \     'malloc',
+      \     'free',
+      \     'aligned_malloc',
+      \   ],
+      \   '<random>': [
+      \     'random_device',
+      \     'mt19937',
+      \     'mt19937_64',
+      \     'uniform_real_distribution',
+      \     'uniform_int_distribution',
+      \     'normal_distribution',
+      \   ],
+      \   '<algorithm>': [
+      \
+      \     'all_of', 'any_of', 'none_of',
+      \     'for_each', 'for_each_n',
+      \     'count', 'count_if',
+      \     'mismatch',
+      \     'find', 'find_if', 'find_if_not',
+      \     'find_end', 'find_first_of', 'adjacent_find',
+      \     'search', 'search_n',
+      \
+      \     'copy', 'copy_backward', 'move', 'move_backward', 'copy_n',
+      \     'fill', 'fill_n', 'transform', 'generate', 'generate_n',
+      \     'remove', 'remove_if', 'remove_copy', 'remove_copy_if',
+      \     'replace', 'replace_if', 'replace_copy', 'replace_copy_if',
+      \     'swap', 'swap_ranges', 'swap_iter',
+      \     'reverse', 'reverse_copy', 'rotate',
+      \     'rotate_copy',
+      \     'shuffle',
+      \ ]
+      \ }
+
 " }}}
 
 " Playground: {{{
@@ -447,7 +415,7 @@ let g:lightline = {
       \   },
       \   'component': {
       \     'winid_bufnr': '[%{winnr()}/%{win_getid()}]{%{bufnr()}}',
-      \     'foldlevel': '%{&foldlevel}f',
+      \     'foldlevel': '%{(&foldenable) ? &foldlevel : "-"}f',
       \   },
       \ }
 
@@ -771,10 +739,36 @@ augroup end
 "     1. Try the `g:jm_vimrc.java_import_cache`
 "     2. Search the CWD using `ag` for an `import .*\.{ClassName};`
 "     3. Finally, search `g:jm_vimrc.deps.JavaClassnameList()`
+"   Alternatively, for C++ do only:
+"     1. Try the `g:jm_vimrc.cc_import_cache`
 " {{{
 nnoremap <space>t :call <SID>FindImport(expand('<cword>'))<CR>
 command -nargs=1 FindImport call <SID>FindImport(<q-args>)
 function! s:FindImport(word) abort
+
+  if &filetype ==# 'cpp'
+    let l:res = g:jm_vimrc.cc_import_cache
+          \->copy()
+          \->filter({incl, names -> index(names, a:word) != -1})
+          \->keys()
+          \->map({k, incl -> printf("#include %s", incl)})
+    if len(l:res) == 0
+      echo "FindImport: `" .. a:word .. "` not found!"
+    elseif len(l:res) > 1
+      call maktaba#ui#selector#Create(l:res)
+            \.WithMappings({'<cr>': [function("s:AddImportCpp")->get("name"), 'Close', 'Add import']})
+            \.Show()
+    else
+      call s:AddImportCpp(l:res[0])
+    endif
+    return
+  endif
+
+  if &filetype !=# 'java'
+    throw 'ERROR(InvalidFiletype)'
+    return
+  endif
+
   " First try the g:jm_vimrc.java_import_cache
   if (has_key(g:jm_vimrc.java_import_cache, a:word))
     call s:AddImport(printf('import %s;', get(g:jm_vimrc.java_import_cache, a:word)))
@@ -810,6 +804,18 @@ function! s:AddImport(import) abort
     let l:result = search(a:import, 'nw')
     if l:result == 0
       let l:start = search('^import', 'nw')
+      call append(l:start, [a:import])
+      "execute '1,1FormatLines'
+      echom "Adding: " .. a:import
+    else
+      echom "Already Present: " .. a:import
+    endif
+endfunction
+
+function! s:AddImportCpp(import) abort
+    let l:result = search(a:import, 'nw')
+    if l:result == 0
+      let l:start = search('^#include', 'nw')
       call append(l:start, [a:import])
       "execute '1,1FormatLines'
       echom "Adding: " .. a:import
@@ -1026,3 +1032,158 @@ endfunction
 " }}}
 
 " }}} Misc
+
+" Notes {{{
+
+let s:Wtf = {}
+command! -nargs=1 -complete=customlist,<SID>WtfComplete Wtf echo join(s:Wtf[<q-args>], "\n")
+function! s:WtfComplete(arg, ...) abort
+  return keys(s:Wtf)->filter({k, v -> !stridx(v, a:arg)})
+endfunction
+let s:Wtf.misc =<< END
+Misc:
+  [i          ~ Display first line with <cword> (incl 'path')
+  [I          ~ Display all line with <cword> (incl 'path')
+  [<C-i>      ~ Jump to first line with <cword> (incl 'path')
+  <C-w><C-i>  ~ New window and jump to first line with <cword> (incl 'path')
+  gv          ~ Select last visual selection
+  :Tab fmt    ~ Field delimiter is treated also a field!
+  [N]wincmd w ~ Increment current winnr or jump to window [N]
+  D C Y       ~ Delete to EOL...
+  i_<C-(t|d)> ~ Increase/decrease indent of current line
+  :exusage    ~ List ex commands
+  :h:t{:r:e}  ~ expand() stuff
+  %           ~ Use when ex cmd accepts path/file
+  '[ ']       ~ last changed or yanked area
+  '>          ~ last visual area
+  'conceallevel'
+              ~ Control syntax-defined character concealment
+  <Bar>       ~ Used for :map
+END
+let s:Wtf.redir =<< END
+Redir:
+  :redir      ~ Redirect messages to various places:
+    END       ~ Stop redirecting
+    > {file}  ~ Write to file
+    >> {file} ~ Append to file
+    @[a-z]    ~ Registers
+    @[a-z]>
+    @[a-z]>>
+    @*>       ~ Clipboard
+    => {var}  ~ Write {var}
+    =>> {var} ~ Append to {var}
+
+  :filter /{pat}/ {command}
+
+  let {name} =<< EOF
+  ...
+  EOF
+
+  :append
+  ...
+  .
+
+  :insert
+  ...
+  .
+END
+let s:Wtf.args =<< END
+Args:
+  line()      ~ Accepts . $ 'x
+    col()
+    getline()
+    getpos()
+    indent()
+    virtcol()
+  bufname()   ~ Accepts '' % #
+    {get,append,delete}bufline()
+    {get,set}bufvar()
+    bufnr()
+    bufwinid()
+    getbufinfo()
+END
+let s:Wtf.funcs =<< END
+Function Names:
+  normal: Foo
+  script: <SNR>139_Foo
+  lambda: {'<lambda>42'}
+  numbered: {'42'}
+END
+let s:Wtf.prev =<< END
+Previous Actions:
+  gv    ~ select prev. selection
+  '[ '] ~ prev. changed or yanked yext
+  '< '> ~ prev. selected visual area
+  '.    ~ Last change start
+  ]' [' ~ Move to next/prev mark
+END
+let s:Wtf.motions =<< END
+Motions:
+  inclusive:
+    $ g_ f t e E %
+  exclusive:
+    ...
+END
+let s:Wtf.folds =<< END
+Folds:
+  Folds can become desynced from foldlevel.
+  motions:
+    z[jk]  -- Jump to start/end of next/prev fold
+    [[]]z  -- Jump to end-points of current fold
+  folds:
+    z[fd]  -- create/delete fold
+    z[oca] -- open/close/alternate one fold
+    z[OCA] -- open/close/alternate folds recursively
+  foldlevels:
+    z[rm]  -- add/sub one to/from foldlevel
+    z[RM]  -- max/min foldlevel
+    z[xX]  -- apply foldlevel (if zx also call zv)
+  fold creation:
+    zD     -- Deletes folds recursively
+    zE     -- Deletes all folds
+  misc:
+    zv     -- open folds enough to view cursor
+    z[nNi] -- Disable/enable/toggle folding
+END
+let s:Wtf.tabs =<< END
+Tabs:
+  'tabstop':
+    Number of spaces that a <Tab> character in a file counts for.
+  'softtabstop':
+    Number of spaces that a <Tab> counts for while performing
+    editing operations, like inserting a <Tab> or using <BS>.
+  'shiftwidth':
+    Number of spaces to use for each step of (auto)indent.
+    Used for 'cindent', <<, >>, etc.
+  'expandtab':
+    Replaces tab characters with spaces.
+  'smarttab':
+    Better tab semantics, especially after new-lines.
+END
+let s:Wtf.jobs =<< END
+Channel:
+  option:
+    mode:
+      'json' (ch def), 'js', 'nl' (job def), 'raw'
+    callback:
+      { ch, msg -> ... }
+    close_cb:
+      { ch -> ... }
+    drop:
+      'auto': Drop if no callbacks, keep o/w
+      'never': Never drop
+Jobs:
+  option:
+    (in|out|err)_mode: See Channel.option.mode
+    callback: Generic callback
+      { ch, msg -> ... }
+    (out|err)_cb: Specific callbacks
+      { ch, msg -> ... }
+    close_cb:
+      { ch -> ... }
+    exit_cb:
+      { job, status -> ... }
+    drop: See Channel.option.drop
+END
+let s:Wtf.channel = s:Wtf.jobs
+" }}} Notes
