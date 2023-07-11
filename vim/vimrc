@@ -51,22 +51,10 @@ let g:jm_vimrc.deps = #{
       \   google_java_executable: 'google-java-format --skip-javadoc-formatting',
       \ }
 
-" A variety of dependencies on the system
-let g:jm_vimrc.cc_libs = {
-      \   'absl': {
-      \     'CFLAGS': [
-      \       '-L/usr/local/include'
-      \     ],
-      \     'LDFLAGS': [
-      \       '-labsl_base',
-      \       '-labsl_status',
-      \       '-labsl_statusor',
-      \     ]},
-      \ }
-
 " Defines the import cache used for Java import search, if an attempt to
 " resolve the import for a key in this map, the value specified will be
 " imported before trying any other method to find the import.
+" Java Import Cache: {{{
 let g:jm_vimrc.java_import_cache = #{
       \   Map: 'java.util.Map',
       \   Set: 'java.util.Set',
@@ -126,12 +114,30 @@ let g:jm_vimrc.java_import_cache = #{
       \   Type: 'java.lang.reflect.Type' ,
       \   AnnotatedElement: 'java.lang.reflect.AnnotatedElement' ,
       \ }
+" }}} Java Import Cache
 
+" C++ Import Cache: {{{
 let g:jm_vimrc.cc_import_cache = {
       \   '<opencv2/core.hpp>': [
       \     'Mat',
-      \     'Matx',
       \     'Mat_',
+      \     'Mat22f', 'Mat33f', 'Mat44f',
+      \     'Mat21f', 'Mat31f', 'Mat41f',
+      \     'Mat22d', 'Mat33d', 'Mat44d',
+      \     'Mat21d', 'Mat31d', 'Mat41d',
+      \     'Matx',
+      \     'Matx22f', 'Matx33f', 'Matx44f',
+      \     'Matx21f', 'Matx31f', 'Matx41f',
+      \     'Matx22d', 'Matx33d', 'Matx44d',
+      \     'Matx21d', 'Matx31d', 'Matx41d',
+      \     'Vec',
+      \     'Vec1b', 'Vec2b', 'Vec3b', 'Vec4b', 'Vec6b',
+      \     'Vec1i', 'Vec2i', 'Vec3i', 'Vec4i', 'Vec6i',
+      \     'Vec1f', 'Vec2f', 'Vec3f', 'Vec4f', 'Vec6f',
+      \     'Vec1d', 'Vec2d', 'Vec3d', 'Vec4d', 'Vec6d',
+      \     'Scalar_', 'Scalar',
+      \     'Point_', 'Point2i', 'Point2l', 'Point2f', 'Point2d',
+      \     'Point3_', 'Point3i', 'Point3l', 'Point3f', 'Point3d',
       \   ],
       \   '<opencv2/imgcodecs.hpp>': ['imread', 'imwrite'],
       \   '<opencv2/imgproc.hpp>': ['circle'],
@@ -149,6 +155,13 @@ let g:jm_vimrc.cc_import_cache = {
       \     'tuple_size',
       \     'tuple_element',
       \     'get',
+      \   ],
+      \   '<type_traits>': [
+      \     'enable_if', 'conditional',
+      \     'integral_constant', 'bool_constant',
+      \     'true_type', 'false_type',
+      \     'conjunction', 'disjunction', 'negation',
+      \     'is_same', 'is_base_of', 'is_convertible',
       \   ],
       \   '<array>': ['array'],
       \   '<valarray>': ['valarray'],
@@ -232,6 +245,8 @@ let g:jm_vimrc.cc_import_cache = {
       \     'shuffle',
       \ ]
       \ }
+
+" }}} C++ Import Cache
 
 " }}}
 
