@@ -44,9 +44,13 @@ std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
 endsnippet
 
 snippet td()
-template <typename...> void td() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
+template <typename... Ts> void td() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
 endsnippet
 
 snippet td
 td<decltype(${1:int})>();$0
+endsnippet
+
+snippet cvM
+cv::Mat ${1:m}(${2:4}, ${3:4}, ${5:CV_32FC1}, ${6:cv::Scalar(0, 0, 0)});
 endsnippet

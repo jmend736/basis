@@ -381,6 +381,8 @@ set wildmode=longest,list,full
 " Highlight search + incremental search
 set hlsearch
 set incsearch
+set foldopen-=search " Whether to open folds when searching
+                     " Also see :ToggleFoldOpenSearch
 
 " Ignore case, unless you use uppercase characters
 set ignorecase
@@ -540,6 +542,13 @@ if !exists('g:jm_term')
 endif
 command! -nargs=* Term call g:jm_term.Run(<q-args>)
 
+command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
+function! s:ReplaceR(cmd) abort
+call execute(printf(
+      \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
+      \ a:cmd))
+endfunction
+
 " -bar allows these to be followed by | to chain commands (ie. for autocmds)
 command! -bar SetupClasspath
       \ let $CLASSPATH = join(g:jm_vimrc.deps.ClasspathJarList(), ':')
@@ -558,12 +567,14 @@ command! -bar SetupNote
 command! -bar SetupAutoread
       \ set autoread | autocmd FocusGained,BufEnter * checktime
 
-command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
-function! s:ReplaceR(cmd) abort
-call execute(printf(
-      \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
-      \ a:cmd))
-endfunction
+command! ToggleFoldOpenSearch
+      \ if stridx(&foldopen, "search") == -1 |
+      \   set foldopen+=search |
+      \   echo "ENABLED foldopen search" |
+      \ else |
+      \   set foldopen-=search |
+      \   echo "DISABLED foldopen search" |
+      \ endif
 
 command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
 function! s:MakeOrSetup(cmds) abort
@@ -661,6 +672,7 @@ augroup END
 augroup ft_scheme
     autocmd!
     autocmd FileType scheme setlocal colorcolumn=79
+    autocmd FileType scheme let g:lisp_rainbow = v:true
     autocmd FileType scheme nnoremap <buffer> <localleader>r
           \ :w<CR> :Term mit-scheme --load % <CR>
 augroup END
