@@ -4,6 +4,10 @@ snippet inc
 #include <${1:iostream}>$0
 endsnippet
 
+snippet Inc
+#include "${1:`!v expand('%:r')`}.h"$0
+endsnippet
+
 snippet pp
 std::cout << ${1:"${2:Hello world}"} << std::endl;$0
 endsnippet
@@ -40,6 +44,14 @@ endsnippet
 snippet o<<
 std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
   return o << ${3:$2};
+}$0
+endsnippet
+
+snippet o<<{}
+std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
+  o << "{";
+  o << ${3:$2};
+  return o << "}";
 }$0
 endsnippet
 

@@ -39,8 +39,6 @@ bss#view#View()        |View{}|   Create a new view
 bss#view#TermView()    |View{}|   Create a view for `:term`
 bss#view#ScratchView() |View{}|   Create a scratch buffer view
 
-DEFINITIONS
-
 ==============================================================================
 3. Types                                                         *basis-types*
 

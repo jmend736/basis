@@ -118,13 +118,17 @@ let g:jm_vimrc.java_import_cache = #{
 
 " C++ Import Cache: {{{
 let g:jm_vimrc.cc_import_cache = {
+      \   '"absl/strings/str_join.h"': ['StrJoin'],
+      \   '"absl/strings/str_cat.h"': ['StrCat'],
+      \   '"absl/strings/str_replace.h"': ['StrReplaceAll'],
+      \   '"absl/strings/str_split.h"': ['StrSplit'],
       \   '<opencv2/core.hpp>': [
       \     'Mat',
       \     'Mat_',
-      \     'Mat22f', 'Mat33f', 'Mat44f',
-      \     'Mat21f', 'Mat31f', 'Mat41f',
-      \     'Mat22d', 'Mat33d', 'Mat44d',
-      \     'Mat21d', 'Mat31d', 'Mat41d',
+      \     'Mat1b', 'Mat2b', 'Mat3b', 'Mat4b',
+      \     'Mat1i', 'Mat2i', 'Mat3i', 'Mat4i',
+      \     'Mat1f', 'Mat2f', 'Mat3f', 'Mat4f',
+      \     'Mat1d', 'Mat2d', 'Mat3d', 'Mat4d',
       \     'Matx',
       \     'Matx22f', 'Matx33f', 'Matx44f',
       \     'Matx21f', 'Matx31f', 'Matx41f',
@@ -138,6 +142,9 @@ let g:jm_vimrc.cc_import_cache = {
       \     'Scalar_', 'Scalar',
       \     'Point_', 'Point2i', 'Point2l', 'Point2f', 'Point2d',
       \     'Point3_', 'Point3i', 'Point3l', 'Point3f', 'Point3d',
+      \     'abs',
+      \     'exp', 'log',
+      \     'pow', 'sqrt',
       \   ],
       \   '<opencv2/imgcodecs.hpp>': ['imread', 'imwrite'],
       \   '<opencv2/imgproc.hpp>': ['circle'],
@@ -158,10 +165,13 @@ let g:jm_vimrc.cc_import_cache = {
       \   ],
       \   '<type_traits>': [
       \     'enable_if', 'conditional',
+      \     'enable_if_t', 'conditional_t',
       \     'integral_constant', 'bool_constant',
       \     'true_type', 'false_type',
       \     'conjunction', 'disjunction', 'negation',
+      \     'conjunction_v', 'disjunction_v', 'negation_v',
       \     'is_same', 'is_base_of', 'is_convertible',
+      \     'is_same_v', 'is_base_of_v', 'is_convertible_v',
       \   ],
       \   '<array>': ['array'],
       \   '<valarray>': ['valarray'],
@@ -197,6 +207,21 @@ let g:jm_vimrc.cc_import_cache = {
       \   '<map>': ['map'],
       \   '<unordered_map>': ['unordered_map'],
       \   '<set>': ['set'],
+      \   '<iostream>': [
+      \     'cout', 'cin', 'cerr',
+      \     'endl',
+      \   ],
+      \   '<ios>': [
+      \     'internal', 'left', 'right',
+      \     'boolalpha', 'showbase', 'showpos',
+      \     'dec', 'hex', 'oct',
+      \     'fixed', 'scientific', 'default',
+      \   ],
+      \   '<format>': ['format'],
+      \   '<iomanip>': [
+      \     'setw',
+      \     'quoted',
+      \   ],
       \   '<unordered_set>': ['unordered_set'],
       \   '<optional>': ['optional'],
       \   '<complex>': ['complex'],
@@ -225,6 +250,14 @@ let g:jm_vimrc.cc_import_cache = {
       \     'uniform_int_distribution',
       \     'normal_distribution',
       \   ],
+      \   '<functional>': [
+      \     'function',
+      \     'plus', 'minus', 'multiplies', 'divides',
+      \     'equal_to', 'not_equal_to',
+      \     'greater', 'less', 'greater_equal', 'less_equal',
+      \     'logical_and', 'logical_or', 'logical_not',
+      \     'bit_end', 'bit_or', 'bit_xor', 'bit_not',
+      \   ],
       \   '<algorithm>': [
       \
       \     'all_of', 'any_of', 'none_of',
@@ -243,7 +276,26 @@ let g:jm_vimrc.cc_import_cache = {
       \     'reverse', 'reverse_copy', 'rotate',
       \     'rotate_copy',
       \     'shuffle',
-      \ ]
+      \   ],
+      \   '"absl/algorithm/container.h"': [
+      \
+      \     'c_all_of', 'c_any_of', 'c_none_of',
+      \     'c_for_each', 'c_for_each_n',
+      \     'c_count', 'c_count_if',
+      \     'c_mismatch',
+      \     'c_find', 'c_find_if', 'c_find_if_not',
+      \     'c_find_end', 'c_find_first_of', 'c_adjacent_find',
+      \     'c_search', 'c_search_n',
+      \
+      \     'c_copy', 'c_copy_backward', 'c_move', 'c_move_backward', 'c_copy_n',
+      \     'c_fill', 'c_fill_n', 'c_transform', 'c_generate', 'c_generate_n',
+      \     'c_remove', 'c_remove_if', 'c_remove_copy', 'c_remove_copy_if',
+      \     'c_replace', 'c_replace_if', 'c_replace_copy', 'c_replace_copy_if',
+      \     'c_swap', 'c_swap_ranges', 'c_swap_iter',
+      \     'c_reverse', 'c_reverse_copy', 'c_rotate',
+      \     'c_rotate_copy',
+      \     'c_shuffle',
+      \   ],
       \ }
 
 " }}} C++ Import Cache
@@ -278,6 +330,7 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-fugitive'
 Plug 'moll/vim-bbye'
 Plug 'scrooloose/nerdcommenter'
@@ -300,6 +353,12 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
+" TEMPORARY: This gets merged into vim, but want this for now to get indent
+" fix:
+" https://github.com/bazelbuild/vim-ft-bzl/commit/941fb142f604c254029c2a0852ea7578f08de91a
+Plug 'bazelbuild/vim-ft-bzl'
+
+" Plug 'cohama/lexima.vim'
 " Plug 'mattn/emmet-vim'
 " Plug 'sheerun/vim-polyglot'
 " Plug 'fatih/vim-go'
@@ -516,6 +575,9 @@ nnoremap <leader>S :mksession<cr>
 
 nnoremap <leader><space> :let &l:foldcolumn = (&l:foldcolumn) ? 0 : 3<cr>
 
+xmap \a <Plug>(EasyAlign)
+nmap \a <Plug>(EasyAlign)
+
 nmap <leader>1 <Plug>BufTabLine.Go(1)
 nmap <leader>2 <Plug>BufTabLine.Go(2)
 nmap <leader>3 <Plug>BufTabLine.Go(3)
@@ -540,9 +602,11 @@ nmap <leader>0 <Plug>BufTabLine.Go(10)
 if !exists('g:jm_term')
   let g:jm_term = bss#view#TermView()
 endif
-command! -nargs=* Term call g:jm_term.Run(<q-args>)
+command! -nargs=* -complete=shellcmd Term
+      \ eval g:jm_term.Run(<q-args>)
 
 command! -nargs=+ ReplaceR call s:ReplaceR(<q-args>)
+command! -bar ReplaceRTarget execute 'ReplaceR' BlazeGuessCommand()
 function! s:ReplaceR(cmd) abort
 call execute(printf(
       \ 'nnoremap <buffer> <localleader>r :Term %s<cr>',
@@ -566,6 +630,10 @@ command! -bar SetupNote
       \ match GruvboxYellowBold /^[A-Z ]\+:/
 command! -bar SetupAutoread
       \ set autoread | autocmd FocusGained,BufEnter * checktime
+command! -bar SetupHex
+      \ match GruvboxAqua /\<0x0*\zs[1-9a-f]\x*\>/
+command! -bar SetupNum
+      \ match GruvboxAqua /\<\(0x\)\?0*\zs[1-9a-f]\x*\>/
 
 command! ToggleFoldOpenSearch
       \ if stridx(&foldopen, "search") == -1 |
@@ -576,9 +644,13 @@ command! ToggleFoldOpenSearch
       \   echo "DISABLED foldopen search" |
       \ endif
 
+command! StopAllJobs eval job_info()->map('job_stop(v:val)')
+
 command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
 function! s:MakeOrSetup(cmds) abort
-  if filereadable('Makefile')
+  if filereadable('WORKSPACE')
+    execute 'Term blaze build' BlazeTarget()
+  elseif filereadable('Makefile')
     Term make
   else
     let l:cmds = substitute(a:cmds, '%', expand('%'), 'g')
@@ -636,8 +708,9 @@ augroup END
 augroup ft_c
     autocmd!
     autocmd FileType c setlocal tabstop=2 shiftwidth=2
+    autocmd FileType c setlocal foldmethod=syntax
     autocmd FileType c nnoremap <buffer> <localleader>r
-          \ :make<CR>
+          \ :Term make<CR>
     autocmd FileType c nnoremap <buffer> <localleader>R
           \ :MakeOrSetup gcc -Wall -O3 -o a.out %; ./a.out; rm a.out<cr>
 augroup END
@@ -646,14 +719,21 @@ augroup END
 augroup ft_cc
     autocmd!
     autocmd FileType cpp setlocal tabstop=2 shiftwidth=2
+    autocmd FileType cpp setlocal foldmethod=syntax
     autocmd FileType cpp nnoremap <buffer> <localleader>r
-          \ :MakeOrSetup clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS); ./build<CR>
+          \ :MakeOrSetup
+          \   clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS);
+          \   ./build<CR>
     autocmd FileType cpp nnoremap <buffer> <space>f
           \ :FormatCode<CR>
     autocmd FileType cpp
           \ if !exists('g:jm_setup_cpp') |
           \   SetupCV |
           \   let g:jm_setup_cpp = v:true |
+          \ endif
+    autocmd FileType cpp
+          \ if expand('%:p') =~ '/home/jmend/pg' |
+          \   silent ReplaceRTarget |
           \ endif
 augroup END
 
@@ -711,7 +791,7 @@ augroup ft_markdown
     "autocmd FileType markdown nnoremap <buffer> <leader>r
                 "\ :Term pandoc %:p -s --highlight-style kate --pdf-engine=xelatex -o gen/%:t:r.pdf<cr>
 
-    autocmd FileType markdown nnoremap <buffer> <localleader>r
+    autocmd FileType markdown command! SetupR nnoremap <buffer> <localleader>r
           \ :call execute(printf(
           \     "Term pandoc %s -s --highlight-style kate --pdf-engine=xelatex -o %s.pdf",
           \     expand('%:p'),
@@ -975,9 +1055,8 @@ endfunction
 " {{{
 function! s:BlazeTargets(fname) abort
   let l:query = printf(
-        \   'same_pkg_direct_rdeps("//%s:%s")',
-        \   fnamemodify(a:fname, ":.:h:r"),
-        \   fnamemodify(a:fname, ":t"),
+        \   'same_pkg_direct_rdeps(%s)',
+        \   fnamemodify(a:fname, ":p:."),
         \ )
 
   let l:command = printf(
@@ -985,8 +1064,35 @@ function! s:BlazeTargets(fname) abort
         \   g:jm_vimrc.deps.blaze,
         \   l:query,
         \ )
-  echom l:command
   return filter(systemlist(l:command), 'v:val =~# "^//"')
+endfunction
+
+function! BlazeGuessCommand(show = v:false) abort
+  let l:fname = expand('%:p')
+
+  let l:target = BlazeTarget()
+  if l:target ==# "???"
+    echom "Can't find blaze target!"
+    return "false"
+  endif
+
+  let l:action = 'build'
+  if l:fname =~# '\v(_test.cc|Test.java)$' || l:target =~# '\v(_test|Test)$'
+    let l:action = 'test'
+  elseif l:fname =~# '\v(_bin.cc|Bin.java)$' || l:target =~# '\v(_bin|Bin)$'
+    let l:action = 'run'
+  endif
+
+  let l:command = printf(
+        \   "%s %s %s",
+        \   g:jm_vimrc.deps.blaze,
+        \   l:action,
+        \   l:target,
+        \ )
+  if a:show
+    echom 'Using:' l:command
+  endif
+  return l:command
 endfunction
 
 function! BlazeTarget() abort
@@ -1069,6 +1175,8 @@ function! s:WtfComplete(arg, ...) abort
 endfunction
 let s:Wtf.misc =<< END
 Misc:
+  :redraw     ~ Useful for :echo-ish commands
+  :exec|:echo ~ Both join args with spaces
   [i          ~ Display first line with <cword> (incl 'path')
   [I          ~ Display all line with <cword> (incl 'path')
   [<C-i>      ~ Jump to first line with <cword> (incl 'path')
@@ -1150,6 +1258,9 @@ Motions:
     $ g_ f t e E %
   exclusive:
     ...
+Semantics:
+  aw ~ Around word, including leading xor trailing whitespace
+  iw ~ Inner word
 END
 let s:Wtf.folds =<< END
 Folds:
@@ -1213,4 +1324,34 @@ Jobs:
     drop: See Channel.option.drop
 END
 let s:Wtf.channel = s:Wtf.jobs
+let s:Wtf.ea =<< END
+EasyAlign:
+  Shortcuts in alignment mode:
+    <C-x>    : /.*/          : Regex
+    <C-a>    : a[lcr]+(*|**) : Align
+    <C-d>    : d[lrc]        : Delimiter Align
+    <C-i>    : i[ksdn]       : Indentation
+
+    <C-[lr]> : [lr][0-9]+    : Left/Right Margin
+    <Left>   : <             : Stick to left
+    <Right>  : >             : Stick to right
+
+    <C-f>    : [gv]/.*/      : Filter
+    <C-g>    : ig[.*]        : Ignore Groups
+    <C-u>    : iu[01]        : Ignore unmatched
+
+  Align <C-a>:
+    Specifies of each delimited section (not delimiter).
+    [lrc]+     : Specify explicitly
+    [lrc]+\*   : Repeat the _last_ alignment
+    [lrc]+\*\* : Repeat the entire sequence of alignments
+
+  N-th Delimiter:
+    By default alignment occurs only on the 1st delimiter of a line
+      :EasyAlign =
+    Specifying N (a number) will make alignment occur around N-th delimiter
+      :EasyAlign N=
+    Using * will make it happen across all occurrences of a delimiter
+      :EasyAlign *=
+END
 " }}} Notes

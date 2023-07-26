@@ -1,13 +1,23 @@
-function! bss#pretty#PPLines(data, show_func=v:false, context=[]) abort
+function! bss#pretty#PP(data, show_func=v:false, context=[]) abort
+  return join(bss#pretty#PPLines(a:data, a:show_func, a:context), "\n")
+endfunction
+
+function! bss#pretty#PPLimited(max_depth, data, show_func=v:false, context=[]) abort
+  return join(bss#pretty#PPLines(a:data, a:show_func, a:context, a:max_depth), "\n")
+endfunction
+
+function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1) abort
   let l:lines = []
   if count(a:context, a:data) != 0
+    return ['{...}']
+  elseif a:max_depth != -1 && len(a:context) > a:max_depth
     return ['...']
   elseif type(a:data) is v:t_list
     call add(l:lines, '[')
     let l:n = 0
     call add(a:context, a:data)
     for l:v in a:data
-      let l:v_lines = bss#pretty#PPLines(l:v, a:show_func, a:context)
+      let l:v_lines = bss#pretty#PPLines(l:v, a:show_func, a:context, a:max_depth)
       call add(l:lines, printf('  %2d: %s', l:n, l:v_lines[0]))
       call extend(l:lines, map(l:v_lines[1:], '"  "..v:val'))
       let l:n += 1
@@ -21,7 +31,7 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[]) abort
       if (type(l:V) is v:t_func) && !a:show_func
         continue
       endif
-      let l:v_lines = bss#pretty#PPLines(l:V, a:show_func, a:context)
+      let l:v_lines = bss#pretty#PPLines(l:V, a:show_func, a:context, a:max_depth)
       call add(l:lines, printf('  %s: %s', string(l:k), l:v_lines[0]))
       call extend(l:lines, map(l:v_lines[1:], '"  "..v:val'))
     endfor

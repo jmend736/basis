@@ -1,0 +1,52 @@
+# Main =================================================================
+
+snippet ver
+cmake_minimum_required(VERSION 3.12)
+endsnippet
+
+snippet pro
+${1:# Sets:
+# - PROJECT_SOURCE_DIR
+# - PROJECT_BINARY_DIR
+}project(${2:`!v expand('%:p:h:t')`} LANGUAGES CXX)
+endsnippet
+
+snippet adde
+add_executable(${1:main} $1.cc$2)$0
+endsnippet
+
+snippet addl
+add_library(${1:main} PUBLIC $1.cc$2)$0
+endsnippet
+
+snippet dep
+target_link_libraries(${1:main} PUBLIC ${2:lib})$0
+endsnippet
+
+snippet pp
+message(STATUS "${1:Hello World}")$0
+endsnippet
+
+# Import ===============================================================
+
+snippet iabsl
+# targets: absl_base, absl_container, absl_strings, absl_status
+FetchContent_Declare(
+  absl
+  GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+  GIT_TAG 20230125.3
+  )
+
+FetchContent_MakeAvailable(absl)
+endsnippet
+
+snippet iopencv
+# targets: core, imgproc, imgcodecs
+FetchContent_Declare(
+  opencv
+  GIT_REPOSITORY https://github.com/opencv/opencv.git
+  GIT_TAG 4.7.0
+  )
+
+FetchContent_MakeAvailable(opencv)
+endsnippet
