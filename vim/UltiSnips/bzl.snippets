@@ -1,0 +1,101 @@
+priority -1
+
+# Details ==============================================================
+#
+# BUILD:
+#   pack : package()
+#   ccb  : cc_binary()
+#   ccl  : cc_library()
+#   cct  : cc_test()
+# WORKSPACE:
+#   pack : package()
+#   ccb  : cc_binary()
+#   ccl  : cc_library()
+#   cct  : cc_test()
+#
+# BUILD ================================================================
+
+snippet pack
+package(default_visibility = ["//visibility:public"])
+endsnippet
+
+snippet ccb
+cc_binary(
+  name = "${1:main}",
+  srcs = ["$1.cc"],
+  deps = [],
+)
+endsnippet
+
+snippet ccl
+cc_library(
+  name = "${1:main}",
+  hdrs = ["$1.h"],
+  srcs = ["$1.cc"],
+  deps = [],
+)
+endsnippet
+
+snippet cct
+cc_test(
+  name = "${1:main}_test",
+  srcs = ["$1_test.cc"],
+  deps = [
+    "//third_party/gtest",
+  ],
+)
+endsnippet
+
+# WORKSPACE ============================================================
+
+snippet ihttp
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+endsnippet
+
+snippet igit
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+endsnippet
+
+snippet ext_jvm
+RULES_JVM_EXTERNAL_TAG = "4.0"
+RULES_JVM_EXTERNAL_SHA = "31701ad93dbfe544d597dbe62c9a1fdd76d81d8a9150c2bf1ecf928ecdf97169"
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+endsnippet
+
+snippet ext_proto
+COM_GOOGLE_PROTOBUF_TAG = "v3.17.0"
+git_repository(
+  name = "com_google_protobuf",
+  remote = "https://github.com/protocolbuffers/protobuf",
+  tag = COM_GOOGLE_PROTOBUF_TAG,
+)
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+protobuf_deps()
+endsnippet
+
+snippet ext_gtest
+COM_GOOGLE_GOOGLETEST_TAG = "v1.13.0"
+COM_GOOGLE_GOOGLETEST_SHA = "ffa17fbc5953900994e2deec164bb8949879ea09b411e07f215bfbb1f87f4632"
+http_archive(
+    name = "com_google_googletest",
+    sha256 = COM_GOOGLE_GOOGLETEST_SHA,
+    url = "https://github.com/google/googletest/archive/refs/tags/%s.zip" % COM_GOOGLE_GOOGLETEST_TAG,
+    strip_prefix = "googletest-%s" % COM_GOOGLE_GOOGLETEST_TAG,
+)
+endsnippet
+
+snippet ext_absl
+COM_GOOGLE_ABSL_TAG = "20230125.3"
+COM_GOOGLE_ABSL_SHA = "51d676b6846440210da48899e4df618a357e6e44ecde7106f1e44ea16ae8adc7"
+http_archive(
+  name = "com_google_absl",
+  urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/%s.zip" % COM_GOOGLE_ABSL_TAG],
+  strip_prefix = "abseil-cpp-%s" % COM_GOOGLE_ABSL_TAG,
+  sha256 = COM_GOOGLE_ABSL_SHA,
+)
+endsnippet
