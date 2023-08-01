@@ -3,15 +3,17 @@ priority -1
 # Details ==============================================================
 #
 # BUILD:
-#   pack : package()
-#   ccb  : cc_binary()
-#   ccl  : cc_library()
-#   cct  : cc_test()
+#   pack      : package()
+#   ccb       : cc_binary()
+#   ccl       : cc_library()
+#   cct       : cc_test()
 # WORKSPACE:
-#   pack : package()
-#   ccb  : cc_binary()
-#   ccl  : cc_library()
-#   cct  : cc_test()
+#   ihttp     : Load http_archive()
+#   igit      : Load git_repository()
+#   ext_absl  : Add @com_google_absl//
+#   ext_proto : Add @com_google_protobuf//
+#   ext_gtest : Add @com_google_googletest//
+#   ext_jvm   : Add @rules_jvm_external//
 #
 # BUILD ================================================================
 
@@ -41,6 +43,7 @@ cc_test(
   name = "${1:main}_test",
   srcs = ["$1_test.cc"],
   deps = [
+    ":$1",
     "//third_party/gtest",
   ],
 )
@@ -97,5 +100,14 @@ http_archive(
   urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/%s.zip" % COM_GOOGLE_ABSL_TAG],
   strip_prefix = "abseil-cpp-%s" % COM_GOOGLE_ABSL_TAG,
   sha256 = COM_GOOGLE_ABSL_SHA,
+)
+endsnippet
+
+snippet ext_sky
+BAZEL_SKYLIB_TAG = "1.4.7"
+git_repository(
+  name = "bazel_skylib",
+  remote = "https://github.com/bazelbuild/bazel-skylib",
+  tag = BAZEL_SKYLIB_TAG,
 )
 endsnippet

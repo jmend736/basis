@@ -31,6 +31,21 @@ int main(int argc, char *argv[]) {
 }
 endsnippet
 
+snippet mainf
+#include "absl/flags/parse.h"
+#include "absl/flags/declare.h"
+#include "absl/flags/flag.h"
+#include "absl/flags/usage.h"
+
+// ABSL_DECLARE_FLAG(int, name);
+// ABSL_FLAG(int, name, 0, "desc");
+
+int main(int argc, char *argv[]) {
+  absl::ParseCommandLine(argc, argv);
+  return 0;
+}
+endsnippet
+
 snippet fori
 for (int i{}; i < ${1:10}; i++) {
   $0
@@ -39,6 +54,11 @@ endsnippet
 
 snippet be "" i
 std::begin(${1:x}), std::end($1)$0
+endsnippet
+
+snippet uc
+using namespace std::chrono;
+using namespace std::literals::chrono_literals;
 endsnippet
 
 snippet o<<
@@ -56,13 +76,44 @@ std::ostream& operator<<(std::ostream& o, ${1:int} ${2:v}) {
 endsnippet
 
 snippet td()
-template <typename... Ts> void td() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
+template <typename... Ts>
+std::string td() {
+  auto s = std::string{__PRETTY_FUNCTION__};
+  return s.substr(23, s.length() - 23 - 1);
+}
 endsnippet
 
 snippet td
-td<decltype(${1:int})>();$0
+td<decltype(${1:int})>()$0
 endsnippet
 
 snippet cvM
 cv::Mat ${1:m}(${2:4}, ${3:4}, ${5:CV_32FC1}, ${6:cv::Scalar(0, 0, 0)});
+endsnippet
+
+snippet rng
+std::mt19937 rng{std::random_device{}()};
+std::uniform_int_distribution dist{};
+endsnippet
+
+snippet srng
+static std::mt19937 rng{std::random_device{}()};
+static std::uniform_int_distribution dist{};
+endsnippet
+
+snippet ABSL_FLAG
+ABSL_FLAG(${1:int}, ${2:count}, ${3:0}, "${4:counter}");$0
+endsnippet
+
+snippet ABSL_DECLARE_FLAG
+ABSL_DECLARE_FLAG(${1:int}, ${2:count});$0
+endsnippet
+
+snippet AF
+ABSL_DECLARE_FLAG(${1:int}, ${2:count});
+ABSL_FLAG($1, $2, ${3:0}, "${4:counter}");$0
+endsnippet
+
+snippet gf "Get flag" i
+absl::GetFlag(FLAGS_${1:name})$0
 endsnippet

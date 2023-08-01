@@ -1,5 +1,6 @@
+# Defined in /home/jmend/.config/fish/functions/mkrt.fish @ line 1
 function mkrt --description 'Make a random temporary directory'
-    argparse 'p/py' 'c/cc' -- $argv
+    argparse 'b/blaze' 'p/py' 'c/cc' -- $argv
 
     if set -q _flag_py
         set -l dir (mktemp -d ~/pg-py/XXXX)
@@ -12,5 +13,13 @@ function mkrt --description 'Make a random temporary directory'
         pushd $dir
         return
     end
+    if set -q _flag_blaze
+        pushd (mktemp -d /tmp/pg-XXXX)
+        touch WORKSPACE BUILD main.cc
+        buildozer -quiet 'new cc_library main' :__pkg__
+        buildozer -quiet 'add srcs main.cc' :main
+        return
+    end
+
     pushd (mktemp -d /tmp/pg-XXXX)
 end
