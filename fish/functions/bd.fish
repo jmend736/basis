@@ -1,4 +1,3 @@
-# Defined via `source`
 function bd
     argparse -i 'q/quiet' -- $argv
 

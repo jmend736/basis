@@ -1,4 +1,3 @@
-# Defined in /home/jmend/.config/fish/functions/mkrt.fish @ line 1
 function mkrt --description 'Make a random temporary directory'
     argparse 'b/blaze' 'p/py' 'c/cc' -- $argv
 
