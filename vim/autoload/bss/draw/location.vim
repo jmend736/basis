@@ -1,8 +1,8 @@
 "
 "
-" bss#ug#location#Location(bufnr, line, col) returns a Location{}
+" bss#draw#location#Location(bufnr, line, col) returns a Location{}
 "
-" bss#ug#location#CursorLocation()
+" bss#draw#location#CursorLocation()
 
 let s:Location = {
       \   'bufnr': v:t_number,
@@ -23,7 +23,7 @@ let s:LocationProp = {
 " LocationTrie{} Constructors
 " ---------------------------------------------------------------------------
 
-function! bss#ug#location#LocationTrie() abort
+function! bss#draw#location#LocationTrie() abort
   return extend(deepcopy(s:LocationTrie), {
         \   'data': {},
         \ })
@@ -70,7 +70,7 @@ endfunction
 " ---------------------------------------------------------------------------
 
 function! s:LocationTrie.Add(col = col('.'), lnum = line('.'), bufnr = bufnr('%')) abort dict
-  return self.AddLocation(bss#ug#location#Location(a:bufnr, a:lnum, a:col))
+  return self.AddLocation(bss#draw#location#Location(a:bufnr, a:lnum, a:col))
 endfunction
 
 function! s:LocationTrie.AddLocation(loc) abort dict
@@ -88,7 +88,7 @@ endfunction
 
 " Location{} Constructors
 " ---------------------------------------------------------------------------
-function! bss#ug#location#Location(bufnr, lnum, col, length=1) abort
+function! bss#draw#location#Location(bufnr, lnum, col, length=1) abort
   return extend(deepcopy(s:Location), {
         \   'bufnr': a:bufnr,
         \   'lnum': a:lnum,
@@ -97,11 +97,11 @@ function! bss#ug#location#Location(bufnr, lnum, col, length=1) abort
         \ })
 endfunction
 
-function! bss#ug#location#CursorLocation() abort
-  return bss#ug#location#Location(bufnr(''), line('.'), col('.'))
+function! bss#draw#location#CursorLocation() abort
+  return bss#draw#location#Location(bufnr(''), line('.'), col('.'))
 endfunction
 
-function! bss#ug#location#ClearAllHighlights() abort
+function! bss#draw#location#ClearAllHighlights() abort
   return prop_clear(1, line('$'), s:LocationProp)
 endfunction
 

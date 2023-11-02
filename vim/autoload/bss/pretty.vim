@@ -8,11 +8,18 @@ endfunction
 
 function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1) abort
   let l:lines = []
-  if count(a:context, a:data) != 0
-    return ['{...}']
-  elseif a:max_depth != -1 && len(a:context) > a:max_depth
+  let l:data_type = type(a:data)
+
+  " Stop after max_depth if it's not -1
+  if a:max_depth != -1 && len(a:context) > a:max_depth
     return ['...']
-  elseif type(a:data) is v:t_list
+
+  " Avoid infinite recursion from data structures that include themselves
+  elseif count(a:context, a:data) != 0
+    return ['{...}']
+
+  " Handle Lists
+  elseif l:data_type is v:t_list
     call add(l:lines, '[')
     let l:n = 0
     call add(a:context, a:data)
@@ -24,7 +31,9 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1
     endfor
     call remove(a:context, -1)
     call add(l:lines, ']')
-  elseif type(a:data) is v:t_dict
+
+  " Handle Dicts
+  elseif l:data_type is v:t_dict
     call add(l:lines, '{')
     call add(a:context, a:data)
     for [l:k, l:V] in items(a:data)
@@ -37,8 +46,12 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1
     endfor
     call remove(a:context, -1)
     call add(l:lines, '}')
+
+  " 
   else
     call add(l:lines, string(a:data))
+
   endif
+
   return l:lines
 endfunction

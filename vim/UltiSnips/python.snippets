@@ -49,21 +49,37 @@ def get_args(arglist):
 	return args
 endglobal
 
-snippet ii
+snippet il
 import numpy as np
 import numpy.linalg as la
-from matplotlib import pyplot as plt
-import networkx as nx
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 endsnippet
 
 snippet inp
+import numpy as np
+endsnippet
+
+snippet Inp
 import numpy as np
 import numpy.linalg as la
 import numpy.typing as npt
 endsnippet
 
 snippet iplt
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+endsnippet
+
+snippet Iplt
+import matplotlib as mpl
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+endsnippet
+
+snippet inx
+import networkx as nx
 endsnippet
 
 snippet ipath
@@ -75,11 +91,18 @@ from datetime import datetime as dt, timedelta as td
 endsnippet
 
 snippet plts
-plt.savefig("/mnt/c/Users/jmend/Desktop/img.png")
+plt.savefig(f'/mnt/c/Users/jmend/Desktop/{__import__("datetime").datetime.now().isoformat()[:19]}.png')
 endsnippet
 
 snippet now "" i
-`!p if not snip.c: snip.rv = "'{}'".format(__import__('datetime').datetime.now().isoformat()[:16])`
+`!p if not snip.c: snip.rv = "'{}'".format(__import__('datetime').datetime.now().isoformat()[:19])`
+endsnippet
+
+snippet tw "" i
+__import__('textwrap').wrap(
+    ${1:text},
+    initial_indent='$2',
+    subsequent_indent='$3')$0
 endsnippet
 
 snippet f ""

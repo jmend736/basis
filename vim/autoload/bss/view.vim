@@ -1,3 +1,20 @@
+"
+" bss#view#View({args})
+"   Create a new unopened view
+"
+" bss#view#TermView()
+"   Create a new unopened view, oriented towards being :term output
+"
+" bss#view#ScratchView()
+"   Create a new unopened view, for scratch work
+"
+" bss#view#DataView({data}, with_methods = v:true)
+"   Create a new opened view, for scratch work
+"
+" {args}:
+"   Used to extend s:View
+"
+
 let s:View = {
       \   'bufnr': v:none,
       \   'winid': v:none,

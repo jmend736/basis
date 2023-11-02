@@ -62,3 +62,7 @@ function! bss#PB(data, with_methods = v:false) abort
   return bss#view#DataView(a:data, a:with_methods)
         \.GoToWindow()
 endfunction
+
+function! bss#PN(data) abort
+  call bss#nav#Navigate(a:data)
+endfunction

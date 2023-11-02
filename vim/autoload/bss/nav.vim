@@ -50,7 +50,7 @@ function! s:Ptr.Echo() abort dict
 endfunction
 
 
-function! s:FilterKeys(data, prefix = '') abort dict
+function! s:FilterKeys(data, prefix = '') abort
   if type(a:data) is v:t_dict
     return filter(keys(a:data), 'stridx(v:val, a:prefix) == 0')
   elseif type(a:data) is v:t_list
