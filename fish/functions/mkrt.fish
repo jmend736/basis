@@ -4,11 +4,11 @@ function mkrt --description 'Make a random temporary directory'
     if set -q _flag_py
         set -l dir (mktemp -d ~/pg-py/XXXX)
         pushd $dir
-        echo $dir >> ~/pg-py/entries
+        echo $dir >> ~/Playground/pg-py/entries
         return
     end
     if set -q _flag_cc
-        set -l dir (~/pg-cc/make-pg-cc.fish)
+        set -l dir (~/Playground/pg-cc/make-pg-cc.fish)
         pushd $dir
         return
     end
