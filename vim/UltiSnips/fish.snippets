@@ -7,3 +7,16 @@ complete -c (status current-function) \
     -n "not __fish_seen_subcommand_from $subcommands" \
     -xa "$subcommands"
 endsnippet
+
+snippet autocomp
+switch $argv[1]
+;   case complete
+        set -l subcommands (
+            functions (status current-function) \
+            | string replace -rf '^\s+case ' ''
+        )
+        complete -c (status current-function) \
+            -n "not __fish_seen_subcommand_from $subcommands" \
+            -xa "$subcommands"
+end
+endsnippet
