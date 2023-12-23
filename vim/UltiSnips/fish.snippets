@@ -1,0 +1,9 @@
+snippet autoc
+set -l subcommands (
+    functions (status current-function) \
+    | string replace -rf '^\s+case ' ''
+)
+complete -c (status current-function) \
+    -n "not __fish_seen_subcommand_from $subcommands" \
+    -xa "$subcommands"
+endsnippet

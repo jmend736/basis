@@ -300,6 +300,7 @@ let g:jm_vimrc.cc_import_cache = {
       \     'reverse', 'reverse_copy', 'rotate',
       \     'rotate_copy',
       \     'shuffle',
+      \     'max', 'min', 'max_element', 'min_element', 'minmax',
       \   ],
       \   '"absl/algorithm/container.h"': [
       \
@@ -359,6 +360,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-repeat'
 Plug 'triglav/vim-visual-increment'
 Plug 'tmhedberg/SimpylFold'
+"Plug 'liuchengxu/vista.vim'
 Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
 Plug 'nelstrom/vim-markdown-folding'
@@ -372,7 +374,8 @@ Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
 Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
-Plug 'vim-scripts/DrawIt'        " \di [arrows] \da
+Plug 'shiracamus/vim-syntax-x86-objdump-d'
+Plug 'romainl/vim-devdocs'
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
 "" Temporary Plugins:
@@ -382,6 +385,7 @@ Plug 'jmend736/basis', { 'rtp': 'vim' }
 Plug 'bazelbuild/vim-ft-bzl'
 
 "" Old Plugins:
+" Plug 'vim-scripts/DrawIt'
 " Plug 'cohama/lexima.vim'
 " Plug 'mattn/emmet-vim'
 " Plug 'sheerun/vim-polyglot'
@@ -444,7 +448,7 @@ set listchars=tab:\>\ ,trail:·
 set number           " Show line number at cursor,
 set numberwidth=4    " with a column width of 3,
 set relativenumber   " and numbers relative to cursor elsewhere
-set ruler            " Show line/col number (hidden by lightline)
+set noruler          " Show line/col number (hidden by lightline)
 set showcmd          " Show currently entered command below status
                      " Define status line (hidden by lightline)
 set statusline=%f\ %=L:%l/%L\ %c\ (%p%%)
@@ -670,7 +674,7 @@ command! -bar ReplaceRTarget
 
 let g:jm_vimrc.docs.commands['StopAllJobs'] =
       \ 'Stop all running jobs'
-command! StopAllJobs eval job_info()->map('job_stop(v:val)')
+command! -bar StopAllJobs eval job_info()->map('job_stop(v:val)')
 
 let g:jm_vimrc.docs.commands['SetupClasspath'] =
       \ 'Set classpath to jm_vimrc.deps.ClasspathJarList()'
@@ -713,6 +717,11 @@ let g:jm_vimrc.docs.commands['SetupMatchNum'] =
       \ 'Match decimal numbers'
 command! -bar SetupMatchNum
       \ match GruvboxAqua /\<\(0x\)\?0*\zs[1-9a-f]\x*\>/
+
+let g:jm_vimrc.docs.commands['Dis'] =
+      \ 'Setup terminal for viewing objdump output ($ objdump -d ... | vim +Dis -)'
+command! -bar Dis
+      \ setlocal ft=dis buftype=nofile
 
 let g:jm_vimrc.docs.commands['ToggleFoldOpenSearch'] =
       \ 'Toggle search on foldopen option'
@@ -822,12 +831,20 @@ augroup END
 
 augroup ft_python
     autocmd!
+    autocmd FileType python command! RunPython
+          \ execute "Term python" expand('%')
+    autocmd FileType python command! RunPythonTests
+          \ execute "Term python -m pytest" expand('%')
+    autocmd FileType python command! RunPythonTypechecks
+          \ execute "Term python -m mypy --ignore-missing-imports --follow-imports=skip " expand("%")
+    autocmd FileType python command! RunPythonMPL
+          \ StopAllJobs | eval timer_start(0, {-> execute('RunPython')})
     autocmd FileType python nnoremap <buffer> <localleader>r
-          \ :execute "Term python " .. expand('%')<cr>
+          \ :RunPython<cr>
     autocmd FileType python nnoremap <buffer> <localleader>R
-          \ :execute "Term python -m pytest " .. expand('%')<cr>
+          \ :RunPythonTests<cr>
     autocmd FileType python nnoremap <buffer> <localleader>t
-          \ :execute "Term python -m mypy --ignore-missing-imports --follow-imports=skip " .. expand("%")<cr>
+          \ :RunPythonTypechecks<cr>
     autocmd FileType python nnoremap <buffer> <space>f
           \ :FormatCode<CR>
 augroup END
@@ -898,6 +915,7 @@ augroup ft_vim
     autocmd FileType vim setlocal foldmethod=marker shiftwidth=2
     autocmd FileType vim nnoremap <buffer> <localleader>r
           \ :source %<cr>
+    autocmd FileType vim nnoremap K :help <C-r><C-w><CR>
 augroup END
 
 augroup ft_fish
@@ -1241,6 +1259,21 @@ function! s:SyntaxItem()
 endfunction
 " }}}
 
+" AsyncExec(fn)
+"   Call fn() async
+"
+" AsyncExec(...)
+"   Join string arguments and exec async
+" {{{
+function! s:Async(Fn)
+  eval timer_start(0, a:Fn)
+endfunction
+
+function! s:AsyncExec(...)
+  eval s:Async({-> execute(join(map(a:000, function('string'))))})
+endfunction
+" }}}
+
 " }}} Misc
 
 " Notes {{{
@@ -1268,6 +1301,7 @@ let s:Wtf.c = s:Wtf.commands
 
 let s:Wtf.misc =<< END
 Misc:
+  :center     ~ Center visual selection!
   :redraw     ~ Useful for :echo-ish commands
   :exec|:echo ~ Both join args with spaces
   [i          ~ Display first line with <cword> (incl 'path')
