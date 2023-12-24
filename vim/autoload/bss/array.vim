@@ -1,16 +1,26 @@
-" Top-level API
+" N-Dimensional Array API
 " ======================================================================
+"
+" Makes the tradeoff where it has a lot of convenience functions on the array
+" objects themselves, but this means that with every operation, all of these
+" are copied.
+"
+" I might consider taking this in a different direction, for example:
+"
+" 1.  Making the array objects mutable and all operations mutations
+" 2.  Making the mathematical operations options, with an `WithOps()` method
+"     which imbues the array object with the mathematical operations.
 "
 " Classes:
 " ----------------------------------------------------------------------
 "
 "   bss#array#Array({data})
-"   : Defines an array with an n-dimensional list as input {data}
+"   :   Defines an array with an n-dimensional list as input {data}
 "
 " Fields:
 "
 "   data  : An n-dimensional list-of-lists.
-"   shape : Defines stuff
+"   shape : Shape of the list of lists.
 
 let s:Array = {
       \   'shape':   v:t_list,
@@ -25,19 +35,19 @@ function! bss#array#Array(data) abort
 endfunction
 
 function! bss#array#Eye(n) abort
-  return bss#array#Map([a:n, a:n], {i, j -> (i == j) ? 1 : 0})
+  return bss#array#MapIndexed([a:n, a:n], {i, j -> (i == j) ? 1 : 0})
 endfunction
 
 function! bss#array#Zeroes(n) abort
-  return bss#array#Map([a:n, a:n], { -> 0 })
+  return bss#array#MapIndexed([a:n, a:n], { -> 0 })
 endfunction
 
 function! bss#array#Ones(n) abort
-  return bss#array#Map([a:n, a:n], { -> 1 })
+  return bss#array#MapIndexed([a:n, a:n], { -> 1 })
 endfunction
 
-function! bss#array#Map(dims, Fn = { -> 0}) abort
-  return bss#array#Array(s:NDimMap(a:dims, a:Fn))
+function! bss#array#MapIndexed(dims, Fn = { -> 0}) abort
+  return bss#array#Array(s:NDimMapIndexed(a:dims, a:Fn))
 endfunction
 
 function! s:Array.At(...) abort dict
@@ -51,28 +61,105 @@ function! s:Array.At(...) abort dict
   return l:ptr
 endfunction
 
+function! s:Array.MapIndexed(Fn) abort dict
+  return bss#array#MapIndexed(self.shape, a:Fn)
+endfunction
+
+function! s:Array.Map(Fn) abort dict
+  let l:Fn = function(a:Fn)
+  return bss#array#MapIndexed(self.shape, { -> l:Fn(self.At(a:000)) })
+endfunction
+
 function! s:Array.Plus(obj) abort dict
-  if s:IsArray(a:obj)
-    if (a:obj.shape != self.shape)
-      throw 'ERROR(BadValue): Attempted to add shape ' .. self.shape .. ' with shape ' .. obj.shape
-    endif
-    return bss#array#Map(self.shape, { ... -> self.At(a:000) + a:obj.At(a:000) })
-  elseif type(a:obj) is v:t_number
-    return bss#array#Map(self.shape, { ... -> self.At(a:000) + a:obj })
-  endif
-  throw 'ERROR(BadValue): Invalid type of argument: ' .. a:obj
+  return s:Broadcast({a, b -> a + b}, self, a:obj)
 endfunction
 
 function! s:Array.Times(obj) abort dict
-  if s:IsArray(a:obj)
-    if (a:obj.shape != self.shape)
-      throw 'ERROR(BadValue): Attempted to add shape ' .. self.shape .. ' with shape ' .. obj.shape
-    endif
-    return bss#array#Map(self.shape, { ... -> self.At(a:000) * a:obj.At(a:000) })
-  elseif type(a:obj) is v:t_number
-    return bss#array#Map(self.shape, { ... -> self.At(a:000) * a:obj })
-  endif
-  throw 'ERROR(BadValue): Invalid type of argument: ' .. a:obj
+  return s:Broadcast({a, b -> a * b}, self, a:obj)
+endfunction
+
+function! s:Array.Abs() abort dict
+  return self.Map(function('abs'))
+endfunction
+
+function! s:Array.Round() abort dict
+  return self.Map(function('round'))
+endfunction
+
+function! s:Array.Ceil() abort dict
+  return self.Map(function('ceil'))
+endfunction
+
+function! s:Array.Floor() abort dict
+  return self.Map(function('floor'))
+endfunction
+
+function! s:Array.Trunc() abort dict
+  return self.Map(function('trunc'))
+endfunction
+
+function! s:Array.Exp() abort dict
+  return self.Map(function('exp'))
+endfunction
+
+function! s:Array.Log() abort dict
+  return self.Map(function('log'))
+endfunction
+
+function! s:Array.Log10() abort dict
+  return self.Map(function('log10'))
+endfunction
+
+function! s:Array.Pow(e) abort dict
+  return self.Map({b -> pow(b, a:e)})
+endfunction
+
+function! s:Array.Sqrt() abort dict
+  return self.Map(function('sqrt'))
+endfunction
+
+function! s:Array.Sin() abort dict
+  return self.Map(function('sin'))
+endfunction
+
+function! s:Array.Cos() abort dict
+  return self.Map(function('cos'))
+endfunction
+
+function! s:Array.Tan() abort dict
+  return self.Map(function('tan'))
+endfunction
+
+function! s:Array.Asin() abort dict
+  return self.Map(function('asin'))
+endfunction
+
+function! s:Array.Acos() abort dict
+  return self.Map(function('acos'))
+endfunction
+
+function! s:Array.Atan() abort dict
+  return self.Map(function('atan'))
+endfunction
+
+function! s:Array.Sinh() abort dict
+  return self.Map(function('sinh'))
+endfunction
+
+function! s:Array.Cosh() abort dict
+  return self.Map(function('cosh'))
+endfunction
+
+function! s:Array.Tanh() abort dict
+  return self.Map(function('tanh'))
+endfunction
+
+function! s:Array.Isinf() abort dict
+  return self.Map(function('isinf'))
+endfunction
+
+function! s:Array.Isnan() abort dict
+  return self.Map(function('isnan'))
 endfunction
 
 " Helper Functions
@@ -89,6 +176,24 @@ function! s:ContainsAll(list, elems) abort
   endfor
   return l:contained
 endfunction
+
+""
+" Decorate binary function {Fn} to make it broadcastable:
+" - If two Array{}s of the same shape are passed, then operate element-wise
+" - If an array and a scalar ar passed, then apply across the array
+"
+function! s:Broadcast(Fn, A, B) abort
+  if s:IsArray(a:B)
+    if (a:B.shape != a:A.shape)
+      throw 'ERROR(BadValue): Attempted to operate on shape ' .. a:A.shape .. ' with shape ' .. a:B.shape
+    endif
+    return bss#array#Map(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B.At(a:000)) })
+  elseif type(a:B) is v:t_number
+    return bss#array#Map(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B) })
+  endif
+  throw 'ERROR(BadValue): Invalid type of argument: ' .. a:B
+endfunction
+
 
 ""
 " Calculates the shape of an n-dim list of lists.
@@ -132,19 +237,10 @@ function! s:CalculateShape_FirstElemShape(data) abort
   return [len(a:data)] + s:CalculateShape_FirstElemShape(a:data[0])
 endfunction
 
-function! s:NDimMap(dims, Fn, idx=[]) abort
+function! s:NDimMapIndexed(dims, Fn, idx=[]) abort
   if len(a:dims) == 0
     return call(a:Fn, a:idx)
   else
-    return map(range(a:dims[0]), 's:NDimMap(a:dims[1:], a:Fn, a:idx + [v:key])')
+    return map(range(a:dims[0]), 's:NDimMapIndexed(a:dims[1:], a:Fn, a:idx + [v:key])')
   endif
 endfunction
-
-" EXPERIMENTAL
-" ======================================================================
-
-let I = bss#array#Eye(3)
-echom I
-echom I.Plus(I)
-echom I.Times(2)
-echom I.Times(32)
