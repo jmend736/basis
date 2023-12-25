@@ -37,7 +37,7 @@ function save -w functions
         echo "Error: Argument must be a function name!"
         exit 1
     end
-    functions --no-details $argv[1] > '$functions'/$argv[1].fish
+    functions --no-details $argv[1] | tail +2 > '$functions'/$argv[1].fish
 end
 ' | psub)
 funcsave save
