@@ -31,6 +31,10 @@ DESCRIPTION
         --complete
     ```
 
+    NOTE: When using inline, passing the argument `--complete` to the
+    surrounding function will cause complete-generation to run, and then the
+    surrounding function to return.
+
 ARGSTRING
 
     The <argstring> can be one matching these:
