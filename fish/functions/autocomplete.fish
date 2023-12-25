@@ -1,3 +1,4 @@
+function autocomplete --description 'example of case-autocompletion'
     switch $argv[1]
         case subcommand1
             echo executed subcommand1
