@@ -10,23 +10,30 @@ SYNOPSIS
 
 DESCRIPTION
 
-    This function converts <argstring> (arguments with the format expected by
-    argparse) to arguments for the complete command. This allows you to write
-    something like this:
+    There are two usage pattersns for this function:
 
-      $ foo --help
-      h/help Print this help
-      a/all Another command
+    Inline:
+    ```
+    argparse (argparse_complete -c func \
+        "a/arg1 {help-text-1}" \
+        "b/arg2 {help-text-2}" \
+        "h/help {help-text-3}" \
+        -- $argv)
+    or return
+    ```
 
-      $ complete -c foo (complete_arg (foo --help))
-
-      $ complete -C 'foo '
-      -h --help -a --all
+    Separately:
+    ```
+    argparse_complete -c func \
+        "a/arg1 {help-text-1}" \
+        "b/arg2 {help-text-2}" \
+        "h/help {help-text-3}" \
+        --complete
+    ```
 
 ARGSTRING
 
-    The <argstring> is largely defined as allowing for the format 
- input is currently limited to one of the forms:
+    The <argstring> can be one matching these:
 
       b/
       b/both
@@ -37,8 +44,19 @@ ARGSTRING
       justlong=
       justlong=?
       justlong=+
+
+    An <argstring> can be followed by a space then a description. (Note that
+    the space and description must be part of the <argstring>)
 '
-    argparse h/help c/command= -- $argv
+
+    # argparse_complete Flag Handling
+    # ==================================================================
+    argparse --stop-nonopt h/help c/command= -- $argv
+
+    set -l complete
+    if string match -rq '(--complete)' $argv
+        set complete yes
+    end
 
     if not set -q _flag_command
         echo 'Missing -c/--command argument!'
@@ -50,32 +68,81 @@ ARGSTRING
         return
     end
 
+    # `argparse` DSL Patterns
+    # ==================================================================
+    set -l short__ '(?<short>[a-zA-Z])'
+    set -l div__   '(?<div>(?<no_short>-)|/)'
+    set -l long__  '(?<long>[a-zA-Z_-]+)'
+    set -l qual__  '(?<qual>=\?|=\+|=)'
+    set -l desc__  '(?:(?:\s*)(?<desc>.*$))'
+
+    # `complete` Argument Construction
+    # ==================================================================
+    set -l tail
     for fmt in $argv
+
+        # complete Argument Construction
+        # ==============================================================
+
+        if test -n "$tail"
+            echo $fmt
+            continue
+        else if test "$fmt" = "--"
+             and not test -n "$complete"
+            set tail yes
+            echo -s - -
+            continue
+        else if test "$fmt" = "--"
+            break
+        end
+
+        # complete Argument Construction
+        # ==============================================================
+
+        string match -rq "($short__$div__)?$long__$qual__?$desc__?" -- $fmt
+        or string match -rq "$short__$qual__?$desc__?" -- $fmt
+
         set -l args
-        if set -l match (string match -r '([a-zA-Z0-9])([/-])([a-zA-Z0-9_-]*)(=|=\?|=\+)?' $fmt)
-            # a/abc=
-            test $match[3] = / && set -a args '-s'$match[2]
-            set -a args '-l'$match[4]
-            switch $match[5]
-                case '=' '=\+'
-                    set -a args '-r'
-            end
-        else if set -l match (string match -r '([a-zA-Z0-9_-])(=|=\?|=\+)?' $fmt)
-            # a=
-            set -a args '-s'$match[2]
-            switch $match[3]
-                case '=' '=\+'
-                    set -a args '-r'
-            end
-        else if set -l match (string match -r '([a-zA-Z0-9_-]+)(=|=\?|=\+)?' $fmt)
-            # abc=
-            set -a args '-l'$match[2]
-            switch $match[3]
-                case '=' '=\+'
-                    set -a args '-r'
+
+        if test -n "$short"
+           and not test -n "$no_short"
+            set -a args "--short-option" $short
+        end
+
+        if test -n "$long"
+            set -a args "--long-option" $long
+        end
+
+        if test "$qual" = "="
+           or test "$qual" = "=+"
+            set -a args "--require-parameter"
+        end
+
+        if test -n "$desc"
+            set -a args "--description" $desc
+        end
+
+        # Format Argument Handling
+        # ==============================================================
+        if test -n "$complete"
+            # Define Completions
+            # ----------------------------------------------------------
+            complete -c $_flag_command $args
+            echo -s - -
+        else
+            # Forward Argument
+            # ----------------------------------------------------------
+            if test -n "$short"
+                echo "$short$div$long$qual"
+            else
+                echo "$long$qual"
             end
         end
-        complete -c $_flag_command $args
+
     end
-    return
+    if test -n "$complete"
+        return 1
+    else
+        return
+    end
 end
