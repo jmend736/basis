@@ -124,8 +124,6 @@ ARGSTRING
             set -a args (eval "string collect -- $addl")
         end
 
-        set -S args >&2
-
         # Format Argument Handling
         # ==============================================================
         if test -n "$complete"
