@@ -13,16 +13,14 @@ DESCRIPTION
     There are two usage pattersns for this function:
 
     Inline:
-        ```
-        argparse (argparse_complete -c func \
-            "a/arg1 {help-text-1}" \
-            "b/arg2 {help-text-2}" \
-            "h/help {help-text-3}" \
-            -- $argv)
-        or return
-        ```
-    Then calling `$ func --complete` to define completions.
-
+    ```
+    argparse (argparse_complete -c func \
+        "a/arg1 {help-text-1}" \
+        "b/arg2 {help-text-2}" \
+        "h/help {help-text-3}" \
+        -- $argv)
+    or return
+    ```
 
     Separately:
     ```
@@ -47,8 +45,10 @@ ARGSTRING
       justlong=?
       justlong=+
 
-    An <argstring> can be followed by a space then a description. (Note that
-    the space and description must be part of the <argstring>)
+    After the argparse format specifier, the <argstring> can contain addition
+    arguments that are passed directly to the complete command. For example:
+
+    b/both -d"help text goes here"
 '
 
     # argparse_complete Flag Handling
@@ -76,7 +76,7 @@ ARGSTRING
     set -l div__   '(?<div>(?<no_short>-)|/)'
     set -l long__  '(?<long>[a-zA-Z_-]+)'
     set -l qual__  '(?<qual>=\?|=\+|=)'
-    set -l desc__  '(?:(?:\s*)(?<desc>.*$))'
+    set -l addl__  '(?:(?:\s*)(?<addl>.*$))'
 
     # `complete` Argument Construction
     # ==================================================================
@@ -101,8 +101,8 @@ ARGSTRING
         # complete Argument Construction
         # ==============================================================
 
-        string match -rq "($short__$div__)?$long__$qual__?$desc__?" -- $fmt
-        or string match -rq "$short__$qual__?$desc__?" -- $fmt
+        string match -rq "($short__$div__)?$long__$qual__?$addl__?" -- $fmt
+        or string match -rq "$short__$qual__?$addl__?" -- $fmt
 
         set -l args
 
@@ -120,8 +120,8 @@ ARGSTRING
             set -a args "--require-parameter"
         end
 
-        if test -n "$desc"
-            set -a args "--description" $desc
+        if test -n "$addl"
+            set -a args $addl
         end
 
         # Format Argument Handling
