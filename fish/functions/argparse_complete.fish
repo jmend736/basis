@@ -13,14 +13,16 @@ DESCRIPTION
     There are two usage pattersns for this function:
 
     Inline:
-    ```
-    argparse (argparse_complete -c func \
-        "a/arg1 {help-text-1}" \
-        "b/arg2 {help-text-2}" \
-        "h/help {help-text-3}" \
-        -- $argv)
-    or return
-    ```
+        ```
+        argparse (argparse_complete -c func \
+            "a/arg1 {help-text-1}" \
+            "b/arg2 {help-text-2}" \
+            "h/help {help-text-3}" \
+            -- $argv)
+        or return
+        ```
+    Then calling `$ func --complete` to define completions.
+
 
     Separately:
     ```
