@@ -27,8 +27,8 @@ let s:Array = {
       \   'data':    v:t_list,
       \ }
 
-function! bss#array#Array(data) abort
-  return copy(s:Array)->extend({
+function! bss#array#Array(data, base=s:Array) abort
+  return copy(a:base)->extend({
         \   'shape': s:CalculateShape(a:data),
         \   'data': a:data
         \ })
@@ -46,119 +46,152 @@ function! bss#array#Ones(n) abort
   return bss#array#MapIndexed([a:n, a:n], { -> 1 })
 endfunction
 
-function! bss#array#MapIndexed(dims, Fn = { -> 0}) abort
-  return bss#array#Array(s:NDimMapIndexed(a:dims, a:Fn))
+function! bss#array#Range(n) abort
+  return bss#array#Array(range(a:n))
+endfunction
+
+function! bss#array#Range2D(n) abort
+  return bss#array#MapIndexed([a:n, a:n], {i, j -> a:n*i + j })
+endfunction
+
+function! bss#array#MapIndexed(dims, Fn = { -> 0}, base=s:Array) abort
+  return bss#array#Array(s:NDimMapIndexed(a:dims, a:Fn), a:base)
 endfunction
 
 function! s:Array.At(...) abort dict
-  if type(a:1) isnot v:t_list
-    return self.At(a:000)
+  if a:0 == 0
+    return self
+  elseif type(a:1) isnot v:t_list
+    return s:ArrayAtImpl(self.data, a:000)
+  else
+    return s:ArrayAtImpl(self.data, a:1)
   endif
-  let l:ptr = self.data
-  for l:idx in a:1
-    let l:ptr = l:ptr[l:idx]
-  endfor
-  return l:ptr
+endfunction
+
+function! s:Array.MapAt(Fn, ...) abort dict
+  return bss#array#Array(map(self.At(a:000), {k, v -> a:Fn(v)}), self)
 endfunction
 
 function! s:Array.MapIndexed(Fn) abort dict
-  return bss#array#MapIndexed(self.shape, a:Fn)
+  return bss#array#Array(s:NDimMapIndexed(self.shape, a:Fn), self)
 endfunction
 
 function! s:Array.Map(Fn) abort dict
-  let l:Fn = function(a:Fn)
-  return bss#array#MapIndexed(self.shape, { -> l:Fn(self.At(a:000)) })
+  return self.MapIndexed({ ... -> a:Fn(self.At(a:000)) })
 endfunction
 
-function! s:Array.Plus(obj) abort dict
+function! s:Array.T() abort dict
+  let l:SwapDims = {l -> l[-1:] + l[1:-2] + l[:0]}
+  return bss#array#MapIndexed(
+        \ l:SwapDims(self.shape),
+        \ {... -> self.At(l:SwapDims(a:000))},
+        \ self)
+endfunction
+
+function! s:Array.WithOps() abort dict
+  return extend(self, s:ArrayOps)
+endfunction
+
+function! s:Array.ToString(dump = v:false) abort dict
+  let l:str =  s:ArrayToStringImpl(self)
+  if !a:dump
+    return l:str
+  else
+    eval bss#PL(l:str)
+  endif
+endfunction
+
+let s:ArrayOps = {}
+
+function! s:ArrayOps.Plus(obj) abort dict
   return s:Broadcast({a, b -> a + b}, self, a:obj)
 endfunction
 
-function! s:Array.Times(obj) abort dict
+function! s:ArrayOps.Times(obj) abort dict
   return s:Broadcast({a, b -> a * b}, self, a:obj)
 endfunction
 
-function! s:Array.Abs() abort dict
+function! s:ArrayOps.Abs() abort dict
   return self.Map(function('abs'))
 endfunction
 
-function! s:Array.Round() abort dict
+function! s:ArrayOps.Round() abort dict
   return self.Map(function('round'))
 endfunction
 
-function! s:Array.Ceil() abort dict
+function! s:ArrayOps.Ceil() abort dict
   return self.Map(function('ceil'))
 endfunction
 
-function! s:Array.Floor() abort dict
+function! s:ArrayOps.Floor() abort dict
   return self.Map(function('floor'))
 endfunction
 
-function! s:Array.Trunc() abort dict
+function! s:ArrayOps.Trunc() abort dict
   return self.Map(function('trunc'))
 endfunction
 
-function! s:Array.Exp() abort dict
+function! s:ArrayOps.Exp() abort dict
   return self.Map(function('exp'))
 endfunction
 
-function! s:Array.Log() abort dict
+function! s:ArrayOps.Log() abort dict
   return self.Map(function('log'))
 endfunction
 
-function! s:Array.Log10() abort dict
+function! s:ArrayOps.Log10() abort dict
   return self.Map(function('log10'))
 endfunction
 
-function! s:Array.Pow(e) abort dict
+function! s:ArrayOps.Pow(e) abort dict
   return self.Map({b -> pow(b, a:e)})
 endfunction
 
-function! s:Array.Sqrt() abort dict
+function! s:ArrayOps.Sqrt() abort dict
   return self.Map(function('sqrt'))
 endfunction
 
-function! s:Array.Sin() abort dict
+function! s:ArrayOps.Sin() abort dict
   return self.Map(function('sin'))
 endfunction
 
-function! s:Array.Cos() abort dict
+function! s:ArrayOps.Cos() abort dict
   return self.Map(function('cos'))
 endfunction
 
-function! s:Array.Tan() abort dict
+function! s:ArrayOps.Tan() abort dict
   return self.Map(function('tan'))
 endfunction
 
-function! s:Array.Asin() abort dict
+function! s:ArrayOps.Asin() abort dict
   return self.Map(function('asin'))
 endfunction
 
-function! s:Array.Acos() abort dict
+function! s:ArrayOps.Acos() abort dict
   return self.Map(function('acos'))
 endfunction
 
-function! s:Array.Atan() abort dict
+function! s:ArrayOps.Atan() abort dict
   return self.Map(function('atan'))
 endfunction
 
-function! s:Array.Sinh() abort dict
+function! s:ArrayOps.Sinh() abort dict
   return self.Map(function('sinh'))
 endfunction
 
-function! s:Array.Cosh() abort dict
+function! s:ArrayOps.Cosh() abort dict
   return self.Map(function('cosh'))
 endfunction
 
-function! s:Array.Tanh() abort dict
+function! s:ArrayOps.Tanh() abort dict
   return self.Map(function('tanh'))
 endfunction
 
-function! s:Array.Isinf() abort dict
+function! s:ArrayOps.Isinf() abort dict
   return self.Map(function('isinf'))
 endfunction
 
-function! s:Array.Isnan() abort dict
+function! s:ArrayOps.Isnan() abort dict
   return self.Map(function('isnan'))
 endfunction
 
@@ -187,9 +220,9 @@ function! s:Broadcast(Fn, A, B) abort
     if (a:B.shape != a:A.shape)
       throw 'ERROR(BadValue): Attempted to operate on shape ' .. a:A.shape .. ' with shape ' .. a:B.shape
     endif
-    return bss#array#Map(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B.At(a:000)) })
+    return bss#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B.At(a:000)) }, a:A)
   elseif type(a:B) is v:t_number
-    return bss#array#Map(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B) })
+    return bss#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.At(a:000), a:B) }, a:A)
   endif
   throw 'ERROR(BadValue): Invalid type of argument: ' .. a:B
 endfunction
@@ -242,5 +275,38 @@ function! s:NDimMapIndexed(dims, Fn, idx=[]) abort
     return call(a:Fn, a:idx)
   else
     return map(range(a:dims[0]), 's:NDimMapIndexed(a:dims[1:], a:Fn, a:idx + [v:key])')
+  endif
+endfunction
+
+function! s:ArrayAtImpl(data, index) abort
+  let l:ptr = a:data
+  for l:i in range(len(a:index))
+    let l:idx = a:index[l:i]
+    if type(l:idx) is v:t_number
+      let l:ptr = l:ptr[l:idx]
+    elseif l:idx =~# '\v(all|All)'
+      return map(l:ptr, {k, v -> s:ArrayAtImpl(v, a:index[l:i+1:])})
+    else
+      throw 'ERROR(BadValue): Invalid index: ' .. string(l:idx)
+    endif
+  endfor
+  return l:ptr
+endfunction
+
+function! s:ArrayToStringImpl(A) abort
+  if len(a:A.shape) == 1
+    return string(a:A.data)
+  elseif len(a:A.shape) == 2
+
+    let l:widths = a:A.T()
+          \.MapAt({v -> max(map(v, 'len(string(v:val))'))}, 'All')
+          \.WithOps().Plus(1)
+    return a:A.MapIndexed({i, j -> printf('%'..l:widths.At(j)..'s', a:A.At([i, j]))})
+          \.MapAt({v -> '['..join(v, ',')..']'}, 'All')
+          \.data
+          \->bss#Apply({v -> '['..join(v, ",\n ")..']'})
+
+  else
+    throw 'ERROR(BadValue): Invalid Dimensions (too many?) ' .. string(a:A.shape)
   endif
 endfunction

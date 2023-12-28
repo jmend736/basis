@@ -38,6 +38,10 @@ function! bss#SetDefault(data, index, Default = { -> v:none }) abort
   return bss#Get(a:data, a:index)
 endfunction
 
+function! bss#Apply(v, Fn) abort
+  return a:Fn(a:v)
+endfunction
+
 function! bss#P(fmt, ...) abort
   let l:msg = (type(a:fmt) is v:t_string)
         \ ? call('printf', [a:fmt] + a:000)
@@ -50,6 +54,12 @@ function! bss#E(fmt, ...) abort
         \ ? call('printf', [a:fmt] + a:000)
         \ : printf("%s", a:fmt)
   echoerr l:msg
+endfunction
+
+function! bss#PL(mutline_str) abort
+  for l:line in split(a:mutline_str, "\n")
+    echom l:line
+  endfor
 endfunction
 
 function! bss#PP(data, with_methods = v:false) abort
@@ -65,4 +75,36 @@ endfunction
 
 function! bss#PN(data) abort
   call bss#nav#Navigate(a:data)
+endfunction
+
+function! bss#PA(array, with_methods = v:false) abort
+  eval a:array.ToString(v:true)
+endfunction
+
+function! bss#Array(data) abort
+  return bss#array#Array(a:data)
+endfunction
+
+function! bss#Eye(n) abort
+  return bss#array#Eye(a:n)
+endfunction
+
+function! bss#Ones(n) abort
+  return bss#array#Ones(a:n)
+endfunction
+
+function! bss#Zeroes(n) abort
+  return bss#array#Zeroes(a:n)
+endfunction
+
+function! bss#ArrayMap(Fn) abort
+  return bss#array#Map(a:Fn)
+endfunction
+
+function! bss#ArrayMap(dims, Fn) abort
+  return bss#array#MapIndexed(a:dims, a:Fn)
+endfunction
+
+function! bss#M(n, Fn) abort
+  return bss#array#MapIndexed([a:n, a:n], a:Fn)
 endfunction
