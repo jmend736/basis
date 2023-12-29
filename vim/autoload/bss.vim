@@ -1,3 +1,5 @@
+" Entrypoints to Features
+" ======================================================================
 function! bss#ParseClassFile(fname) abort
   return bss#java#classfile#Parse(a:fname)
 endfunction
@@ -22,6 +24,8 @@ function! bss#ClassFiles(files) abort
   return bss#java#classfiles#Open(a:files)
 endfunction
 
+" Generic Getters/Setters
+" ======================================================================
 function! bss#Get(data, index, default = v:none) abort
   if a:data is v:none
     return v:none
@@ -38,10 +42,8 @@ function! bss#SetDefault(data, index, Default = { -> v:none }) abort
   return bss#Get(a:data, a:index)
 endfunction
 
-function! bss#Apply(v, Fn) abort
-  return a:Fn(a:v)
-endfunction
-
+" Printing Functions
+" ======================================================================
 function! bss#P(fmt, ...) abort
   let l:msg = (type(a:fmt) is v:t_string)
         \ ? call('printf', [a:fmt] + a:000)
@@ -81,6 +83,8 @@ function! bss#PA(array, with_methods = v:false) abort
   eval a:array.ToString(v:true)
 endfunction
 
+" Array Functions
+" ======================================================================
 function! bss#Array(data) abort
   return bss#array#Array(a:data)
 endfunction
@@ -107,4 +111,13 @@ endfunction
 
 function! bss#M(n, Fn) abort
   return bss#array#MapIndexed([a:n, a:n], a:Fn)
+endfunction
+
+" Functional Programming Helpers
+" ======================================================================
+
+""
+" Useful function for using raw-lambdas when chaining
+function! bss#Then(v, Fn) abort
+  return call(a:Fn, [a:v])
 endfunction
