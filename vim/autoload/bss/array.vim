@@ -1,15 +1,10 @@
 " N-Dimensional Array API
 " ======================================================================
 "
-" Makes the tradeoff where it has a lot of convenience functions on the array
-" objects themselves, but this means that with every operation, all of these
-" are copied.
+" This is not practical to use for anything, I've chosen to use less code
+" rather than more performant code.
 "
-" I might consider taking this in a different direction, for example:
-"
-" 1.  Making the array objects mutable and all operations mutations
-" 2.  Making the mathematical operations options, with an `WithOps()` method
-"     which imbues the array object with the mathematical operations.
+" Mostly, I wanted to implement the tabular printing of a matrix.
 "
 " Classes:
 " ----------------------------------------------------------------------
@@ -35,7 +30,7 @@ function! bss#array#Array(data, base=v:none) abort
 endfunction
 
 function! bss#array#Eye(n) abort
-  return bss#array#MapIndexed([a:n, a:n], {i, j -> (i == j) ? 1 : 0})
+  return bss#array#MapIndexed([a:n, a:n], {i, j -> (i == j)})
 endfunction
 
 function! bss#array#Zeroes(n) abort
