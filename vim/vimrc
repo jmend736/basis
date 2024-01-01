@@ -1,4 +1,4 @@
-" Copyright (c) 2023 Julian Mendoza
+" Copyright (c) 2024 Julian Mendoza
 "
 " MIT License
 "
@@ -519,6 +519,7 @@ let g:slime_target = "tmux"
 
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_folding_disabled = 1
+let g:markdown_fold_style = 'nested'
 
 let g:NERDCompactSexyComs = v:true
 let g:NERDCommentEmptyLines = v:true
@@ -563,6 +564,14 @@ noremap <C-j> <C-W>j
 noremap <C-k> <C-W>k
 noremap <C-h> <C-W>h
 noremap <C-l> <C-W>l
+
+let g:jm_vimrc.docs.mappings['[['] =
+      \ 'Enable [[,][,]],[] to operate on non-col-1-{}'
+" From :h object-motions
+nnoremap [[ ?{<CR>w99[{
+nnoremap ][ /}<CR>b99]}
+nnoremap ]] j0[[%/{<CR>
+nnoremap [] k$][%?}<CR>
 
 let g:jm_vimrc.docs.mappings['\q'] =
       \ 'Delete current buffer without changing window layout'
@@ -1271,6 +1280,26 @@ endfunction
 
 function! s:AsyncExec(...)
   eval s:Async({-> execute(join(map(a:000, function('string'))))})
+endfunction
+" }}}
+
+" AsyncExec(...)
+"   Join string arguments and exec async
+" {{{
+let g:jm_vimrc.docs.commands['ConcealK'] =
+      \ 'Define conceal rules: eg. ConcealK lambda:λ'
+command! -complete=expression -nargs=1 ConcealK call <SID>ConcealK(<q-args>)
+function! s:ConcealK(repl_str) abort
+  let l:repl = {}
+  let l:i = 0
+  for [l:keyword, l:replacement] in split(a:repl_str, ' ')->map('v:val->split(":")')
+    let l:i += 1
+    execute 'syntax keyword'
+          \ printf('ConcealK%03d', l:i) l:keyword
+          \ 'conceal' printf('cchar=%s', l:replacement)
+  endfor
+  setlocal conceallevel=1
+  setlocal concealcursor=ni
 endfunction
 " }}}
 

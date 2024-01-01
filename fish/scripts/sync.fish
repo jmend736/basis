@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Julian Mendoza
+# Copyright (c) 2024 Julian Mendoza
 #
 # MIT License
 #
