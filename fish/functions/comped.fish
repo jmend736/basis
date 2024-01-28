@@ -1,4 +1,6 @@
 function comped --wraps=functions --argument fname
-    vim "~/.config/fish/completions/$fname.fish"
-    complete -c $fname -e
+    if test -z "$fname"
+        return 1
+    end
+    vim ~/.config/fish/completions/$fname.fish
 end
