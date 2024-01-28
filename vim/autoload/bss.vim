@@ -117,7 +117,45 @@ endfunction
 " ======================================================================
 
 ""
+" Non-modifying Map
+function! bss#NMap(list, Func) abort
+  return copy(a:list)->map(a:Func)
+endfunction
+
+""
 " Useful function for using raw-lambdas when chaining
 function! bss#Then(v, Fn) abort
   return call(a:Fn, [a:v])
+endfunction
+
+"
+" Func(accumulator, delta)
+function! bss#Reduce(list, init, Func) abort
+  let l:value = a:init
+  for l:val in a:list
+    let l:value = a:Func(l:value, l:val)
+  endfor
+  return l:value
+endfunction
+
+" Math helpers
+" ======================================================================
+
+function! bss#Sum(list) abort
+  return bss#Reduce(a:list, 0, {a, b -> a + b})
+endfunction
+
+function! bss#Transpose(A) abort
+  if len(a:A) == 0
+    return []
+  elseif type(a:A[0]) != v:t_list
+    return range(len(a:A))->map({i -> [a:A[i]]})
+  endif
+  return range(len(a:A[0]))->map(
+        \   {i -> range(len(a:A))->map(
+        \       {j -> a:A[j][i]})})
+endfunction
+
+function! bss#T(A) abort
+  return bss#Transpose(a:A)
 endfunction

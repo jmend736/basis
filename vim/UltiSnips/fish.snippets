@@ -1,22 +1,40 @@
-snippet autoc
-set -l subcommands (
-    functions (status current-function) \
-    | string replace -rf '^\s+case ' ''
-)
-complete -c (status current-function) \
-    -n "not __fish_seen_subcommand_from $subcommands" \
-    -xa "$subcommands"
+snippet fn
+function ${1:name}
+    $2
+end$0
 endsnippet
 
-snippet autocomp
-switch $argv[1]
-;   case complete
-        set -l subcommands (
-            functions (status current-function) \
-            | string replace -rf '^\s+case ' ''
-        )
-        complete -c (status current-function) \
-            -n "not __fish_seen_subcommand_from $subcommands" \
-            -xa "$subcommands"
-end
+snippet fx
+function ${1:main} -a ${2:x}
+    $3
+end$0
+endsnippet
+
+snippet if
+if ${1:true}
+    $2
+end$0
+endsnippet
+
+snippet sw
+switch ${1:1}
+    case ${2:1}
+        $3
+end$0
+endsnippet
+
+snippet elif
+elif ${1:true}$0
+endsnippet
+
+
+snippet ac
+    switch $argv[1]
+        case _complete
+            set -l code (functions (status current-function) | string collect)
+            string match -r -a -q '\s*case (?<subcommands>[^_](\w|\.)+)' -- $code
+            complete -c (status current-function) \
+                -n "not __fish_seen_subcommand_from $subcommands" \
+                -xa "$subcommands"
+    end
 endsnippet
