@@ -2,6 +2,11 @@ Cursor.Restore()	basis.txt	/*Cursor.Restore()*
 Cursor.Restore()	basis.txt	/*Cursor.Restore()*
 Cursor{}	basis.txt	/*Cursor{}*
 Location{}	basis.txt	/*Location{}*
+Pat.Handler	basis.txt	/*Pat.Handler*
+Pat.match	basis.txt	/*Pat.match*
+Pat.pattern	basis.txt	/*Pat.pattern*
+Pats.match	basis.txt	/*Pats.match*
+Pat{}	basis.txt	/*Pat{}*
 View.Append()	basis.txt	/*View.Append()*
 View.Call()	basis.txt	/*View.Call()*
 View.Clear()	basis.txt	/*View.Clear()*
@@ -20,6 +25,7 @@ basis-cursor	basis.txt	/*basis-cursor*
 basis-desc	basis.txt	/*basis-desc*
 basis-location	basis.txt	/*basis-location*
 basis-misc	basis.txt	/*basis-misc*
+basis-pat	basis.txt	/*basis-pat*
 basis-reqs	basis.txt	/*basis-reqs*
 basis-type	basis.txt	/*basis-type*
 basis-typedef	basis.txt	/*basis-typedef*
@@ -29,6 +35,8 @@ basis.txt	basis.txt	/*basis.txt*
 bss	basis.txt	/*bss*
 bss#cursor#Save()	basis.txt	/*bss#cursor#Save()*
 bss#cursor#Save()	basis.txt	/*bss#cursor#Save()*
+bss#pat#Pat()	basis.txt	/*bss#pat#Pat()*
+bss#pat#Pats()	basis.txt	/*bss#pat#Pats()*
 bss#type#Type()	basis.txt	/*bss#type#Type()*
 bss#type#Typed()	basis.txt	/*bss#type#Typed()*
 bss#view#ScratchView()	basis.txt	/*bss#view#ScratchView()*

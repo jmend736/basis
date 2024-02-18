@@ -65,7 +65,11 @@ let g:jm_vimrc.deps = #{
       \   javap:  'javap',
       \   ag:     'ag',
       \   fish:   'fish',
+      \   python: 'python3',
       \ }
+
+let g:jm_vimrc.is_mac = system('uname -s') =~# 'Darwin'
+
 let g:jm_vimrc.deps.JavaClassnameList      = {-> []}
 let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "classpath list"')}
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
@@ -321,6 +325,10 @@ let g:jm_vimrc.cc_import_cache = {
       \     'c_rotate_copy',
       \     'c_shuffle',
       \   ],
+      \   '<iterator>': [
+      \     'istream_iterator',
+      \     'ostream_iterator',
+      \   ],
       \ }
 
 " }}} C++ Import Cache
@@ -328,13 +336,20 @@ let g:jm_vimrc.cc_import_cache = {
 " }}}
 
 " Playground: {{{
-for [key, path] in items(#{
-      \   a:  'Files ~/code/abseil-cpp/absl',
-      \   co: 'Files ~/code',
-      \   cv: 'Files ~/code/opencv/modules/core',
-      \   n:  'Files ~/jmendio/n',
-      \   v:  'edit ~/.vimrc',
-      \ })
+let s:pg_items = (g:jm_vimrc.is_mac)
+      \ ? #{
+      \     pg: 'Files ~/Playground',
+      \     n:  'Files ~/Playground/jmendio/n',
+      \     v:  'edit ~/.vimrc',
+      \   }
+      \ : #{
+      \     a:  'Files ~/code/abseil-cpp/absl',
+      \     co: 'Files ~/code',
+      \     cv: 'Files ~/code/opencv/modules/core',
+      \     n:  'Files ~/jmendio/n',
+      \     v:  'edit ~/.vimrc',
+      \   }
+for [key, path] in items(s:pg_items)
   execute printf('nnoremap <leader>e%s :%s<cr>', key, path)
   let g:jm_vimrc.docs.mappings['\e' .. key] = 'Run :' .. path
 endfor
@@ -360,7 +375,6 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-repeat'
 Plug 'triglav/vim-visual-increment'
 Plug 'tmhedberg/SimpylFold'
-"Plug 'liuchengxu/vista.vim'
 Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
 Plug 'nelstrom/vim-markdown-folding'
@@ -385,6 +399,7 @@ Plug 'jmend736/basis', { 'rtp': 'vim' }
 Plug 'bazelbuild/vim-ft-bzl'
 
 "" Old Plugins:
+"Plug 'liuchengxu/vista.vim'
 " Plug 'vim-scripts/DrawIt'
 " Plug 'cohama/lexima.vim'
 " Plug 'mattn/emmet-vim'
@@ -470,7 +485,11 @@ set fileencodings=utf-8
 set tags=tags
 set tags+=/usr/include/**/tags
 set printoptions=number:y,duplex:long,paper:letter
-set clipboard=unnamedplus
+if g:jm_vimrc.is_mac
+  set clipboard=unnamed
+else
+  set clipboard=unnamedplus
+endif
 set errorbells
 set laststatus=2
 set cursorline
@@ -828,9 +847,8 @@ augroup ft_cc
     autocmd FileType cpp nnoremap <buffer> <space>f
           \ :FormatCode<CR>
     autocmd FileType cpp
-          \ if !exists('g:jm_setup_cpp') |
+          \ if exists('g:jm_setup_cpp_cv') |
           \   SetupCV |
-          \   let g:jm_setup_cpp = v:true |
           \ endif
     autocmd FileType cpp
           \ if expand('%:p') =~ '/home/jmend/pg' |
@@ -841,11 +859,11 @@ augroup END
 augroup ft_python
     autocmd!
     autocmd FileType python command! RunPython
-          \ execute "Term python" expand('%')
+          \ execute "Term" g:jm_vimrc.deps.python expand('%')
     autocmd FileType python command! RunPythonTests
-          \ execute "Term python -m pytest" expand('%')
+          \ execute "Term" g:jm_vimrc.deps.python "-m pytest" expand('%')
     autocmd FileType python command! RunPythonTypechecks
-          \ execute "Term python -m mypy --ignore-missing-imports --follow-imports=skip " expand("%")
+          \ execute "Term" g:jm_vimrc.deps.python "-m mypy --ignore-missing-imports --follow-imports=skip " expand("%")
     autocmd FileType python command! RunPythonMPL
           \ StopAllJobs | eval timer_start(0, {-> execute('RunPython')})
     autocmd FileType python nnoremap <buffer> <localleader>r
@@ -915,8 +933,8 @@ augroup ft_markdown
     autocmd FileType markdown highlight htmlH3 ctermfg=DarkGreen
     autocmd FileType markdown highlight htmlH4 ctermfg=LightGray
     autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
-    autocmd FileType markdown syntax clear markdownCodeBlock
-    autocmd FileType markdown highlight link markdownError NONE
+    "autocmd FileType markdown syntax clear markdownCodeBlock
+    "autocmd FileType markdown highlight link markdownError NONE
 augroup END
 
 augroup ft_vim
@@ -1283,8 +1301,8 @@ function! s:AsyncExec(...)
 endfunction
 " }}}
 
-" AsyncExec(...)
-"   Join string arguments and exec async
+" ConcealK
+"   Define conceal rules: eg. ConcealK lambda:λ" {{{
 " {{{
 let g:jm_vimrc.docs.commands['ConcealK'] =
       \ 'Define conceal rules: eg. ConcealK lambda:λ'

@@ -2,7 +2,7 @@
 
         basis lib for jmend's vimrc~
 
-Basis                                                             *bss* *basis*
+Basis                                                                *bss* *basis*
 
 1. Description                                  |basis-desc|
    1.1 Requirements                             |basis-reqs|
@@ -11,24 +11,25 @@ Basis                                                             *bss* *basis*
    3.1 Type Definitions                         |basis-typedef|
    3.2 Type{}                                   |basis-type|
    3.3 Cursor{}                                 |basis-cursor|
-   3.4 View{}                                   |basis-view|
+   3.5 Location{}                               |basis-view|
+   3.6 Pat{}                                    |basis-view|
 
 ==============================================================================
-1. Description                                                    *basis-desc*
+1. Description                                                      *basis-desc*
 
 Basis is my "standard-library" of sorts. Mostly a collection of fun vimscript.
 
 Uses RFC 2119 key words: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" and "OPTIONAL".
 
-1.1 Requirements                                                  *basis-reqs*
+1.1 Requirements                                                    *basis-reqs*
 ------------------------------------------------------------------------------
 
 A Vim version 8.0 or later is REQUIRED. The option 'compatible' MUST NOT be
 set.
 
 ==============================================================================
-2. Functions                                                      *basis-misc*
+2. Functions                                                        *basis-misc*
 
 USAGE                            RESULT         DESCRIPTION
 
@@ -40,9 +41,9 @@ bss#view#TermView()    |View{}|   Create a view for `:term`
 bss#view#ScratchView() |View{}|   Create a scratch buffer view
 
 ==============================================================================
-3. Types                                                         *basis-types*
+3. Types                                                           *basis-types*
 
-3.1 Type Defintions                                            *basis-typedef*
+3.1 Type Defintions                                              *basis-typedef*
 ------------------------------------------------------------------------------
 
 You can't define new types in vimscript, so for this section a type refers to
@@ -57,7 +58,7 @@ To support this |basis-type| defines a set of helper functions which accept
 the declared description.
 
 
-3.2 Type                                                          *basis-type*
+3.2 Type                                                            *basis-type*
 ------------------------------------------------------------------------------
 
 The core idea behind the type system defined by |bss#type#Type()| is:
@@ -79,21 +80,21 @@ All of this functionality is disabled by default, and must be enabled using
 
 FUNCTIONS
 
-bss#type#Type({desc}) -> |Type()|                              *bss#type#Type()*
+bss#type#Type({desc}) -> |Type{}|                                *bss#type#Type()*
 
     Defines a "Checker" |Funcref| that ensures values passed to it match the
     |bss-type-descriptor| {desc}. The returned |Funcref| accepts a single
     argument, and will throw a 'ERROR(Type)'-prefixed exception if the value
     isn't matched (assuming type checking is enabled).
 
-bss#type#Typed({desc}, {value}) -> type({value})            *bss#type#Typed()*
+bss#type#Typed({desc}, {value}) -> type({value})              *bss#type#Typed()*
 
     Runs the checker defined by {desc} (see |bss#type#Type()|) against the
     {value}, returning the {value} if it matches, otherwise throwing
     'ERROR(Type)'.
 
 
-3.2.1 Type Descriptors                                   *bss-type-descriptor*
+3.2.1 Type Descriptors                                     *bss-type-descriptor*
 ------------------------------------------------------------------------------
 
 A type descriptor is a declarative way to define a type. An instance of the
@@ -135,7 +136,7 @@ Checker |Func|        Defines a checker which asserts the checked value:
 Non-Checker |Func|    Defines a checker which asserts the checked value:
                         1. Has |type()| of |v:t_func|.
 
-3.3 Cursor{}                                           *basis-cursor* *Cursor{}*
+3.3 Cursor{}                                             *basis-cursor* *Cursor{}*
 ------------------------------------------------------------------------------
 
 This represents a saved location of a cursor. To create an instance, use the
@@ -150,7 +151,7 @@ This represents a saved location of a cursor. To create an instance, use the
 
 CONSTRUCTORS
 
-bss#cursor#Save() -> |Cursor{}|                              *bss#cursor#Save()*
+bss#cursor#Save() -> |Cursor{}|                                *bss#cursor#Save()*
 
     Saves the current cursor location (window, line and column) and returns a
     |Cursor{}| which can be used to restore the cursor to this location.
@@ -161,11 +162,11 @@ FIELDS
 
 METHODS
 
-Cursor.Restore() -> nothing                                 *Cursor.Restore()*
+Cursor.Restore() -> nothing                                   *Cursor.Restore()*
 
     Restore the location of the cursor to the location where it was saved.
 
-3.4 View{}                                               *basis-view* *View{}*
+3.4 View{}                                                   *basis-view* *View{}*
 ------------------------------------------------------------------------------
 
 This represents a reusable buffer and window combination. If the view is still
@@ -196,7 +197,7 @@ View.Get({varname})     Get buffer-local variable from view buffer
 
 CONSTRUCTORS
 
-bss#view#View({fields}) -> |View{}|                           *bss#view#View()*
+bss#view#View({fields}) -> |View{}|                              *bss#view#View()*
 
     Creates an unopened |View{}|. If the |dict| {fields} argument is present,
     then the view instance is extended (|extend()|) with the {fields}
@@ -212,75 +213,75 @@ bss#view#View({fields}) -> |View{}|                           *bss#view#View()*
         let l:view = bss#view#View({'options': ['nobuflisted']})
 <
 
-bss#view#TermView() -> |View{}|                            *bss#view#TermView()*
+bss#view#TermView() -> |View{}|                              *bss#view#TermView()*
 
     Creates a |View{}| meant for holding output from a `:term` execution.
 
-bss#view#ScratchView() -> |View{}|                      *bss#view#ScratchView()*
+bss#view#ScratchView() -> |View{}|                        *bss#view#ScratchView()*
 
     Creates a |View{}| with a scratch buffer (no file, no swap, unlisted)
 
 FIELDS
 
-bufnr                                                             *View.bufnr*
+bufnr                                                               *View.bufnr*
 
     The buffer number (see |bufnr()|) of the view, or |v:none| if unset.
 
-winid                                                             *View.winid*
+winid                                                               *View.winid*
 
     The window id (see |win_getid()|) of the view, or |v:none| if unset.
 
-options                                                         *View.options*
+options                                                           *View.options*
 
     A |list| of |string| which specifies options. Each entry of this list will
     be applied by |View.Setup()| using `:setlocal`.
 
-vars                                                               *View.vars*
+vars                                                                 *View.vars*
 
     A |dict| of arbitray values which specifies options. Each item of this
     dict will be exposed as a buffer local by |View.Setup()|.
 
 METHODS
 
-View.Exec({cmd}) -> |View{}|                                       *View.Exec()*
+View.Exec({cmd}) -> |View{}|                                         *View.Exec()*
 
     `:execute` the specified EX command in the |View{}|'s window. {cmd} must
     be a |string|.
 
-View.Run({cmd}) -> |View{}|                                         *View.Run()*
+View.Run({cmd}) -> |View{}|                                           *View.Run()*
 
     Run `:term {cmd}` within the |View{}|.
 
-View.Call({Func}) -> |View{}|                                       *View.Call()*
+View.Call({Func}) -> |View{}|                                        *View.Call()*
 
     Call `:call` the {Func} within the |View{}|.
 
-View.Setup() -> nothing                                         *View.Setup()*
+View.Setup() -> nothing                                           *View.Setup()*
 
     For each entry in |View.options|, apply it using `:setlocal` on the
     current window. For each item in |View.vars|, expose it as a buffer-local
     in the current buffer.
 
-View.Clear() -> nothing                                         *View.Clear()*
+View.Clear() -> nothing                                           *View.Clear()*
 
     If the |View{}| is valid, clear all lines in the view buffer.
 
-View.Append({line}) -> |View{}|                                  *View.Append()*
+View.Append({line}) -> |View{}|                                    *View.Append()*
 
     If the |View{}| is valid, append the {line} (a |string|) to the view
     buffer.
 
-View.SetLines({lines}) -> |View{}|                             *View.SetLines()*
+View.SetLines({lines}) -> |View{}|                               *View.SetLines()*
 
     If the |View{}| is valid, replace all lines in the view buffer with the
     {lines}, which can be either a string or a list of string.
 
-View.Get({varname}) -> T                                          *View.Get()*
+View.Get({varname}) -> T                                            *View.Get()*
 
     If the |View{}| is valid, return the buffer-local value of {varname},
     otherwise return |v:none|.
 
-3.4 Location{}                                     *basis-location* *Location{}*
+3.5 Location{}                                       *basis-location* *Location{}*
 ------------------------------------------------------------------------------
 
 Represents a specific character location within a buffer.
@@ -291,8 +292,8 @@ Represents a specific character location within a buffer.
 
 CONSTRUCTORS
 
-                                                           *bss#cursor#Save()*
-bss#ug#location#Location({bufnr}, {lnum}, {col}) -> |Location{}|                   
+                                                             *bss#cursor#Save()*
+bss#ug#location#Location({bufnr}, {lnum}, {col}) -> |Location{}|
 
     Saves the current cursor location (buffer, line and column) and returns a
     |Location{}| which can be used to restore the cursor to this location.
@@ -303,8 +304,51 @@ FIELDS
 
 METHODS
 
-Cursor.Restore() -> nothing                                 *Cursor.Restore()*
+Cursor.Restore() -> nothing                                   *Cursor.Restore()*
 
     Restore the location of the cursor to the location where it was saved.
+
+3.6 Pat{}                                                      *basis-pat* *Pat{}*
+------------------------------------------------------------------------------
+
+Represents a tuple of a |pattern| and handler |Funcref|.
+
+>
+    let l:pat = bss#pat#Pat('reg\(ex\)', {value, group1 -> ...})
+<
+
+CONSTRUCTORS
+
+                                                                 *bss#pat#Pat()*
+bss#pat#Pat({pattern}, {handler}) -> |Pat{}|
+
+    Create a |Pat{}| object.
+
+                                                                *bss#pat#Pats()*
+bss#pat#Pats({pats}) -> |Pat{}|-like
+
+    Given a |list| of |Pat{}|, creates a composite |Pat{}|-like object, 
+
+FIELDS
+
+pattern                                                            *Pat.pattern*
+
+    The |pattern| to match against.
+
+Handler                                                            *Pat.Handler*
+
+    The handler which takes arguments which correspond to the list returned by
+    |matchlist()|.
+
+METHODS
+
+Pat.Match({expr}) -> v:none | Handler({expr})                        *Pat.match*
+
+    Attempts to match {expr} with |Pat.pattern|, if they match then pass the
+    match list to |Pat.Handler| and return its result.
+
+Pats.Match({expr}) -> v:none | Handler({expr})                      *Pats.match*
+
+    Similar to |Pat.match| but tries all contained |Pat{}| objects.
 
 vim:tw=78:ts=8:sw=4:ft=help:norl:cocu=nic:

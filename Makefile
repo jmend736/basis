@@ -32,7 +32,7 @@ help:
 	@: $(info $(HELP))
 
 .PHONY: sync
-sync:
+sync: vim/doc/tags
 	cat ~/.vimrc \
 		| sed "s:'~/code/basis/vim':'jmend736/basis', { 'rtp'\: 'vim' }:" \
 		> vim/vimrc
