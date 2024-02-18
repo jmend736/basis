@@ -13,7 +13,7 @@ endfunction
 endsnippet
 
 snippet fna
-function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'):]->substitute('.vim$', '', '')->substitute('/', '#', 'g')`#${1:Name}() abort dict
+function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'):]->substitute('.vim$', '', '')->substitute('/', '#', 'g')`#${1:Name}() abort
   $0
 endfunction
 endsnippet
