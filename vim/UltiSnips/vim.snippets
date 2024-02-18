@@ -12,6 +12,12 @@ function! ${1:Dict}.${2:Name}() abort dict
 endfunction
 endsnippet
 
+snippet fna
+function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'):]->substitute('.vim$', '', '')->substitute('/', '#', 'g')`#${1:Name}() abort dict
+  $0
+endfunction
+endsnippet
+
 snippet wh
 while $1
   $0
