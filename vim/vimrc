@@ -396,7 +396,6 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
-"Plug 'jmend736/basis', { 'rtp': 'vim' }
 Plug 'jmend736/basis', { 'rtp': 'vim' }
 
 "" Temporary Plugins:
