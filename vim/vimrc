@@ -36,6 +36,9 @@
 "   :Wtf <tab>    ~ Show other documentation available
 "                   (Mostly misc. stuff I find useful to remember)
 
+" Required here for vim9+
+set nocompatible
+
 " Command Prefix:
 "   <leader>      : used for global mappings
 "   <localleader> : used for buffer-local mappings
@@ -90,9 +93,12 @@ let g:jm_vimrc.java_import_cache = #{
       \   Optional:         'java.util.Optional',
       \   HashSet:          'java.util.HashSet',
       \   HashMap:          'java.util.HashMap',
+      \   TreeMap:          'java.util.TreeMap',
       \   TreeSet:          'java.util.TreeSet',
       \   Arrays:           'java.util.Arrays',
       \   Collection:       'java.util.Collection',
+      \   OrderedMap:       'java.util.OrderedMap',
+      \   NavigableMap:     'java.util.NavigableMap',
       \   Consumer:         'java.util.function.Consumer',
       \   Predicate:        'java.util.function.Predicate',
       \   Function:         'java.util.function.Function',
@@ -436,7 +442,6 @@ Glaive codefmt
 " }}} Plugins (Vundle)
 
 " General Options: {{{
-set nocompatible
 filetype plugin indent on
 
 set t_Co=256        " Number of colors
@@ -535,6 +540,9 @@ let g:lightline = {
 let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 let g:slime_target = "tmux"
+
+" Will disable indent-based markdown code blocks
+let g:bss_markdown_fix = 1
 
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_folding_disabled = 1
@@ -927,14 +935,25 @@ augroup ft_markdown
 
     autocmd FileType markdown command! JmMdQuotesAsComments match GruvboxFg3 /^\s*>.*/
 
-    " Some syntax changes
-    autocmd FileType markdown highlight htmlH1 ctermfg=DarkRed
-    autocmd FileType markdown highlight htmlH2 ctermfg=DarkCyan
-    autocmd FileType markdown highlight htmlH3 ctermfg=DarkGreen
-    autocmd FileType markdown highlight htmlH4 ctermfg=LightGray
-    autocmd FileType markdown highlight def link mkdHeading GruvboxAquaBold
-    "autocmd FileType markdown syntax clear markdownCodeBlock
-    "autocmd FileType markdown highlight link markdownError NONE
+    if !exists('g:bss_markdown_fix') || !g:bss_markdown_fix
+      " Disable indent-based code blocks, this enables arbitrarily deep
+      " indentation of lists
+      autocmd FileType markdown syntax clear markdownCodeBlock
+      autocmd FileType markdown syntax region markdownCodeBlock matchgroup=markdownCodeDelimiter start="^\s*\z(`\{3,\}\).*$" end="^\s*\z1\ze\s*$" keepend
+      autocmd FileType markdown syntax region markdownCodeBlock matchgroup=markdownCodeDelimiter start="^\s*\z(\~\{3,\}\).*$" end="^\s*\z1\ze\s*$" keepend
+
+      " Fix up the colors
+      autocmd FileType markdown highlight link markdownH1 GruvboxRedBold
+      autocmd FileType markdown highlight link markdownH2 GruvboxBlueBold
+      autocmd FileType markdown highlight link markdownH3 GruvboxGreenBold
+      autocmd FileType markdown highlight link markdownH4 GruvboxPurpleBold
+
+      " Ensure bold/italics are highlighted
+      autocmd FileType markdown highlight link markdownBold GruvboxFg4
+      autocmd FileType markdown highlight link markdownBoldDelimiter GruvboxFg4
+      autocmd FileType markdown highlight link markdownItalic GruvboxFg2
+      autocmd FileType markdown highlight link markdownItalicDelimiter GruvboxFg2
+    endif
 augroup END
 
 augroup ft_vim
@@ -1302,7 +1321,7 @@ endfunction
 " }}}
 
 " ConcealK
-"   Define conceal rules: eg. ConcealK lambda:λ" {{{
+"   Define conceal rules: eg. ConcealK lambda:λ
 " {{{
 let g:jm_vimrc.docs.commands['ConcealK'] =
       \ 'Define conceal rules: eg. ConcealK lambda:λ'
