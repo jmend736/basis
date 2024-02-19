@@ -1,7 +1,7 @@
-if exists('g:loaded_basis')
+if exists('g:loaded_basis_commands')
   finish
 endif
-let g:loaded_basis = v:true
+let g:loaded_basis_commands = v:true
 
 command! -nargs=* -complete=file CF call bss#ClassFiles([<f-args>])
 
