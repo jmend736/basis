@@ -14,8 +14,6 @@ function! bss#draw#align#AlignOp(Op, type = '__setup__') abort
     if empty(l:line)
       continue
     endif
-    call l:PartUpdater(call(a:Op, [l:part]))
-
     call l:PartUpdater(bss#draw#align#Align(l:part, ' ', s:Ops[a:Op]))
   endfor
 endfunction
