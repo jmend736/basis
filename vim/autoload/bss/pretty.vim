@@ -23,8 +23,8 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1
     call add(l:lines, '[')
     let l:n = 0
     call add(a:context, a:data)
-    for l:v in a:data
-      let l:v_lines = bss#pretty#PPLines(l:v, a:show_func, a:context, a:max_depth)
+    for l:V in a:data
+      let l:v_lines = bss#pretty#PPLines(l:V, a:show_func, a:context, a:max_depth)
       call add(l:lines, printf('  %2d: %s', l:n, l:v_lines[0]))
       call extend(l:lines, map(l:v_lines[1:], '"  "..v:val'))
       let l:n += 1
