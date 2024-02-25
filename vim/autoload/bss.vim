@@ -86,31 +86,31 @@ endfunction
 " Array Functions
 " ======================================================================
 function! bss#Array(data) abort
-  return bss#array#Array(a:data)
+  return bss#math#array#Array(a:data)
 endfunction
 
 function! bss#Eye(n) abort
-  return bss#array#Eye(a:n)
+  return bss#math#array#Eye(a:n)
 endfunction
 
 function! bss#Ones(n) abort
-  return bss#array#Ones(a:n)
+  return bss#math#array#Ones(a:n)
 endfunction
 
 function! bss#Zeroes(n) abort
-  return bss#array#Zeroes(a:n)
+  return bss#math#array#Zeroes(a:n)
 endfunction
 
 function! bss#ArrayMap(Fn) abort
-  return bss#array#Map(a:Fn)
+  return bss#math#array#Map(a:Fn)
 endfunction
 
 function! bss#ArrayMap(dims, Fn) abort
-  return bss#array#MapIndexed(a:dims, a:Fn)
+  return bss#math#array#MapIndexed(a:dims, a:Fn)
 endfunction
 
 function! bss#M(n, Fn) abort
-  return bss#array#MapIndexed([a:n, a:n], a:Fn)
+  return bss#math#array#MapIndexed([a:n, a:n], a:Fn)
 endfunction
 
 " Functional Programming Helpers
@@ -158,4 +158,16 @@ endfunction
 
 function! bss#T(A) abort
   return bss#Transpose(a:A)
+endfunction
+
+function! bss#VecPlus(...) abort
+  return call('bss#math#vec#Plus', a:000)
+endfunction
+
+function! bss#VecTimes(...) abort
+  return call('bss#math#vec#Times', a:000)
+endfunction
+
+function! bss#VecDot(...) abort
+  return call('bss#math#vec#Dot', a:000)
 endfunction

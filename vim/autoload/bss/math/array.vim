@@ -9,7 +9,7 @@
 " Classes:
 " ----------------------------------------------------------------------
 "
-"   bss#array#Array({data})
+"   bss#math#array#Array({data})
 "   :   Defines an array with an n-dimensional list as input {data}
 "
 " Fields:
@@ -22,35 +22,35 @@ let s:Array = {
       \   'data':    v:t_list,
       \ }
 
-function! bss#array#Array(data, base=v:none) abort
+function! bss#math#array#Array(data, base=v:none) abort
   return copy((a:base is v:none) ? s:Array : a:base)->extend({
         \   'shape': s:CalculateShape(a:data),
         \   'data': a:data
         \ })
 endfunction
 
-function! bss#array#Eye(n) abort
-  return bss#array#MapIndexed([a:n, a:n], {i, j -> (i == j)})
+function! bss#math#array#Eye(n) abort
+  return bss#math#array#MapIndexed([a:n, a:n], {i, j -> (i == j)})
 endfunction
 
-function! bss#array#Zeroes(n) abort
-  return bss#array#MapIndexed([a:n, a:n], { -> 0 })
+function! bss#math#array#Zeroes(n) abort
+  return bss#math#array#MapIndexed([a:n, a:n], { -> 0 })
 endfunction
 
-function! bss#array#Ones(n) abort
-  return bss#array#MapIndexed([a:n, a:n], { -> 1 })
+function! bss#math#array#Ones(n) abort
+  return bss#math#array#MapIndexed([a:n, a:n], { -> 1 })
 endfunction
 
-function! bss#array#Range(n) abort
-  return bss#array#Array(range(a:n))
+function! bss#math#array#Range(n) abort
+  return bss#math#array#Array(range(a:n))
 endfunction
 
-function! bss#array#Range2D(n) abort
-  return bss#array#MapIndexed([a:n, a:n], {i, j -> a:n*i + j })
+function! bss#math#array#Range2D(n) abort
+  return bss#math#array#MapIndexed([a:n, a:n], {i, j -> a:n*i + j })
 endfunction
 
-function! bss#array#MapIndexed(dims, Fn = { -> 0}, base=s:Array) abort
-  return bss#array#Array(s:NDimMapIndexed(a:dims, a:Fn), a:base)
+function! bss#math#array#MapIndexed(dims, Fn = { -> 0}, base=s:Array) abort
+  return bss#math#array#Array(s:NDimMapIndexed(a:dims, a:Fn), a:base)
 endfunction
 
 function! s:Array.Get(...) abort dict
@@ -64,15 +64,15 @@ function! s:Array.Get(...) abort dict
 endfunction
 
 function! s:Array.At(...) abort dict
-  return bss#array#Array(self.Get(a:000), self)
+  return bss#math#array#Array(self.Get(a:000), self)
 endfunction
 
 function! s:Array.MapAt(Fn, ...) abort dict
-  return bss#array#Array(map(self.Get(a:000), {k, v -> call(a:Fn, [v])}), self)
+  return bss#math#array#Array(map(self.Get(a:000), {k, v -> call(a:Fn, [v])}), self)
 endfunction
 
 function! s:Array.MapIndexed(Fn) abort dict
-  return bss#array#Array(s:NDimMapIndexed(self.shape, a:Fn), self)
+  return bss#math#array#Array(s:NDimMapIndexed(self.shape, a:Fn), self)
 endfunction
 
 function! s:Array.Map(Fn) abort dict
@@ -81,7 +81,7 @@ endfunction
 
 function! s:Array.T() abort dict
   let l:SwapDims = {l -> l[-1:] + l[1:-2] + l[:0]}
-  return bss#array#MapIndexed(
+  return bss#math#array#MapIndexed(
         \ l:SwapDims(self.shape),
         \ {... -> self.Get(l:SwapDims(a:000))},
         \ self)
@@ -219,9 +219,9 @@ function! s:Broadcast(Fn, A, B) abort
     if (a:B.shape != a:A.shape)
       throw 'ERROR(BadValue): Attempted to operate on shape ' .. a:A.shape .. ' with shape ' .. a:B.shape
     endif
-    return bss#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.Get(a:000), a:B.Get(a:000)) }, a:A)
+    return bss#math#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.Get(a:000), a:B.Get(a:000)) }, a:A)
   elseif type(a:B) is v:t_number
-    return bss#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.Get(a:000), a:B) }, a:A)
+    return bss#math#array#MapIndexed(a:A.shape, { ... -> a:Fn(a:A.Get(a:000), a:B) }, a:A)
   endif
   throw 'ERROR(BadValue): Invalid type of argument: ' .. a:B
 endfunction
