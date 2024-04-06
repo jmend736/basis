@@ -16,12 +16,12 @@ set -l _tmux_variables \
      'client_flags\t"List of client flags"' \
      'client_height\t"Height of client"' \
      'client_key_table\t"Current key table"' \
-     'client_last_session\t"Name of the client"''s last session' \
+     'client_last_session\t"Name of the client''s last session"' \
      'client_name\t"Name of client"' \
      'client_pid\t"PID of client process"' \
      'client_prefix\t"1 if prefix key has been pressed"' \
      'client_readonly\t"1 if client is read-only"' \
-     'client_session\t"Name of the client"''s session' \
+     'client_session\t"Name of the client''s session"' \
      'client_termfeatures\t"Terminal features of client, if any"' \
      'client_termname\t"Terminal name of client"' \
      'client_termtype\t"Terminal type of client, if available"' \
