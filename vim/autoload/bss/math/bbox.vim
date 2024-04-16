@@ -14,6 +14,9 @@ let s:BBox = {
 " bss#math#bbox#BBox(point: list<number>)
 " :   2D BBox of just {point}
 "
+" bss#math#bbox#BBox(point1: list<number>, ...)
+" :   nD BBox with extends defined by min/max of all points
+"
 " bss#math#bbox#BBox([point1, ...]: list<list<number>>)
 " :   nD BBox with extends defined by min/max of all points
 "
