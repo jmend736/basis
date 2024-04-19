@@ -20,6 +20,18 @@ function! bss#LQuery(data, path) abort
   return bss#data#LQuery(a:data, a:path)
 endfunction
 
+function! bss#BlazeTargets() abort
+  return bss#blaze#BlazeTargets()
+endfunction
+
+function! bss#BlazeTarget() abort
+  return bss#blaze#BlazeTarget()
+endfunction
+
+function! bss#BlazeGuess(...) abort
+  return call('bss#blaze#BlazeGuessCommand', a:000)
+endfunction
+
 function! bss#ClassFiles(files) abort
   return bss#java#classfiles#Open(a:files)
 endfunction
