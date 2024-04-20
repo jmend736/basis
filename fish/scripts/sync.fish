@@ -41,8 +41,12 @@ function sync
             argparse 'f/from=' 't/to=' -- $args
             pushd $_flag_to
             for fname in *
+                if not test -f $_flag_from/$fname
+                    printf 'sync skipping %s\n' $_flag_from/$fname
+                    continue
+                end
                 if not diff $_flag_from/$fname $_flag_to/$fname >/dev/null
-                    printf 'sync %s updated.' $_flag_to/$fname
+                    printf 'sync %s updated\n' $_flag_to/$fname
                     cp $_flag_from/$fname $_flag_to/$fname
                 end
             end
