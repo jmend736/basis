@@ -260,21 +260,26 @@ Jobs:
     drop: See Channel.option.drop
 END
 let s:wtf_defaults.channel = s:wtf_defaults.jobs
-let s:wtf_defaults.ea =<< END
+let s:wtf_defaults.easyalign =<< END
 EasyAlign:
   Shortcuts in alignment mode:
-    <C-x>    : /.*/          : Regex
-    <C-a>    : a[lcr]+(*|**) : Align
-    <C-d>    : d[lrc]        : Delimiter Align
-    <C-i>    : i[ksdn]       : Indentation
+    Int. Key : Command Line  : g:easy_align_delimiters
+    ---------:---------------:------------------------
+    <C-x>    : /.*/          : <none>
+    <C-a>    : a[lcr]+(*|**) : align
+    <C-d>    : d[lrc]        : delimiter_align
+    <C-i>    : i[ksdn]       : indentation
 
-    <C-[lr]> : [lr][0-9]+    : Left/Right Margin
-    <Left>   : <             : Stick to left
-    <Right>  : >             : Stick to right
+    <C-[lr]> : [lr][0-9]+    : (left|right)_margin
+    <Left>   : <             : stick_to_left
+    <Right>  : >             : stick_to_right
 
-    <C-f>    : [gv]/.*/      : Filter
-    <C-g>    : ig[.*]        : Ignore Groups
-    <C-u>    : iu[01]        : Ignore unmatched
+    <C-f>    : [gv]/.*/      : filter
+    <C-g>    : ig[.*]        : ignore_groups
+    <C-u>    : iu[01]        : ignore_unmatched
+
+  stick_to_(left|right)
+    Where to stick the delimiter
 
   Align <C-a>:
     Specifies of each delimited section (not delimiter).
@@ -289,4 +294,56 @@ EasyAlign:
       :EasyAlign N=
     Using * will make it happen across all occurrences of a delimiter
       :EasyAlign *=
+
+  Builtin Delimiters:
+    --------------+-------------------------------------
+    Delimiter key | Description/Use cases
+    --------------+-------------------------------------
+       <Space>    | General alignment around whitespaces
+          =       | Operators containing equals sign 
+          :       | Suitable for formatting JSON or YAML
+          .       | Multi-line method chaining
+          ,       | Multi-line method arguments
+          &       | LaTeX tables (`&`  and  `\\` )
+          #       | Ruby/Python comments
+          "       | Vim comments
+        <Bar>     | Table markdown
+    --------------+-------------------------------------
+END
+let s:wtf_defaults.ea = s:wtf_defaults.easyalign
+
+let s:wtf_defaults.pattern =<< END
+Pattern: (Assume \m)
+
+  Magic: (very) \v \m \M \V (not very)
+    With \m, unescaped: .* ^$ []
+
+  BNF: (:h pattern)
+    <pattern> ::= <branch> ( '\|' <branch> )*
+    <branch>  ::= <concat> ( '\&' <concat> )*
+    <concat>  ::= <piece>  ( '\&' <piece>  )*
+    <piece>   ::= <atom> | ( <atom> <h /multi> )
+    <atom>    ::= <h /ordinary-atom>
+                | '\(' <pattern> '\)'
+                | '\%(' <pattern> '\)'
+
+  <h /multi>
+    * \+ \= \?
+    \{n,m} \{n,} \{,m} \{}     (As many as possible)
+    \{-n,m} \{-n,} \{-,m} \{-} (As few as possible)
+    \{n} \{-n}                 (Exactly)
+
+    \@= : Match with 0 width if preceding atom matches
+    \@! : Match with 0 width if preceding atom does not match
+
+  <h /ordinary-atom> (Non-standard ones)
+"   \< \>   : (/zero-width) Beginning/end of words
+"   \zs \ze : (/zero-width) Sets the start/end of match
+"   \%^ \%$ : (/zero-width) Begin/end of file
+"   \%V     : (/zero-width) Visual area
+"   \%#     : (/zero-width) Cursor position
+"   \%'m    : (/zero-width) Mark m position
+"   \%23l   : (/zero-width) Line 23
+"   \%23c   : (/zero-width) Col 23
+"   \%23v   : (/zero-width) Virt col 23
 END
