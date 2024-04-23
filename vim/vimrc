@@ -401,9 +401,21 @@ let g:jm_vimrc.docs.mappings['\<Space>'] =
 nnoremap <leader><space> :let &l:foldcolumn = (&l:foldcolumn) ? 0 : 3<cr>
 
 let g:jm_vimrc.docs.mappings['\a'] =
-      \ 'Trigger EasyAlign'
+      \ 'Trigger EasyAlign (See :Wtf ea)'
 xmap <leader>a <Plug>(EasyAlign)
 nmap <leader>a <Plug>(EasyAlign)
+
+let g:jm_vimrc.docs.mappings['\a[(]'] =
+      \ 'Extra EasyAlign items'
+let g:easy_align_delimiters = {
+      \   '(': {
+      \     'pattern': '(',
+      \     'right_margin': 0,
+      \   },
+      \   ':': {
+      \     'pattern': ':',
+      \   },
+      \ }
 
 let g:jm_vimrc.docs.mappings['\[0-9]'] =
       \ 'Switch to buffer (from buftabline)'
