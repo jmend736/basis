@@ -236,6 +236,9 @@ Tabs:
 END
 let s:wtf_defaults.jobs =<< END
 Channel:
+  get:
+    job_getchannel ch_open
+    ch_info
   option:
     mode:
       'json' (ch def), 'js', 'nl' (job def), 'raw'
@@ -247,6 +250,9 @@ Channel:
       'auto': Drop if no callbacks, keep o/w
       'never': Never drop
 Jobs:
+  get:
+    ch_getjob job_start term_getjob
+    job_info
   option:
     (in|out|err)_mode: See Channel.option.mode
     callback: Generic callback
@@ -258,8 +264,41 @@ Jobs:
     exit_cb:
       { job, status -> ... }
     drop: See Channel.option.drop
+
+Terms:
+  get:
+    term_start term_list
+    term_getjob->job_info
+  option:
+    (in|out|err)_io: Specify IO type
+      'null' | 'pipe' | 'file' | 'buffer'
+    in_(top|bot): First / last line to send
+      number | 1 (top def) | last (bot def)
+    (in|out|err)_name
+      file | buffer
+    (in|out|err)_buf
+      bufnr
+    (in|out|err)_modifiable
+      boolean
+    (in|out|err)_msg: First line message printed
+      boolean
+    env
+      dict
+    cwd
+      path string
+    term_name
+    term_(rows|cols): term size
+      number
+    vertical: whether to split vertical
+    curwin: use current window
+    hidden: do not open a window
+    term_finish
+      'close' | 'open'
+    term_opencmd
+
 END
 let s:wtf_defaults.channel = s:wtf_defaults.jobs
+let s:wtf_defaults.term = s:wtf_defaults.jobs
 let s:wtf_defaults.easyalign =<< END
 EasyAlign:
   Shortcuts in alignment mode:
