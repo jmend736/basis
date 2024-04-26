@@ -1,4 +1,4 @@
-function! bss#extra#SetupEasyAlignDelimiters() abort
+function! bss#extra#EasyAlignDelimiters() abort
   return {
         \   '(': {
         \     'pattern': '(',
