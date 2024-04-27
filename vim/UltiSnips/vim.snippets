@@ -18,6 +18,13 @@ function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'
 endfunction
 endsnippet
 
+snippet comc
+command! -complete=customlist,<SID>$1Complete ${1:Name}
+function! s:$1Complete(arglead, cmdline, curpos) abort
+  return ${3:[$2]}
+endfunction$0
+endsnippet
+
 snippet wh
 while $1
   $0
