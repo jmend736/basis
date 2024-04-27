@@ -4,9 +4,13 @@ priority -1
 #
 # BUILD:
 #   pack      : package()
-#   ccb       : cc_binary()
-#   ccl       : cc_library()
-#   cct       : cc_test()
+#   cb       : cc_binary()
+#   cl       : cc_library()
+#   ct       : cc_test()
+#   jb       : java_binary()
+#   jl       : java_library()
+#   jt       : java_test()
+#   pl       : {,java_,cc_}proto_library()
 # WORKSPACE:
 #   ihttp     : Load http_archive()
 #   igit      : Load git_repository()
@@ -21,7 +25,7 @@ snippet pack
 package(default_visibility = ["//visibility:public"])
 endsnippet
 
-snippet ccb
+snippet cb
 cc_binary(
   name = "${1:main}",
   srcs = ["$1.cc"],
@@ -29,7 +33,7 @@ cc_binary(
 )
 endsnippet
 
-snippet ccl
+snippet cl
 cc_library(
   name = "${1:main}",
   hdrs = ["$1.h"],
@@ -38,7 +42,7 @@ cc_library(
 )
 endsnippet
 
-snippet cct
+snippet ct
 cc_test(
   name = "${1:main}_test",
   srcs = ["$1_test.cc"],
@@ -46,6 +50,49 @@ cc_test(
     ":$1",
     "//third_party/gtest",
   ],
+)
+endsnippet
+
+snippet jb
+java_binary(
+  name = "${1:Main}",
+  srcs = ["$1.java"],
+  deps = [],
+)
+endsnippet
+
+snippet jl
+java_library(
+  name = "${1:Library}",
+  srcs = ["$1.java"],
+  deps = [],
+)
+endsnippet
+
+snippet jt
+cc_test(
+  name = "${1:Main}Test",
+  srcs = ["$1Test.cc"],
+  deps = [
+    ":$1",
+  ],
+)
+endsnippet
+
+snippet pl
+proto_library(
+  name = "${1:hello}_proto",
+  srcs = ["$1.proto"]
+)
+
+java_proto_library(
+  name = "$1_java_proto",
+  deps = [":$1_proto"]
+)
+
+cc_proto_libraray(
+  name = "$1_cc_proto",
+  deps = [":$1_proto"]
 )
 endsnippet
 
