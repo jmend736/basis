@@ -78,6 +78,7 @@ let g:jm_vimrc.is_mac = system('uname -s') =~# 'Darwin'
 let g:jm_vimrc.deps.JavaClassnameList      = {-> []}
 let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "classpath list"')}
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
+let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " }}}
 
 " Playground: {{{
@@ -135,7 +136,12 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
-Plug 'jmend736/basis', { 'rtp': 'vim' }
+"Plug 'natebosch/vim-lsc'
+if exists("$BASIS")
+  Plug $BASIS, { 'rtp': 'vim' }
+else
+  Plug 'jmend736/basis', { 'rtp': 'vim' }
+endif
 
 "" Temporary Plugins:
 " This gets merged into vim, but want this for now to get indent fix:
@@ -202,7 +208,7 @@ set smarttab        " More reasonable tab actions
 set backspace=indent,eol,start
 
 set list            " Replace certain characters visually
-set listchars=tab:\>\ ,trail:·
+set listchars=tab:\>\ ,trail:·,extends:→,precedes:←
 
 set number           " Show line number at cursor,
 set numberwidth=4    " with a column width of 3,
@@ -277,6 +283,10 @@ let g:lightline = {
       \ }
 
 let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+
+"let g:lsc_server_commands = {}
+"let g:lsc_enable_autocomplete = v:true
+"let g:lsc_auto_map = v:true
 
 let g:slime_target = "tmux"
 
@@ -360,6 +370,11 @@ let g:jm_vimrc.docs.mappings['<C-r><C-f>'] =
 inoremap <C-r><C-f> <C-r>=expand('%:p:t:r')<cr>
 cnoremap <C-r><C-f> <C-r>=expand('%:p:t:r')<cr>
 
+let g:jm_vimrc.docs.mappings['<C-r><C-t>'] =
+      \ '[modes:ic] Insert file name root'
+inoremap <C-r><C-t> <C-r>=BlazeTarget()<cr>
+cnoremap <C-r><C-t> <C-r>=BlazeTarget()<cr>
+
 let g:jm_vimrc.docs.mappings['<C-p>'] =
       \ 'Fuzzy-search PWD'
 nnoremap <C-p> :Files<cr>
@@ -405,17 +420,9 @@ let g:jm_vimrc.docs.mappings['\a'] =
 xmap <leader>a <Plug>(EasyAlign)
 nmap <leader>a <Plug>(EasyAlign)
 
-let g:jm_vimrc.docs.mappings['\a[(]'] =
-      \ 'Extra EasyAlign items'
-let g:easy_align_delimiters = {
-      \   '(': {
-      \     'pattern': '(',
-      \     'right_margin': 0,
-      \   },
-      \   ':': {
-      \     'pattern': ':',
-      \   },
-      \ }
+let g:jm_vimrc.docs.mappings['\a[:(]'] =
+      \ 'Extra/overriden EasyAlign items'
+let g:easy_align_delimiters = bss#extra#EasyAlignDelimiters()
 
 let g:jm_vimrc.docs.mappings['\[0-9]'] =
       \ 'Switch to buffer (from buftabline)'
@@ -650,7 +657,7 @@ augroup ft_java
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
     autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-          \ :execute "Term fish -c pg"<cr>
+          \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
@@ -1090,6 +1097,10 @@ function! s:ConcealK(repl_str) abort
   setlocal concealcursor=ni
 endfunction
 " }}}
+
+let g:jm_vimrc.docs.commands['ReadExecute'] =
+      \ 'Execute then read the output of that vim command'
+command! -nargs=* -complete=command ExecuteRead eval append(line('.'), execute(<q-args>)->split("\n"))
 
 " }}} Misc
 
