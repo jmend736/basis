@@ -136,21 +136,14 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
-"Plug 'natebosch/vim-lsc'
+Plug 'Valloric/YouCompleteMe'
 if exists("$BASIS")
   Plug $BASIS, { 'rtp': 'vim' }
 else
   Plug 'jmend736/basis', { 'rtp': 'vim' }
 endif
 
-"" Temporary Plugins:
-" This gets merged into vim, but want this for now to get indent fix:
-" https://github.com/bazelbuild/vim-ft-bzl/commit/941fb142f604c254029c2a0852ea7578f08de91a
-"
-Plug 'bazelbuild/vim-ft-bzl'
-
 "" Old Plugins:
-"Plug 'liuchengxu/vista.vim'
 " Plug 'vim-scripts/DrawIt'
 " Plug 'cohama/lexima.vim'
 " Plug 'mattn/emmet-vim'
@@ -159,11 +152,14 @@ Plug 'bazelbuild/vim-ft-bzl'
 " Plug 'davidhalter/jedi-vim'
 " Plug 'ervandew/supertab'
 " Plug 'w0rp/ale'
-" Plug 'Valloric/YouCompleteMe'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " http://eclim.org
+" Plug 'bazelbuild/vim-ft-bzl'
+" -> https://github.com/bazelbuild/vim-ft-bzl/commit/941fb142f604c254029c2a0852ea7578f08de91a
 
 "" Plugins to check out:
+" Plug 'liuchengxu/vista.vim'
+" Plug 'natebosch/vim-lsc'
 " Plug 'chrisbra/NrrwRgn'
 " Plug 'justinmk/vim-sneak'
 " Plug 'romainl/vim-qf'
@@ -287,6 +283,9 @@ let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 "let g:lsc_server_commands = {}
 "let g:lsc_enable_autocomplete = v:true
 "let g:lsc_auto_map = v:true
+
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
 let g:slime_target = "tmux"
 
@@ -656,10 +655,15 @@ augroup ft_java
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
-    autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-          \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+    if filereadable('WORKSPACE')
+      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+            \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+    elseif filereadable('gradlew')
+      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+            \ :Term ./gradlew run<cr>
+    endif
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
-          \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
+          \ :Term ./gradlew run<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
 augroup END
 
@@ -818,6 +822,9 @@ function! s:AddImport(import) abort
     let l:result = search(a:import, 'nw')
     if l:result == 0
       let l:start = search('^import', 'nw')
+      if l:start == -1
+        let l:start = 1 + search('^package', 'nw')
+      endif
       call append(l:start, [a:import])
       "execute '1,1FormatLines'
       echom "Adding: " .. a:import
@@ -1102,6 +1109,14 @@ let g:jm_vimrc.docs.commands['ReadExecute'] =
       \ 'Execute then read the output of that vim command'
 command! -nargs=* -complete=command ExecuteRead eval append(line('.'), execute(<q-args>)->split("\n"))
 
+let g:jm_vimrc.docs.commands['Bdz'] =
+      \ 'Run buildozer on current target (or :__pkg__ if none exists)'
+command! -nargs=* Bdz echom
+      \ system(printf("fish -c \"buildozer '%s' %s\"",
+      \   join([<f-args>], ' '),
+      \   BlazeTarget() != '???' ? BlazeTarget() : ':__pkg__'
+      \ ))
+
 " }}} Misc
 
 " Notes {{{
@@ -1119,6 +1134,7 @@ let g:jm_vimrc.java_import_cache = #{
       \   Set:              'java.util.Set',
       \   Stream:           'java.util.stream.Stream',
       \   Collectors:       'java.util.stream.Collectors',
+      \   Collector:        'java.util.stream.Collector',
       \   List:             'java.util.List',
       \   ArrayList:        'java.util.ArrayList',
       \   LinkedList:       'java.util.LinkedList',
@@ -1139,6 +1155,10 @@ let g:jm_vimrc.java_import_cache = #{
       \   ImmutableList:    'com.google.common.collect.ImmutableList',
       \   Lists:            'com.google.common.collect.Lists',
       \   ImmutableSet:     'com.google.common.collect.ImmutableSet',
+      \   Streams:          'com.google.common.collect.Streams',
+      \   Table:            'com.google.common.collect.Table',
+      \   Tables:           'com.google.common.collect.Tables',
+      \   ImmutableTable:   'com.google.common.collect.ImmutableTable',
       \   toImmutableList:  'static com.google.common.collect.ImmutableList.toImmutableList',
       \   toImmutableSet:   'static com.google.common.collect.ImmutableSet.toImmutableSet',
       \   ImmutableMap:     'com.google.common.collect.ImmutableMap',
