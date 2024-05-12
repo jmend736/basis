@@ -255,6 +255,19 @@ Jobs:
     job_info
   option:
     (in|out|err)_mode: See Channel.option.mode
+      'json' | 'js' | 'nl' | 'raw'
+        ch            job
+    (in|out|err)_io: Specify IO type
+      'null' | 'pipe' | 'file' | 'buffer'
+                job            job
+    in_(top|bot): First / last line to send
+      number | 1 (top def) | last (bot def)
+    (in|out|err)_name
+      file | buffer
+    (in|out|err)_buf
+      bufnr
+    (in|out|err)_modifiable
+      boolean
     callback: Generic callback
       { ch, msg -> ... }
     (out|err)_cb: Specific callbacks
@@ -270,16 +283,6 @@ Terms:
     term_start term_list
     term_getjob->job_info
   option:
-    (in|out|err)_io: Specify IO type
-      'null' | 'pipe' | 'file' | 'buffer'
-    in_(top|bot): First / last line to send
-      number | 1 (top def) | last (bot def)
-    (in|out|err)_name
-      file | buffer
-    (in|out|err)_buf
-      bufnr
-    (in|out|err)_modifiable
-      boolean
     (in|out|err)_msg: First line message printed
       boolean
     env
@@ -376,13 +379,13 @@ Pattern: (Assume \m)
     \@! : Match with 0 width if preceding atom does not match
 
   <h /ordinary-atom> (Non-standard ones)
-"   \< \>   : (/zero-width) Beginning/end of words
-"   \zs \ze : (/zero-width) Sets the start/end of match
-"   \%^ \%$ : (/zero-width) Begin/end of file
-"   \%V     : (/zero-width) Visual area
-"   \%#     : (/zero-width) Cursor position
-"   \%'m    : (/zero-width) Mark m position
-"   \%23l   : (/zero-width) Line 23
-"   \%23c   : (/zero-width) Col 23
-"   \%23v   : (/zero-width) Virt col 23
+    \< \>   : (/zero-width) Beginning/end of words
+    \zs \ze : (/zero-width) Sets the start/end of match
+    \%^ \%$ : (/zero-width) Begin/end of file
+    \%V     : (/zero-width) Visual area
+    \%#     : (/zero-width) Cursor position
+    \%'m    : (/zero-width) Mark m position
+    \%23l   : (/zero-width) Line 23
+    \%23c   : (/zero-width) Col 23
+    \%23v   : (/zero-width) Virt col 23
 END
