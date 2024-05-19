@@ -20,7 +20,11 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1
 
   " Handle Functions
   elseif l:data_type is v:t_func
-    return [""] + execute(['function', a:data->get('name')]->join(' '))
+    let l:name = a:data->get('name')
+    if l:name =~# '\m^\d\+$'
+      let l:name = printf("{'%d'}", l:name)
+    endif
+    return [""] + execute(['function', l:name]->join(' '))
           \     ->split("\n")
           \     ->map('"  | " .. v:val')
 
