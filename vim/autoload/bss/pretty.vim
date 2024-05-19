@@ -40,7 +40,11 @@ function! bss#pretty#PPLines(data, show_func=v:false, context=[], max_depth = -1
       if (type(l:V) is v:t_func) && !a:show_func
         continue
       endif
-      let l:v_lines = bss#pretty#PPLines(l:V, a:show_func, a:context, a:max_depth)
+      let l:v_lines = (type(l:V) is v:t_func)
+            \ ? execute(['function', l:V->get('name')]->join(' '))
+            \   ->split("\n")
+            \   ->map('"  " .. v:val')
+            \ : bss#pretty#PPLines(l:V, a:show_func, a:context, a:max_depth)
       call add(l:lines, printf('  %s: %s', string(l:k), l:v_lines[0]))
       call extend(l:lines, map(l:v_lines[1:], '"  "..v:val'))
     endfor
