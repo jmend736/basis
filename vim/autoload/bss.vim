@@ -150,6 +150,26 @@ function! bss#Reduce(list, init, Func) abort
   return l:value
 endfunction
 
+function! bss#ApplyAll(args, Func_list) abort
+  if type(a:Func_list) is v:t_func
+    return call(a:Func_list, a:args)
+  endif
+  return copy(a:Func_list)
+        \->map({_, Fn -> call(Fn, a:args)})
+endfunction
+
+function! s:ExtendAllImpl(func_list, ...) abort
+  let l:self = {}
+  for l:Fn in a:func_list
+    call extend(l:self, call(l:Fn, [l:self] + a:000))
+  endfor
+  return l:self
+endfunction
+
+function! bss#ExtendAll(func_list) abort
+  return function('s:ExtendAllImpl', [a:func_list])
+endfunction
+
 " Math helpers
 " ======================================================================
 
