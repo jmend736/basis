@@ -1,38 +1,86 @@
 priority -1
 
+snippet pp
+echom ${VISUAL}$0
+endsnippet
+
 snippet fn
 function! ${1:Name}() abort
-  $0
+	$0
 endfunction
 endsnippet
 
 snippet fnd
 function! ${1:Dict}.${2:Name}() abort dict
-  $0
+	$0
 endfunction
+endsnippet
+
+snippet ->
+{${1:x} -> ${2:0}}$0
+endsnippet
+
+snippet ->>
+{${1:x} ->
+			\ ${2:0}}$0
+endsnippet
+
+snippet s:
+let s:${1:name} = ${2:v:none}$0
+endsnippet
+
+snippet l:
+let l:${1:name} = ${2:v:none}$0
+endsnippet
+
+snippet g:
+let g:${1:name} = ${2:v:none}$0
+endsnippet
+
+snippet \ "line break" i
+
+			\   $0
+endsnippet
+
+snippet # "dict" i
+#{
+			\   ${2:hello}: ${3:v:t_func},$0
+			\ }
+endsnippet
+
+snippet } "dict" i
+{
+			\   ${2:'${1:hello}'}: ${3:v:t_func},$0
+			\ }
+endsnippet
+
+snippet ] "list" i
+[
+			\   ${1:32},$0
+			\ ]
 endsnippet
 
 snippet fna
 function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'):]->substitute('.vim$', '', '')->substitute('/', '#', 'g')`#${1:Name}() abort
-  $0
+	$0
 endfunction
 endsnippet
 
 snippet comc
 command! -complete=customlist,<SID>$1Complete ${1:Name}
 function! s:$1Complete(arglead, cmdline, curpos) abort
-  return ${3:[$2]}
+	return ${3:[$2]}
 endfunction$0
 endsnippet
 
 snippet wh
 while $1
-  $0
+	$0
 endwhile
 endsnippet
 
 snippet if
 if $1
-  $0
+	$0
 endif
 endsnippet
