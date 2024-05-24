@@ -87,6 +87,10 @@ function! bss#PB(data, with_methods = v:false) abort
         \.GoToWindow()
 endfunction
 
+function! bss#PF(data) abort
+  return bss#PB(a:data, v:true)
+endfunction
+
 function! bss#PN(data) abort
   call bss#nav#Navigate(a:data)
 endfunction
