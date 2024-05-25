@@ -12,6 +12,27 @@ function! s:BytesBuilder.Bytes() abort dict
   return copy(self.ptr)
 endfunction
 
+function! s:BytesBuilder.Add(bytes) abort dict
+  if type(a:bytes) is v:t_blob
+    let self.ptr += a:bytes
+  elseif type(a:bytes) is v:t_list
+    let self.ptr += list2blob(a:bytes)
+  else
+    throw 'ERROR(InvalidArguments): {bytes} must be a list or blob!'
+  endif
+  return self
+endfunction
+
+function! s:BytesBuilder.AddBlob(bytes) abort dict
+  let self.ptr += a:bytes
+  return self
+endfunction
+
+function! s:BytesBuilder.AddList(bytes) abort dict
+  let self.ptr += list2blob(a:bytes)
+  return self
+endfunction
+
 function! s:BytesBuilder.U1(n) abort dict
   let self.ptr += bss#java#bytesbuilder#U1(a:n)
   return self
