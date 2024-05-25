@@ -1,0 +1,217 @@
+priority -1
+
+# <mods> ::= P (public)
+#          | # (protected)
+#          | p (private)
+#          | a (abstract)
+#          | d (default)
+#          | s (static)
+#          | f (final)
+#          | S (synchronized)
+#
+# classes, fields, methods:
+#  cl<mods> f<mods> m<mods> in<mods> ct<mods>
+#
+# Java doc:
+#  ** *p *r
+#
+# Types:
+#  S L M LF
+#
+# Misc:
+#  Tt T=
+#  sw
+#  ext: if elif for fore fori
+#
+# Exceptions:
+#  try tryr ca fi
+#  th thr thi thu
+#
+
+global !p
+
+def type_to_name(snip, text):
+	snip.rv = _type_to_name(text)
+
+def _type_to_name(text):
+	if len(text) == 0:
+		return ''
+	elif '<' in text:
+		return _type_to_name(text[:text.find('<')])
+	else:
+		return text[0].lower() + text[1:]
+
+
+# Supports: [P#padsfS]+
+def modifiers(snip, mods):
+	mapping = {
+		'P': 'public',
+		'#': 'protected',
+		'p': 'private',
+		'a': 'abstract',
+		'd': 'default',
+		's': 'static',
+		'f': 'final',
+		'S': 'synchronized',
+	}
+	snip.rv = " ".join([v for k, v in mapping.items() if k in (mods or '')])
+
+endglobal
+
+# Core Language
+
+snippet f "field" b
+private final ${1:String} ${2:`!p type_to_name(snip, t[1])`};$0
+endsnippet
+
+snippet /f([P#padsfS]+)/ "field" r
+`!p modifiers(snip, match.group(1))` ${1:String} ${2:`!p type_to_name(snip, t[1])`};$0
+endsnippet
+
+snippet m "method"
+private ${1:String} ${2:`!p type_to_name(snip, t[1])`}($3) {
+	$4
+}$0
+endsnippet
+
+snippet /m([P#padsfS]+)/ "method" r
+`!p modifiers(snip, match.group(1))` ${1:String} ${2:`!p type_to_name(snip, t[1])`}($3) {
+	$4
+}$0
+endsnippet
+
+snippet ct "ctor"
+public ${1:`!p snip.rv = snip.basename or "Main"`}($3) {
+	$4
+}$0
+endsnippet
+
+snippet /ct([P#p]+)/ "ctor" r
+`!p modifiers(snip, match.group(1))` ${1:`!p snip.rv = snip.basename or "Main"`}($3) {
+	$4
+}$0
+endsnippet
+
+snippet cl "Class"
+public class ${1:`!p snip.rv = snip.basename or "Main"`} {
+	$2
+}$0
+endsnippet
+
+snippet /cl([P#padsfS]+)/ "Class" r
+`!p modifiers(snip, match.group(1))` class ${1:Name} {
+	$2
+}$0
+endsnippet
+
+snippet in "interface"
+public class ${1:`!p snip.rv = snip.basename or "Main"`} {
+	$2
+}$0
+endsnippet
+
+snippet /in([P#padsfS]+)/ "interface" r
+`!p modifiers(snip, match.group(1))` interface ${1:Name} {
+	$2
+}$0
+endsnippet
+
+snippet sw "switch"
+switch ($1) {
+	case $2:
+		$0
+}
+endsnippet
+
+snippet cs "case"
+case $1:
+	$0
+endsnippet
+
+snippet br "break"
+break
+endsnippet
+
+snippet ** "javadoc"
+/**
+ * ${1:"This method..."}.$0
+ */
+endsnippet
+
+snippet *p
+@param ${1:name} ${2:<usage>}
+endsnippet
+
+snippet *r
+@return ${1:<description>}
+endsnippet
+
+# Exceptions
+
+snippet try
+try {
+	$1
+} catch(${2:Exception} e) {
+	${3:throw new RuntimeException(e)};
+}
+endsnippet
+
+snippet ca
+catch(${1:Exception} e) {
+	${2:throw new RuntimeException(e)};
+}
+endsnippet
+
+snippet fi
+finally {
+	$1
+}
+endsnippet
+
+snippet tryr
+try (${1:Name} ${2:`!p type_to_name(snip, t[1])`} = ${3:new $1()}){
+	$4
+}
+endsnippet
+
+snippet th
+throw ${1:e};
+endsnippet
+
+snippet thr
+throw new RuntimeException($1);
+endsnippet
+
+snippet thi
+throw new IllegalStateException($1);
+endsnippet
+
+snippet thu
+throw new UnsupportedOperationException($1);
+endsnippet
+
+# Type support
+
+snippet Tt "Type, and name" i
+${1:T} ${2:`!p type_to_name(snip, t[1])`}$0
+endsnippet
+
+snippet T= "Type, name, and value" i
+${1:T} ${2:`!p type_to_name(snip, t[1])`} = ${3:new `!p type_to_name(snip, t[1])`($4)};
+endsnippet
+
+snippet S "String" i
+String
+endsnippet
+
+snippet L "List<T>" i
+List<${1:String}>
+endsnippet
+
+snippet M "Map<K, V>" i
+Map<${1:String}, ${2:String}>
+endsnippet
+
+snippet LF "ListenableFuture<T>" i
+ListenableFuture<${1:String}>
+endsnippet
