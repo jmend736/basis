@@ -1,11 +1,32 @@
 priority -1
 
+global !p
+from utils import autoload
+endglobal
+
 snippet pp
 echom ${VISUAL}$0
 endsnippet
 
+snippet cls
+let s:${1:Name} = {
+			\   $2
+			\ }
+function! `!p autoload(snip)`$1Create($3) abort
+	return copy(s:$1)->extend({
+				\   $2
+				\ })
+endfunction
+endsnippet
+
 snippet fn
-function! ${1:Name}() abort
+function! ${1:`!p autoload(snip)`Name}() abort
+	$0
+endfunction
+endsnippet
+
+snippet fna
+function! `!p autoload(snip)`${1:Name}() abort
 	$0
 endfunction
 endsnippet
@@ -25,6 +46,10 @@ snippet ->>
 			\ ${2:0}}$0
 endsnippet
 
+snippet :
+'${1:key}': ${2:'value'},
+endsnippet
+
 snippet s:
 let s:${1:name} = ${2:v:none}$0
 endsnippet
@@ -35,11 +60,6 @@ endsnippet
 
 snippet g:
 let g:${1:name} = ${2:v:none}$0
-endsnippet
-
-snippet \ "line break" i
-
-			\   $0
 endsnippet
 
 snippet # "dict" i
@@ -60,12 +80,6 @@ snippet ] "list" i
 			\ ]
 endsnippet
 
-snippet fna
-function! `!v expand('%:p')[stridx(expand('%:p'), '/autoload/')+len('/autoload/'):]->substitute('.vim$', '', '')->substitute('/', '#', 'g')`#${1:Name}() abort
-	$0
-endfunction
-endsnippet
-
 snippet comc
 command! -complete=customlist,<SID>$1Complete ${1:Name}
 function! s:$1Complete(arglead, cmdline, curpos) abort
@@ -81,6 +95,14 @@ endsnippet
 
 snippet if
 if $1
+	$0
+endif
+endsnippet
+
+snippet ife
+if $1
+	$3
+elseif $2
 	$0
 endif
 endsnippet

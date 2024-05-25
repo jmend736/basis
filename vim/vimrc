@@ -74,9 +74,12 @@ let g:jm_vimrc.deps = #{
 " Whether this compute is a mac
 let g:jm_vimrc.is_mac = system('uname -s') =~# 'Darwin'
 
+" Whether this compute is a mac
+let g:jm_vimrc.has_python = has('python3')
+
 " Some system dependencies
 let g:jm_vimrc.deps.JavaClassnameList      = {-> []}
-let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "classpath list"')}
+let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "jars list"')}
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " }}}
@@ -109,7 +112,10 @@ Plug 'morhetz/gruvbox'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
 Plug 'godlygeek/tabular'
-Plug 'SirVer/ultisnips'
+if g:jm_vimrc.has_python
+  Plug 'SirVer/ultisnips'
+  Plug 'Valloric/YouCompleteMe'
+endif
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
@@ -136,7 +142,6 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
-Plug 'Valloric/YouCompleteMe'
 if exists("$BASIS")
   Plug $BASIS, { 'rtp': 'vim' }
 else
@@ -527,6 +532,11 @@ command! ToggleFoldOpenSearch
       \   echo "DISABLED foldopen search" |
       \ endif
 
+let g:jm_vimrc.docs.commands['PyHelp'] =
+      \ 'Look-up help for python expression (: PyHelp <pkg> <cls>)'
+command! -nargs=+ -bang PyHelp
+      \ call py3eval((<bang>0) ? printf('help(%s)', <q-args>) : printf('help(__import__("%s").%s)', <f-args>))
+
 let g:jm_vimrc.docs.commands['MakeOrSetup'] =
       \ 'Run blaze, make, or create a Makefile with included commands (using ; as separator)'
 command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
@@ -724,6 +734,7 @@ augroup ft_vim
     autocmd FileType vim nnoremap <buffer> <localleader>r
           \ :source %<cr>
     autocmd FileType vim nnoremap K :help <C-r><C-w><CR>
+    autocmd FileType vim iabbrev <buffer> \ <cr>\
 augroup END
 
 augroup ft_fish

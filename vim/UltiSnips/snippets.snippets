@@ -1,0 +1,22 @@
+priority -1
+
+snippet snip
+snippet ${1:name}
+	$0
+`!v 'endsnippet'`
+endsnippet
+
+snippet py
+\`!p snip.rv += ${1:'stuff'}\`
+endsnippet
+
+snippet vi
+\`!v ${1:'stuff'}\`
+endsnippet
+
+snippet gl "Global python definition"
+global !p
+def ${1:f}($2):
+	return ${3:'hello'}
+endglobal
+endsnippet
