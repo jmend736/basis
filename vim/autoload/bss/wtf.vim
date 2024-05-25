@@ -389,3 +389,41 @@ Pattern: (Assume \m)
     \%23c   : (/zero-width) Col 23
     \%23v   : (/zero-width) Virt col 23
 END
+
+let s:wtf_defaults.snip =<< END
+  A : auto-expansion
+  r : regex (any quotes)
+  b : beginning of line
+  i : in-word expansion
+  w : word boundary
+  t : do not expand tabs
+  s : remove whitespace at EOL
+  m : trim all whitespaces
+END
+
+let s:wtf_defaults.snipc =<< END
+  `<shell>`
+  `!v <expr>`
+  `!p snip.rv = <str>`
+      fn      - current file
+      path    - current file path
+      t[N]    - placeholders
+      context - context condition
+      match   - regex match
+      snip    - snippet util object
+        += L  - add line=L to snip.rv
+        >> N  - shift N
+        << N  - unshift N
+        rv    - return value
+        c     - text
+        v     - data related to ${VISUAL}
+        fn    - current file
+        ft    - current filetype
+        p     - last selected placeholder
+        basename - current file
+        mkline(line="", indent=None)
+        shift(amount=1)
+        unshift(amount=1)
+        reset_indent()
+        opt(var, default)
+END
