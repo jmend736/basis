@@ -64,8 +64,20 @@ snippet f "field" b
 private final ${1:String} ${2:`!p type_to_name(snip, t[1])`};$0
 endsnippet
 
+snippet f= "field" b
+private final ${1:String} ${2:`!p type_to_name(snip, t[1])`} = ${3:null};$0
+endsnippet
+
 snippet /f([P#padsfS]+)/ "field" r
 `!p modifiers(snip, match.group(1))` ${1:String} ${2:`!p type_to_name(snip, t[1])`};$0
+endsnippet
+
+snippet /f([P#padsfS]+)=/ "field" r
+`!p modifiers(snip, match.group(1))` ${1:String} ${2:`!p type_to_name(snip, t[1])`} = ${3:null};$0
+endsnippet
+
+snippet v "variable" b
+${1:String} ${2:`!p type_to_name(snip, t[1])`} = ${3:null};$0
 endsnippet
 
 snippet m "method"
@@ -200,18 +212,22 @@ snippet T= "Type, name, and value" i
 ${1:T} ${2:`!p type_to_name(snip, t[1])`} = ${3:new `!p type_to_name(snip, t[1])`($4)};
 endsnippet
 
-snippet S "String" i
-String
-endsnippet
-
-snippet L "List<T>" i
+snippet _L "List<T>" i
 List<${1:String}>
 endsnippet
 
-snippet M "Map<K, V>" i
+snippet _IL "ListenableFuture<T>" i
+ImmutableList<${1:String}>
+endsnippet
+
+snippet _IL.of "ListenableFuture<T>" i
+ImmutableList.of($1)$0
+endsnippet
+
+snippet _M "Map<K, V>" i
 Map<${1:String}, ${2:String}>
 endsnippet
 
-snippet LF "ListenableFuture<T>" i
+snippet _LF "ListenableFuture<T>" i
 ListenableFuture<${1:String}>
 endsnippet
