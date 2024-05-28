@@ -297,6 +297,8 @@ let g:slime_target = "tmux"
 " Will disable indent-based markdown code blocks
 let g:bss_markdown_fix = 1
 
+let g:bss_java_fix = 1
+
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_folding_disabled = 1
 let g:markdown_fold_style = 'nested'
@@ -734,7 +736,6 @@ augroup ft_vim
     autocmd FileType vim nnoremap <buffer> <localleader>r
           \ :source %<cr>
     autocmd FileType vim nnoremap K :help <C-r><C-w><CR>
-    autocmd FileType vim iabbrev <buffer> \ <cr>\
 augroup END
 
 augroup ft_fish
@@ -1127,6 +1128,40 @@ command! -nargs=* Bdz echom
       \   join([<f-args>], ' '),
       \   BlazeTarget() != '???' ? BlazeTarget() : ':__pkg__'
       \ ))
+
+command! -nargs=* -complete=customlist,<SID>JemFormatComplete JemFormat eval s:JemFormat[<q-args>]()
+let s:JemFormat = {
+      \   'help': {-> bss#PP(s:JemFormat, v:true)},
+      \ }
+function! s:JemFormatComplete(arglead, cmdline, curpos) abort
+  return keys(s:JemFormat)->filter({k, v -> !stridx(v, a:arglead)})
+endfunction
+
+function! s:JemFormat.format() abort dict
+  let command = self.find()
+  if !empty(command)
+    silent execute command
+  endif
+endfunction
+
+function! s:JemFormat.find() abort dict
+  let [_, num, col; _] = getcurpos()
+  let start_pat   = '\v.*for' .. 'mat: `([^`]+)`.*'
+  let end_pat     = '\v.*for' .. 'mat: END.*'
+  let start_lines = matchbufline(bufnr(), start_pat, 1, num)
+  let start_line  = bss#Last(start_lines)
+  let end_line    = start_line
+        \->bss#Get('lnum')
+        \->bss#Apply({l -> matchbufline(bufnr(), end_pat, l, '$')})
+        \->bss#Apply('bss#Last')
+        \->bss#Or('$')
+  if start_line is v:none
+    return ''
+  endif
+  let range   = [start_line.lnum + 1, end_line.lnum - 1]->join(',')
+  let command = substitute(start_line.text, start_pat, '\1', '')
+  return join([range, command], ' ')
+endfunction
 
 " }}} Misc
 
