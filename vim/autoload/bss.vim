@@ -129,6 +129,25 @@ function! bss#M(n, Fn) abort
   return bss#math#array#MapIndexed([a:n, a:n], a:Fn)
 endfunction
 
+" List Functions
+" ======================================================================
+
+function! bss#First(list) abort
+  return get(a:list, 0, v:none)
+endfunction
+
+function! bss#Last(list) abort
+  return get(a:list, len(a:list)-1, v:none)
+endfunction
+
+function! bss#Rest(list) abort
+  return empty(a:list) ? [] : a:list[1:len(a:list) - 1]
+endfunction
+
+function! bss#Most(list) abort
+  return empty(a:list) ? [] : a:list[:len(a:list) - 2]
+endfunction
+
 " Functional Programming Helpers
 " ======================================================================
 
@@ -142,6 +161,14 @@ endfunction
 " Useful function for using raw-lambdas when chaining
 function! bss#Then(v, Fn) abort
   return call(a:Fn, [a:v])
+endfunction
+
+function! bss#Apply(v, Fn) abort
+  return a:v is v:none ? v:none : call(a:Fn, [a:v])
+endfunction
+
+function! bss#Or(v, a) abort
+  return a:v is v:none ? a:a : a:v
 endfunction
 
 "
