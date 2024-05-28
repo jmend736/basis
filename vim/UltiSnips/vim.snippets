@@ -81,9 +81,12 @@ snippet ] "list" i
 endsnippet
 
 snippet comc
-command! -complete=customlist,<SID>$1Complete ${1:Name}
+command! -nargs=* -complete=customlist,<SID>$1Complete ${1:Name} eval s:$1[<q-args>]()
+let s:$1 = {
+			\   'help': {-> bss#PP(s:$1, v:true)},$2
+			\ }
 function! s:$1Complete(arglead, cmdline, curpos) abort
-	return ${3:[$2]}
+	return keys(s:$1)->filter({k, v -> !stridx(v, a:arglead)})
 endfunction$0
 endsnippet
 
