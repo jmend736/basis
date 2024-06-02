@@ -1,4 +1,74 @@
-"" Helpers for writing operators
+""
+" Helpers for writing operators
+"
+" OPERATOR USAGE
+"
+"   Using |g@| and 'operatorfunc' the general syntax
+"
+"   1.  Define the mapping
+"
+"       1.  `nnoremap <expr> <F4> Operator()` 
+"           :   Defines normal mode mapping
+"
+"       2.  `xnoremap <expr> <F4> Operator()` 
+"           :   Defines visual mode mapping
+"
+"       -   NOTE: With `<expr>`, the `Operator()` function returns a string with
+"                 keystrokes to use for the mapping.
+"
+"   2.  Mapping is invoked (eg. user pressing `<F4>` in normal mode).
+"
+"   3.  `Operator()` should:
+"
+"       -   Set the 'operatorfunc' option
+"       -   Return the string `g@`
+"
+"   4.  User will provide a motion after the operator
+"
+"   5.  Vim will call 'operatorfunc' with one of 3 arguments:
+"
+"       -   line  : Line-wise operations
+"       -   char  : Character-wise operations
+"       -   block : Block-wise operations
+"
+" HELPERS
+"
+"   bss#ops#Op(OpFn)
+"     Helper for steps (3) and (5). Given an update function which accepts the
+"     arguments:
+"
+"         OpFn(line, part, PartUpdater)
+"
+"     The `OpFn` should call `PartUpdater` if it wants to change the line.
+"
+"   bss#ops#Ranges()
+"     Helper for dealing with step (5). It yields the selected lines and indices
+"     of the start/end of the selection.
+"
+"   bss#ops#LinePartModifiers()
+"     A higher-level abstraction over bss#ops#Ranges() which returns the full
+"     line, the selected portion and a function that accepts text to replace the
+"     selected portion of the line.
+
+""
+" Helper for steps (3) and (5). Given an update function which accepts the
+" arguments:
+"
+"     OpFn(line, part, PartUpdater)
+"
+" The `OpFn` should call `PartUpdater` if it wants to change the line.
+"
+function! bss#ops#Op(OpFn, type = '__setup__') abort
+  if a:type == '__setup__'
+    let &operatorfunc = function('bss#ops#Ops', [a:OpFn])
+    return 'g@'
+  endif
+
+  for [l:line, l:part, l:PartUpdater] in bss#ops#LinePartModifiers(a:type)
+    call call(a:OpFn, [l:line, l:part, l:PartUpdater])
+  endfor
+endfunction
+
 
 ""
 " Given a beginning and ending locations, produces a lists that specify the
