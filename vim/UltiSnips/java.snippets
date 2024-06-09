@@ -72,6 +72,52 @@ def modifiers(snip, mods, default=''):
 
 endglobal
 
+# Packages
+
+snippet d.
+dagger.
+endsnippet
+
+snippet d.m
+dagger.multibindings.
+endsnippet
+
+snippet d.p
+dagger.producers.
+endsnippet
+
+snippet d.p.m
+dagger.producers.monitoring.
+endsnippet
+
+snippet j.u
+java.util.
+endsnippet
+
+snippet j.i
+java.io.
+endsnippet
+
+snippet j.cn
+java.util.concurrent.
+endsnippet
+
+snippet j.s
+java.util.stream.
+endsnippet
+
+snippet g.b
+com.google.common.base.
+endsnippet
+
+snippet g.c
+com.google.common.collect.
+endsnippet
+
+snippet g.cn
+com.google.common.util.concurrent.
+endsnippet
+
 # Core Language
 
 snippet pa
@@ -254,6 +300,8 @@ endsnippet
 snippet _LF "ListenableFuture<T>" i
 ListenableFuture<${1:String}>
 endsnippet
+
+# Misc Snippets
 
 snippet time
 {
