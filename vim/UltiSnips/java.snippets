@@ -51,6 +51,10 @@ def _type_to_name(text):
 	else:
 		return text[0].lower() + text[1:]
 
+def lambda_prefix_to_args(text):
+	args = (text or '').split(',')
+	return f'({", ".join(args)})'
+
 
 # Supports: [P#padsfS]+
 def modifiers(snip, mods, default=''):
@@ -140,13 +144,14 @@ snippet br "break"
 break
 endsnippet
 
-snippet -> "Lambda" i
-($1) -> ${2:{$3}}
+
+snippet /([a-zA-Z,]*)->/ "Lambda" r
+${2:`!p snip.rv = lambda_prefix_to_args(match.group(1))`} -> ${1:${VISUAL:\{\}/(.*\n.*)/{\n$1\n}/}}
 endsnippet
 
-snippet ->> "Multiline-lambda" i
-($1) -> {
-	return ${2:$1};
+snippet /([a-zA-Z,]*)->>/ "Multiline-lambda" r
+${2:`!p snip.rv = lambda_prefix_to_args(match.group(1))`} -> {
+	${1:${VISUAL:return null/;$//}};
 }$0
 endsnippet
 
