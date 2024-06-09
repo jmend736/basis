@@ -25,17 +25,21 @@ endif
 " Location{} Constructors
 " ---------------------------------------------------------------------------
 function! bss#draw#location#Location(bufnr, lnum, col) abort
-  let l:lnum = (a:lnum isnot v:none && a:lnum > 0) ? a:lnum : line('.')
-  let l:col  = (a:col isnot v:none && a:col > 0) ? a:col : col('.')
+  if !(a:lnum > 0 && a:col > 0 && a:bufnr > -1)
+    throw printf('ERROR(BadValue) Invalid specification {%s, %s, %s}', a:bufnr, a:lnum, a:col)
+  endif
   return extend(deepcopy(s:Location), {
-        \   'bufnr': (a:bufnr isnot v:none && a:bufnr > -1) ? a:bufnr : bufnr(),
-        \   'origin': [0, 0],
-        \   'vector': [l:lnum, l:col],
+        \   'bufnr'  : a:bufnr,
+        \   'lnum'   : a:lnum,
+        \   'col'    : a:col,
+        \   'origin' : [0, 0],
+        \   'vector' : [a:lnum, a:col],
         \ })
 endfunction
 
 function! bss#draw#location#CursorLocation() abort
-  return bss#draw#location#Location(v:none, v:none, v:none)
+  let [_, line, col; _] = getcursorcharpos()
+  return bss#draw#location#Location(bufnr(), line, col)
 endfunction
 
 function! bss#draw#location#ClearAllHighlights() abort
