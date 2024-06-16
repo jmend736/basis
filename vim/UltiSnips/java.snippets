@@ -57,6 +57,7 @@ def lambda_prefix_to_args(text):
 
 
 # Supports: [P#padsfS]+
+#  See {mapping} for details
 def modifiers(snip, mods, default=''):
 	mapping = {
 		'P': 'public',
@@ -68,7 +69,9 @@ def modifiers(snip, mods, default=''):
 		'f': 'final',
 		'S': 'synchronized',
 	}
-	snip.rv = " ".join([v for k, v in mapping.items() if k in (mods or default)]) + (' ' if (mods or default) else '')
+	after = ' ' if (mods or default) else ''
+	mod_strings = [v for k, v in mapping.items() if k in (mods or default)]
+	snip.rv = ' '.join(mod_strings) + after
 
 endglobal
 
@@ -163,7 +166,7 @@ snippet /\bm([P#padsfS]*)/ "method" r
 endsnippet
 
 snippet /\bcl([P#padsfS]*)/ "Class" r
-`!p modifiers(snip, match.group(1), 'P')`class ${1:Name} {
+`!p modifiers(snip, match.group(1), 'P')`class ${1:`!v expand('%:t:r')`} {
 	${2:${VISUAL}}
 }$0
 endsnippet
