@@ -12,7 +12,7 @@ snippet cls
 let s:${1:Name} = {
 			\   $2
 			\ }
-function! `!p autoload(snip)`$1Create($3) abort
+function! `!p autoload(snip, path)`$1Create($3) abort
 	return copy(s:$1)->extend({
 				\   $2
 				\ })
@@ -20,13 +20,13 @@ endfunction
 endsnippet
 
 snippet fn
-function! ${1:`!p autoload(snip)`Name}() abort
+function! ${1:`!p autoload(snip, path)`Name}() abort
 	$0
 endfunction
 endsnippet
 
 snippet fna
-function! `!p autoload(snip)`${1:Name}() abort
+function! `!p autoload(snip, path)`${1:Name}() abort
 	$0
 endfunction
 endsnippet

@@ -1,8 +1,8 @@
 from pathlib import Path
 import re
 
-def autoload(s):
-    s.rv = maybe_autoload(s.fn)
+def autoload(s, path):
+    s.rv = maybe_autoload(path)
 
 def maybe_autoload(fn):
     P = str(Path(fn).resolve())

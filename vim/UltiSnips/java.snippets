@@ -313,3 +313,10 @@ snippet time
 	System.out.format("Elapsed: %s\n", sw.elapsed());
 }
 endsnippet
+
+snippet test
+@Test
+public void ${1:givenX}_${2:thenY}() {
+	assertThat(null).isNull();
+}
+endsnippet

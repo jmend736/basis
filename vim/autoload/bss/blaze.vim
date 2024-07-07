@@ -85,3 +85,54 @@ function! bss#blaze#CompleteTargets(arg_lead, cmd_line, cursor_pos) abort
           \->filter('v:val =~# "' .. a:arg_lead .. '"')
   endif
 endfunction
+
+function! bss#blaze#MakeJavaWorkspace(name) abort
+
+  let files = {}
+
+  let files.WORKSPACE =<< trim eval END
+    load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+    GOOGLE_BAZEL_COMMON_COMMIT = "b41d50b173bc8121812485410899a241be7815cf";
+    GOOGLE_BAZEL_COMMON_SHA256 = "e9c428bd82741a5111df51de6609f450018ba6174d73f9d05954a0b16e4894dd";
+    http_archive(
+        name = "google_bazel_common",
+        sha256 = GOOGLE_BAZEL_COMMON_SHA256,
+        strip_prefix = "bazel-common-%s" % GOOGLE_BAZEL_COMMON_COMMIT,
+        urls = ["https://github.com/google/bazel-common/archive/%s.zip" % GOOGLE_BAZEL_COMMON_COMMIT],
+    )
+
+    load("@google_bazel_common//:workspace_defs.bzl", "google_common_workspace_rules")
+
+    google_common_workspace_rules()
+  END
+
+  let files.BUILD =<< trim eval END
+    java_binary(
+      name = "{a:name}",
+      srcs = ["{a:name}.java"],
+      main_class = "{a:name}",
+      deps = [
+        "@google_bazel_common//third_party/java/guava"
+      ],
+    )
+  END
+
+  let files[a:name] =<< trim eval END
+    import com.google.common.collect.ImmutableList;
+
+    public class {a:name} {
+      public static void main(String[] args) {
+        System.out.println(ImmutableList.of(1, 3, 2));
+      }
+    }
+  END
+
+  for [filename, contents] in items(files)
+    if !filereadable(filename)
+      call writefile(contents, filename)
+      echom $">>> Wrote {filename}"
+    endif
+  endfor
+
+endfunction

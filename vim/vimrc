@@ -78,10 +78,7 @@ let g:jm_vimrc.is_mac = system('uname -s') =~# 'Darwin'
 let g:jm_vimrc.has_python = has('python3')
 
 " Some system dependencies
-let g:jm_vimrc.deps.jars = [
-      \   '/usr/lib/jvm/java-21-openjdk-amd64/jmods/java.base.jmod'
-      \ ]
-let g:jm_vimrc.deps.JavaClassnameList      = {-> s:ClassesInJars(g:jm_vimrc.deps.jars)}
+let g:jm_vimrc.deps.JavaClassnameList      = {-> systemlist('fish -c "classpath list-all-classes"')}
 let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "jars list"')}
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
@@ -294,6 +291,8 @@ let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 "let g:lsc_enable_autocomplete = v:true
 "let g:lsc_auto_map = v:true
 
+let g:ycm_auto_trigger = 1
+let g:ycm_disable_signature_help = 1
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
@@ -418,9 +417,9 @@ let g:jm_vimrc.docs.mappings['\\'] =
       \ 'Show :tags'
 nnoremap <leader><leader> :tags<cr>
 
-let g:jm_vimrc.docs.mappings['\S'] =
-      \ 'Make session'
-nnoremap <leader>S :mksession<cr>
+let g:jm_vimrc.docs.mappings['\s'] =
+      \ 'Refresh UltSnips snippets'
+nnoremap <leader>s :call UltiSnips#RefreshSnippets()<cr>
 
 let g:jm_vimrc.docs.mappings['\<Space>'] =
       \ 'Toggle foldcolumn'
@@ -672,7 +671,10 @@ augroup ft_java
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
-    if filereadable('WORKSPACE')
+    if filereadable('Makefile')
+      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+            \ :Term make<cr>
+    elseif filereadable('WORKSPACE')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
             \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     elseif filereadable('gradlew')
@@ -839,8 +841,10 @@ function! s:AddImport(import) abort
     let l:result = search(a:import, 'nw')
     if l:result == 0
       let l:start = search('^import', 'nw')
-      if l:start == -1
-        let l:start = 1 + search('^package', 'nw')
+      if l:start == 0
+        let l:start = search('^package', 'nw')
+        call append(l:start, [""])
+        let l:start += 1
       endif
       call append(l:start, [a:import])
       "execute '1,1FormatLines'
@@ -1170,7 +1174,8 @@ endfunction
 
 function! s:ClassesInJars(jars) abort
   for l:jar in a:jars
-    echom systemlist(printf('jar tf %s', l:jar))
+    let l:classes = systemlist(printf('jar tf %s', l:jar))
+          \->filter('v:val =~')
   endfor
 endfunction
 
@@ -1187,83 +1192,85 @@ call bss#wtf#AddDict(['commands', 'c'], g:jm_vimrc.docs.commands)
 " imported before trying any other method to find the import.
 " Java Import Cache: {{{
 let g:jm_vimrc.java_import_cache = #{
-      \   Map              : 'java.util.Map',
-      \   Set              : 'java.util.Set',
-      \   Stream           : 'java.util.stream.Stream',
-      \   Collectors       : 'java.util.stream.Collectors',
-      \   Collector        : 'java.util.stream.Collector',
-      \   List             : 'java.util.List',
-      \   ArrayList        : 'java.util.ArrayList',
-      \   LinkedList       : 'java.util.LinkedList',
-      \   Iterator         : 'java.util.Iterator',
-      \   Optional         : 'java.util.Optional',
-      \   HashSet          : 'java.util.HashSet',
-      \   HashMap          : 'java.util.HashMap',
-      \   TreeMap          : 'java.util.TreeMap',
-      \   TreeSet          : 'java.util.TreeSet',
-      \   Arrays           : 'java.util.Arrays',
-      \   Collection       : 'java.util.Collection',
-      \   OrderedMap       : 'java.util.OrderedMap',
-      \   NavigableMap     : 'java.util.NavigableMap',
-      \   Consumer         : 'java.util.function.Consumer',
-      \   Predicate        : 'java.util.function.Predicate',
-      \   Function         : 'java.util.function.Function',
-      \   Supplier         : 'java.util.function.Supplier',
-      \   ImmutableList    : 'com.google.common.collect.ImmutableList',
-      \   Lists            : 'com.google.common.collect.Lists',
-      \   ImmutableSet     : 'com.google.common.collect.ImmutableSet',
-      \   Streams          : 'com.google.common.collect.Streams',
-      \   Table            : 'com.google.common.collect.Table',
-      \   Tables           : 'com.google.common.collect.Tables',
-      \   ImmutableTable   : 'com.google.common.collect.ImmutableTable',
-      \   toImmutableList  : 'static com.google.common.collect.ImmutableList.toImmutableList',
-      \   toImmutableSet   : 'static com.google.common.collect.ImmutableSet.toImmutableSet',
-      \   ImmutableMap     : 'com.google.common.collect.ImmutableMap',
-      \   Provider         : 'javax.inject.Provider',
-      \   Inject           : 'javax.inject.Inject',
-      \   Qualifier        : 'javax.inject.Qualifier',
-      \   Singleton        : 'javax.inject.Singleton',
-      \   Binds            : 'dagger.Binds',
-      \   Module           : 'dagger.Module',
-      \   Component        : 'dagger.Component',
-      \   Provides         : 'dagger.Provides',
-      \   Multibinds       : 'dagger.multibindings.Multibinds',
-      \   IntoSet          : 'dagger.multibindings.IntoSet',
-      \   IntoMap          : 'dagger.multibindings.IntoMap',
-      \   IntKey           : 'dagger.multibindings.IntKey',
-      \   LongKey          : 'dagger.multibindings.LongKey',
-      \   StringKey        : 'dagger.multibindings.StringKey',
-      \   ClassKey         : 'dagger.multibindings.ClassKey',
-      \   ElementsIntoSet  : 'dagger.multibindings.ElementsIntoSet',
-      \   MapKey           : 'dagger.MapKey',
-      \   Path             : 'java.nio.file.Path',
-      \   Files            : 'java.nio.file.Files',
-      \   ClassReader      : 'org.objectweb.asm.ClassReader',
-      \   ClassWriter      : 'org.objectweb.asm.ClassWriter',
-      \   ClassVisitor     : 'org.objectweb.asm.ClassVisitor',
-      \   Opcodes          : 'org.objectweb.asm.Opcodes',
-      \   FieldVisitor     : 'org.objectweb.asm.FieldVisitor',
-      \   MethodVisitor    : 'org.objectweb.asm.MethodVisitor',
-      \   TypePath         : 'org.objectweb.asm.TypePath',
-      \   Modifier         : 'java.lang.reflect.Modifier',
-      \   Executable       : 'java.lang.reflect.Executable',
-      \   Field            : 'java.lang.reflect.Field',
-      \   Method           : 'java.lang.reflect.Method',
-      \   Type             : 'java.lang.reflect.Type',
-      \   AnnotatedElement : 'java.lang.reflect.AnnotatedElement',
-      \   Executor: 'java.util.concurrent.Executor',
-      \   Future: 'java.util.concurrent.Future',
-      \   ExecutorService: 'java.util.concurrent.ExecutorService',
-      \   Executors: 'java.util.concurrent.Executors',
-      \   TimeUnit: 'java.util.concurrent.TimeUnit',
-      \   ThreadPoolExecutor: 'java.util.concurrent.ThreadPoolExecutor',
-      \   AtomicInteger: 'java.util.concurrent.atomic.AtomicInteger',
-      \   AtomicLong: 'java.util.concurrent.atomic.AtomicLong',
-      \   LongAdder: 'java.util.concurrent.atomic.LongAdder',
-      \   Stats: 'com.google.common.math.Stats',
-      \   Stopwatch: 'com.google.common.base.Stopwatch',
-      \   StatsAccumulator: 'com.google.common.math.StatsAccumulator',
-      \   ConcurrentHashMap: 'java.util.concurrent.ConcurrentHashMap',
+      \   Map                : 'java.util.Map',
+      \   Set                : 'java.util.Set',
+      \   Stream             : 'java.util.stream.Stream',
+      \   Collectors         : 'java.util.stream.Collectors',
+      \   Collector          : 'java.util.stream.Collector',
+      \   List               : 'java.util.List',
+      \   ArrayList          : 'java.util.ArrayList',
+      \   LinkedList         : 'java.util.LinkedList',
+      \   Iterator           : 'java.util.Iterator',
+      \   Optional           : 'java.util.Optional',
+      \   HashSet            : 'java.util.HashSet',
+      \   HashMap            : 'java.util.HashMap',
+      \   TreeMap            : 'java.util.TreeMap',
+      \   TreeSet            : 'java.util.TreeSet',
+      \   Arrays             : 'java.util.Arrays',
+      \   Collection         : 'java.util.Collection',
+      \   OrderedMap         : 'java.util.OrderedMap',
+      \   NavigableMap       : 'java.util.NavigableMap',
+      \   Consumer           : 'java.util.function.Consumer',
+      \   Predicate          : 'java.util.function.Predicate',
+      \   Function           : 'java.util.function.Function',
+      \   Supplier           : 'java.util.function.Supplier',
+      \   ImmutableList      : 'com.google.common.collect.ImmutableList',
+      \   Lists              : 'com.google.common.collect.Lists',
+      \   ImmutableSet       : 'com.google.common.collect.ImmutableSet',
+      \   Streams            : 'com.google.common.collect.Streams',
+      \   Table              : 'com.google.common.collect.Table',
+      \   Tables             : 'com.google.common.collect.Tables',
+      \   ImmutableTable     : 'com.google.common.collect.ImmutableTable',
+      \   toImmutableList    : 'static com.google.common.collect.ImmutableList.toImmutableList',
+      \   toImmutableSet     : 'static com.google.common.collect.ImmutableSet.toImmutableSet',
+      \   ImmutableMap       : 'com.google.common.collect.ImmutableMap',
+      \   Provider           : 'javax.inject.Provider',
+      \   Inject             : 'javax.inject.Inject',
+      \   Qualifier          : 'javax.inject.Qualifier',
+      \   Singleton          : 'javax.inject.Singleton',
+      \   Binds              : 'dagger.Binds',
+      \   Module             : 'dagger.Module',
+      \   Component          : 'dagger.Component',
+      \   Provides           : 'dagger.Provides',
+      \   Multibinds         : 'dagger.multibindings.Multibinds',
+      \   IntoSet            : 'dagger.multibindings.IntoSet',
+      \   IntoMap            : 'dagger.multibindings.IntoMap',
+      \   IntKey             : 'dagger.multibindings.IntKey',
+      \   LongKey            : 'dagger.multibindings.LongKey',
+      \   StringKey          : 'dagger.multibindings.StringKey',
+      \   ClassKey           : 'dagger.multibindings.ClassKey',
+      \   ElementsIntoSet    : 'dagger.multibindings.ElementsIntoSet',
+      \   MapKey             : 'dagger.MapKey',
+      \   Path               : 'java.nio.file.Path',
+      \   Files              : 'java.nio.file.Files',
+      \   ClassReader        : 'org.objectweb.asm.ClassReader',
+      \   ClassWriter        : 'org.objectweb.asm.ClassWriter',
+      \   ClassVisitor       : 'org.objectweb.asm.ClassVisitor',
+      \   Opcodes            : 'org.objectweb.asm.Opcodes',
+      \   FieldVisitor       : 'org.objectweb.asm.FieldVisitor',
+      \   MethodVisitor      : 'org.objectweb.asm.MethodVisitor',
+      \   TypePath           : 'org.objectweb.asm.TypePath',
+      \   Modifier           : 'java.lang.reflect.Modifier',
+      \   Executable         : 'java.lang.reflect.Executable',
+      \   Field              : 'java.lang.reflect.Field',
+      \   Method             : 'java.lang.reflect.Method',
+      \   Type               : 'java.lang.reflect.Type',
+      \   AnnotatedElement   : 'java.lang.reflect.AnnotatedElement',
+      \   Executor           : 'java.util.concurrent.Executor',
+      \   Future             : 'java.util.concurrent.Future',
+      \   ExecutorService    : 'java.util.concurrent.ExecutorService',
+      \   Executors          : 'java.util.concurrent.Executors',
+      \   TimeUnit           : 'java.util.concurrent.TimeUnit',
+      \   ThreadPoolExecutor : 'java.util.concurrent.ThreadPoolExecutor',
+      \   AtomicInteger      : 'java.util.concurrent.atomic.AtomicInteger',
+      \   AtomicLong         : 'java.util.concurrent.atomic.AtomicLong',
+      \   LongAdder          : 'java.util.concurrent.atomic.LongAdder',
+      \   Stats              : 'com.google.common.math.Stats',
+      \   Stopwatch          : 'com.google.common.base.Stopwatch',
+      \   StatsAccumulator   : 'com.google.common.math.StatsAccumulator',
+      \   ConcurrentHashMap  : 'java.util.concurrent.ConcurrentHashMap',
+      \   assertThat         : 'static com.google.common.truth.Truth.assertThat',
+      \   assertWithMessage  : 'static com.google.common.truth.Truth.assertWithMessage',
       \ }
 " }}} Java Import Cache
 
