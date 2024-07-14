@@ -255,3 +255,13 @@ function! bss#Try(Fn) abort
     endfor
   endtry
 endfunction
+
+function! bss#DumpAndThrow(exception) abort
+  try
+    throw a:exception
+  catch /.*/
+    call bss#DumpCurrentException()
+    throw v:exception
+  endtry
+  throw 'ERROR(Failure): Failed to throw error?'
+endfunction
