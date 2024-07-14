@@ -14,7 +14,7 @@ function! s:Write(files, writer, context='') abort
   for [filename, contents] in items(a:files)
     let path = maktaba#path#Join([a:context, filename])
     if type(contents) is v:t_dict
-      call a:writer.mkdir(filename)
+      call a:writer.mkdir(path)
       call s:Write(contents, a:writer, path)
     elseif type(contents) is v:t_list
       call a:writer.write(contents, path)
