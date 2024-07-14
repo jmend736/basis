@@ -243,3 +243,15 @@ function! bss#DumpCurrentException() abort
     echom '  at' elem
   endfor
 endfunction
+
+function! bss#Try(Fn) abort
+  try
+    call a:Fn()
+  catch /.*/
+    echom v:exception
+    PP! {get(a:Fn, 'name'): a:Fn}
+    for elem in v:throwpoint->split('\.\.')->reverse()
+      echom '  at' elem
+    endfor
+  endtry
+endfunction
