@@ -19,7 +19,7 @@ call s:Write({
       \   }
       \ })
 
-call s:Test('invalidFile -> throwsWrongType')
+call s:Test('invalidFile -> throwsWrongType (expected exception)')
 try
   call s:Write({
         \   'main/src/java/com/example': {
@@ -28,7 +28,6 @@ try
         \   }
         \ })
 catch /ERROR/
-  echom "Expect number instead of list error:"
   call bss#DumpCurrentException()
 endtry
 
@@ -44,3 +43,10 @@ call s:Write({
       \   },
       \   $"{name}/src/test/java/{package}": {}
       \ })
+
+call s:Test('Test Failing (expected exception)')
+try
+  call s:Write({'hello': 10})
+catch /ERROR/
+  call bss#DumpCurrentException()
+endtry

@@ -16,8 +16,10 @@ function! s:Write(files, writer, context='') abort
     if type(contents) is v:t_dict
       call a:writer.mkdir(filename)
       call s:Write(contents, a:writer, path)
-    else
+    elseif type(contents) is v:t_list
       call a:writer.write(contents, path)
+    else
+      throw $'ERROR(InvalidArguments): {{contents}} must be a string or dict, instead got {string(contents)}'
     endif
   endfor
 endfunction
@@ -74,11 +76,4 @@ function! s:WriterProto.mkdir(path) abort
           \   { -> mkdir(a:path, 'p')}
           \ )
   endif
-endfunction
-
-function! bss#tmpl#GradleSubproject(name, package) abort
-  call bss#tmpl#Write({
-        \   $"{a:name}/src/main/java/{a:package}": {}
-        \   $"{a:name}/src/test/java/{a:package}": {}
-        \ })
 endfunction
