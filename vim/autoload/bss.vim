@@ -234,3 +234,12 @@ endfunction
 function! bss#VecDot(...) abort
   return call('bss#math#vec#Dot', a:000)
 endfunction
+
+" Exception Handling
+" ======================================================================
+function! bss#DumpCurrentException() abort
+  echom v:exception
+  for elem in v:throwpoint->split('\.\.')->reverse()
+    echom '  at' elem
+  endfor
+endfunction
