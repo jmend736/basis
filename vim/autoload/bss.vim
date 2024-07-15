@@ -244,9 +244,9 @@ function! bss#DumpCurrentException() abort
   endfor
 endfunction
 
-function! bss#Try(Fn) abort
+function! bss#Try(Fn, args=[]) abort
   try
-    return a:Fn()
+    return call(a:Fn, a:args)
   catch /.*/
     echom v:exception
     PP! {get(a:Fn, 'name'): a:Fn}
