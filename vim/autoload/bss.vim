@@ -246,7 +246,7 @@ endfunction
 
 function! bss#Try(Fn) abort
   try
-    call a:Fn()
+    return a:Fn()
   catch /.*/
     echom v:exception
     PP! {get(a:Fn, 'name'): a:Fn}
