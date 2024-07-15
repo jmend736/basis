@@ -9,11 +9,11 @@ echom ${VISUAL}$0
 endsnippet
 
 snippet cls
-let s:${1:Name} = {
-			\   $2
-			\ }
-function! `!p autoload(snip, path)`$1Create($3) abort
-	return copy(s:$1)->extend({
+" format: `EasyAlign :g/\\/`
+let s:${1:Name}Proto = {}
+" format: END
+function! `!p autoload(snip, path)`$1($3) abort
+	return copy(s:$1Proto)->extend({
 				\   $2
 				\ })
 endfunction
