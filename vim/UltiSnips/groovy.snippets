@@ -1,0 +1,12 @@
+priority -1
+
+snippet header
+plugins { id 'java-library' }
+repositories { mavenCentral() }
+dependencies {
+	implementation libs.guava
+	testImplementation 'com.google.truth:truth:1.4.4'
+}
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+testing { suites { test { useJUnitJupiter('5.10.1') } } }
+endsnippet
