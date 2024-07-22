@@ -18,7 +18,7 @@ if !exists('g:bss_blaze_command')
   let g:bss_blaze_cmd = 'blaze'
 endif
 
-function! bss#blaze#BlazeTargets() abort
+function! bss#blaze#BlazeTargets(fname) abort
   let l:query = printf(
         \   'same_pkg_direct_rdeps(%s)',
         \   fnamemodify(a:fname, ":p:."),
