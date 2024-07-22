@@ -2,10 +2,10 @@
 " bss#view#View({args})
 "   Create a new unopened view
 "
-" bss#view#TermView()
+" bss#view#TermView([args])
 "   Create a new unopened view, oriented towards being :term output
 "
-" bss#view#ScratchView()
+" bss#view#ScratchView([args])
 "   Create a new unopened view, for scratch work
 "
 " bss#view#DataView({data}, with_methods = v:true)
@@ -16,30 +16,31 @@
 "
 
 let s:View = {
-      \   'bufnr': v:none,
-      \   'winid': v:none,
-      \   'options': [],
-      \   'vars': {},
+      \   'bufnr'   : v:none,
+      \   'winid'   : v:none,
+      \   'options' : [],
+      \   'vars'    : {},
       \ }
 
-function! bss#view#View(args) abort
-  return extend(deepcopy(s:View), a:args)
+function! bss#view#View(...) abort
+  let instance = deepcopy(s:View)
+  return mapnew(a:000, {i, args -> instance.Extend(args)})[-1]
 endfunction
 
 function! bss#view#TermView(args = {}) abort
-  return bss#view#View(extend({
+  return bss#view#View({
         \   'options': [
         \     'nobuflisted',
         \     'winfixwidth',
         \     'nonumber',
         \     'norelativenumber',
         \   ],
-        \ }),
+        \ },
         \ a:args)
 endfunction
 
 function! bss#view#ScratchView(args = {}) abort
-  return bss#view#View(extend({
+  return bss#view#View({
         \   'options': [
         \     'bufhidden=wipe',
         \     'buftype=nofile',
@@ -49,18 +50,19 @@ function! bss#view#ScratchView(args = {}) abort
         \     'nonumber',
         \     'norelativenumber',
         \   ],
-        \ }),
+        \ },
         \ a:args)
 endfunction
 
 function! bss#view#DataView(data, with_methods = v:false) abort
-  let l:view = bss#view#ScratchView()
-  eval l:view.options->extend([
-        \   'ft=vim',
-        \   'foldmethod=expr',
-        \   "foldexpr=bss#fold#FromString('{}[]')",
-        \   'foldcolumn=4'
-        \ ])
+  let l:view = bss#view#ScratchView({
+        \   'options': [
+        \     'ft=vim',
+        \     'foldmethod=expr',
+        \     "foldexpr=bss#fold#FromString('{}[]')",
+        \     'foldcolumn=4'
+        \   ]
+        \ })
   eval l:view
         \.Open()
         \.SetLines(bss#pretty#PPLines(a:data, a:with_methods))
@@ -71,7 +73,23 @@ function! bss#view#JsonView(json, with_methods = v:false) abort
   return bss#view#DataView(json_decode(a:json))
 endfunction
 
-function! s:View.Open() abort
+function! s:View.Extend(args) abort dict
+  if has_key(a:args, 'bufnr')
+    let self.bufnr = a:args.bufnr
+  endif
+  if has_key(a:args, 'winid')
+    let self.winid = a:args.winid
+  endif
+  if has_key(a:args, 'options')
+    eval self.options->extend(a:args.options)
+  endif
+  if has_key(a:args, 'vars')
+    eval self.vars->extend(a:args.vars)
+  endif
+  return self
+endfunction
+
+function! s:View.Open() abort dict
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()
