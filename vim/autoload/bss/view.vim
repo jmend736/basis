@@ -26,19 +26,20 @@ function! bss#view#View(args) abort
   return extend(deepcopy(s:View), a:args)
 endfunction
 
-function! bss#view#TermView() abort
-  return bss#view#View({
+function! bss#view#TermView(args = {}) abort
+  return bss#view#View(extend({
         \   'options': [
         \     'nobuflisted',
         \     'winfixwidth',
         \     'nonumber',
         \     'norelativenumber',
         \   ],
-        \ })
+        \ }),
+        \ a:args)
 endfunction
 
-function! bss#view#ScratchView() abort
-  return bss#view#View({
+function! bss#view#ScratchView(args = {}) abort
+  return bss#view#View(extend({
         \   'options': [
         \     'bufhidden=wipe',
         \     'buftype=nofile',
@@ -48,7 +49,8 @@ function! bss#view#ScratchView() abort
         \     'nonumber',
         \     'norelativenumber',
         \   ],
-        \ })
+        \ }),
+        \ a:args)
 endfunction
 
 function! bss#view#DataView(data, with_methods = v:false) abort
