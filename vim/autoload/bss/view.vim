@@ -178,6 +178,22 @@ function! s:View.Append(msg) abort
   return self
 endfunction
 
+function! s:View.SetBufVar(varname, value) abort dict
+  if self.CheckValid("View.SetBufVar()")
+    call setbufvar(self.bufnr, a:varname, a:value)
+  endif
+  return self
+endfunction
+
+function! s:View.SetBufVars(vars) abort dict
+  if self.CheckValid("View.SetBufVars()")
+    for [name, value] in items(a:vars)
+      call setbufvar(self.bufnr, name, value)
+    endfor
+  endif
+  return self
+endfunction
+
 function! s:View.Clear() abort
   if self.CheckValid("View.Clear()")
     call deletebufline(self.bufnr, 1, line('$', self.winid))
