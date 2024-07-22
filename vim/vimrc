@@ -71,10 +71,10 @@ let g:jm_vimrc.deps = #{
       \   python: 'python3',
       \ }
 
-" Whether this compute is a mac
+" Whether this computer is a mac
 let g:jm_vimrc.is_mac = system('uname -s') =~# 'Darwin'
 
-" Whether this compute is a mac
+" Whether python is supported
 let g:jm_vimrc.has_python = has('python3')
 
 " Some system dependencies
@@ -87,6 +87,8 @@ let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " Playground: {{{
 let s:pg_items = (g:jm_vimrc.is_mac)
       \ ? #{
+      \     co: 'Files ~/Playground',
+      \     cj: 'Files ~/Playground/jdk/src/java.base/share/classes',
       \     pg: 'Files ~/Playground',
       \     n:  'Files ~/Playground/jmendio/n',
       \     v:  'edit ~/.vimrc',
@@ -685,6 +687,20 @@ augroup ft_java
           \ :Term ./gradlew run<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
 augroup END
+
+augroup ft_jar
+  autocmd!
+  autocmd FileType jar
+        \ call zip#Browse(expand("<amatch>"))
+augroup END
+
+augroup ft_class
+  autocmd!
+  autocmd BufReadCmd *.class
+        \ call bss#java#javap#Browse(expand("<amatch>"))
+augroup END
+
+
 
 augroup ft_javascript
     autocmd!
