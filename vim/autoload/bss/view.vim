@@ -20,16 +20,15 @@
 "       'vars'    : dict<string, any>,
 "     }
 "
-" public:
-"
-"   s:View.Extend({args})
-"     Extend the View{} instance.
+" Buffer/Window Operations:
 "
 "   s:View.Open()
 "     Ensures buf/win are open and valid, and, preserves cursor.
 "
 "   s:View.Setup()
 "     Configures the current buffer's options and variables.
+"
+" Buffer/Window Execution:
 "
 "   s:View.Run({cmd})
 "     Runs :term {cmd} using View for output.
@@ -40,28 +39,37 @@
 "   s:View.Call({Fn}, [args]...)
 "     Calls {Fn} with {args} while cursor is in View.
 "
+"
+" Buffer Operations:
+"
+"   s:View.SetLines({lines})
+"     Replaces all lines View's buffer with {lines}.
+"
 "   s:View.Append({line})
 "     Appends lines {line} to buffer
 "
 "   s:View.Append([{line}...])
 "     Appends all lines [{line}...] to buffer
 "
-"   s:View.SetBufVar({name}, {value})
-"     Sets b:{name} to {value} for View.
-"
-"   s:View.SetBufVars({vars})
-"     Extends View's b: dict with {vars}.
-"
 "   s:View.Clear()
 "     Clear all lines in View's buffer
 "
-"   s:View.SetLines({lines})
-"     Replaces all lines View's buffer with {lines}.
+"
+" Buffer Variable:
 "
 "   s:View.Get({name})
 "     Get b:{name} from View's buffer.
 "
-" private:
+"   s:View.Set({name}, {value})
+"     Sets b:{name} to {value} for View.
+"
+"   s:View.SetAll({vars})
+"     Extends View's b: dict with {vars}.
+"
+" internal:
+"
+"   s:View.Extend({args})
+"     Extend the View{} instance.
 "
 "   s:View.IsValid()
 "     Configures the buffer's options and variables.
@@ -252,15 +260,22 @@ function! s:View.Append(line_or_lines) abort
   return self
 endfunction
 
-function! s:View.SetBufVar(varname, value) abort dict
-  if self.CheckValid("View.SetBufVar()")
+function! s:View.Get(name) abort
+  if self.CheckValid("View.Get()")
+    return getbufvar(self.bufnr, a:name, v:none)
+  endif
+  return v:none
+endfunction
+
+function! s:View.Set(varname, value) abort dict
+  if self.CheckValid("View.Set()")
     call setbufvar(self.bufnr, a:varname, a:value)
   endif
   return self
 endfunction
 
-function! s:View.SetBufVars(vars) abort dict
-  if self.CheckValid("View.SetBufVars()")
+function! s:View.SetAll(vars) abort dict
+  if self.CheckValid("View.SetAll()")
     for [name, value] in items(a:vars)
       call setbufvar(self.bufnr, name, value)
     endfor
@@ -282,11 +297,4 @@ function! s:View.SetLines(lines) abort
     call deletebufline(self.bufnr, 1)
   endif
   return self
-endfunction
-
-function! s:View.Get(name) abort
-  if self.CheckValid("View.Get()")
-    return getbufvar(self.bufnr, a:name, v:none)
-  endif
-  return v:none
 endfunction
