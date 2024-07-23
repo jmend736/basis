@@ -57,14 +57,23 @@
 "
 " Buffer Variable:
 "
-"   s:View.Get({name})
-"     Get b:{name} from View's buffer.
+"   s:View.Get({name}, [default])
+"     Get b:{name} (or [default]) from View's buffer.
 "
 "   s:View.Set({name}, {value})
 "     Sets b:{name} to {value} for View.
 "
 "   s:View.SetAll({vars})
 "     Extends View's b: dict with {vars}.
+"
+"   s:View.Compute({name}, {Fn(name, value | v:none)})
+"     Computes the value of b:{name}
+"
+"   s:View.ComputeIfPresent({name}, {Fn(name, value | v:none)})
+"     Computes the value of b:{name} only if it's present
+"
+"   s:View.ComputeIfAbsent({name}, {Fn(name)})
+"     Computes the value of b:{name} only if it's missing
 "
 " internal:
 "
@@ -192,7 +201,7 @@ endfunction
 function! s:View.CheckValid(name) abort dict
   let l:valid = self.IsValid()
   if !l:valid
-    throw "ERROR(InvalidView): " .. a:name .. " must be called while view is valid!"
+    throw "ERROR(InvalidView): " .. a:name .. " must be called while view is valid! (Call s:View.Open())"
   end
   return l:valid
 endfunction
@@ -260,16 +269,44 @@ function! s:View.Append(line_or_lines) abort
   return self
 endfunction
 
-function! s:View.Get(name) abort
+function! s:View.Get(name, default=v:none) abort
   if self.CheckValid("View.Get()")
-    return getbufvar(self.bufnr, a:name, v:none)
+    return getbufvar(self.bufnr, a:name, a:default)
   endif
   return v:none
 endfunction
 
-function! s:View.Set(varname, value) abort dict
+function! s:View.Set(name, value) abort dict
   if self.CheckValid("View.Set()")
-    call setbufvar(self.bufnr, a:varname, a:value)
+    call setbufvar(self.bufnr, a:name, a:value)
+  endif
+  return self
+endfunction
+
+function! s:View.Compute(name, Fn_name_value) abort dict
+  if self.CheckValid("View.Compute()")
+    let l:value = getbufvar(self.bufnr, a:name, v:none)
+    call setbufvar(self.bufnr, a:name, a:Fn_name_value(a:name, l:value))
+  endif
+  return self
+endfunction
+
+function! s:View.ComputeIfAbsent(name, Fn_name) abort dict
+  if self.CheckValid("View.ComputeIfAbsent()")
+    let l:value = getbufvar(self.bufnr, a:name, v:none)
+    if l:value is v:none
+      call setbufvar(self.bufnr, a:name, a:Fn_name(a:name))
+    endif
+  endif
+  return self
+endfunction
+
+function! s:View.ComputeIfPresent(name, Fn_name_value) abort dict
+  if self.CheckValid("View.ComputeIfAbsent()")
+    let l:value = getbufvar(self.bufnr, a:name, v:none)
+    if l:value isnot v:none
+      call setbufvar(self.bufnr, a:name, a:Fn_name_value(a:name, l:value))
+    endif
   endif
   return self
 endfunction
