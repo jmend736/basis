@@ -1,18 +1,74 @@
 "
-" bss#view#View({args})
-"   Create a new unopened view
+" bss#view#View([args]...)
+"   Creates a new unopened view
 "
-" bss#view#TermView([args])
-"   Create a new unopened view, oriented towards being :term output
+" bss#view#TermView([args]...)
+"   Creates a new unopened view, oriented towards being :term output
 "
-" bss#view#ScratchView([args])
-"   Create a new unopened view, for scratch work
+" bss#view#ScratchView([args]...)
+"   Creates a new unopened view, for scratch work
 "
 " bss#view#DataView({data}, with_methods = v:true)
-"   Create a new opened view, for scratch work
+"   Creates a new opened view, for scratch work
 "
 " {args}:
-"   Used to extend s:View
+"   Pattern:
+"     {
+"       'bufnr'   : ( <bufnr> | 'current' ),
+"       'winid'   : ( <winid> | 'current' ),
+"       'options' : list<string>,
+"       'vars'    : dict<string, any>,
+"     }
+"
+" public:
+"
+"   s:View.Extend({args})
+"     Extend the View{} instance.
+"
+"   s:View.Open()
+"     Ensures buf/win are open and valid, and, preserves cursor.
+"
+"   s:View.Setup()
+"     Configures the current buffer's options and variables.
+"
+"   s:View.Run({cmd})
+"     Runs :term {cmd} using View for output.
+"
+"   s:View.Exec({src})
+"     Runs :execute {src} while cursor is in View.
+"
+"   s:View.Call({Fn}, [args]...)
+"     Calls {Fn} with {args} while cursor is in View.
+"
+"   s:View.Append({line})
+"     Appends lines {line} to buffer
+"
+"   s:View.Append([{line}...])
+"     Appends all lines [{line}...] to buffer
+"
+"   s:View.SetBufVar({name}, {value})
+"     Sets b:{name} to {value} for View.
+"
+"   s:View.SetBufVars({vars})
+"     Extends View's b: dict with {vars}.
+"
+"   s:View.Clear()
+"     Clear all lines in View's buffer
+"
+"   s:View.SetLines({lines})
+"     Replaces all lines View's buffer with {lines}.
+"
+"   s:View.Get({name})
+"     Get b:{name} from View's buffer.
+"
+" private:
+"
+"   s:View.IsValid()
+"     Configures the buffer's options and variables.
+"
+"   s:View.GoToWindow()
+"     Moves cursor to View's window, creating & configuring the window if none
+"     exists.
 "
 
 let s:View = {
@@ -24,7 +80,10 @@ let s:View = {
 
 function! bss#view#View(...) abort
   let instance = deepcopy(s:View)
-  return mapnew(a:000, {i, args -> instance.Extend(args)})[-1]
+  for args in a:000
+    call instance.Extend(args)
+  endfor
+  return instance
 endfunction
 
 function! bss#view#TermView(args = {}) abort
@@ -75,10 +134,18 @@ endfunction
 
 function! s:View.Extend(args) abort dict
   if has_key(a:args, 'bufnr')
-    let self.bufnr = a:args.bufnr
+    if a:args.bufnr ==# 'current'
+      let self.bufnr = bufnr('%')
+    else
+      let self.bufnr = a:args.bufnr
+    endif
   endif
   if has_key(a:args, 'winid')
-    let self.winid = a:args.winid
+    if a:args.winid ==# 'current'
+      let self.winid = win_getid()
+    else
+      let self.winid = a:args.winid
+    endif
   endif
   if has_key(a:args, 'options')
     eval self.options->extend(a:args.options)
@@ -120,6 +187,13 @@ function! s:View.CheckValid(name) abort dict
     throw "ERROR(InvalidView): " .. a:name .. " must be called while view is valid!"
   end
   return l:valid
+endfunction
+
+function! s:View.UseCurrent() abort dict
+  call self.Setup()
+  let self.bufnr = bufnr('')
+  let self.winid = win_getid()
+  return self
 endfunction
 
 function! s:View.GoToWindow() abort
@@ -171,9 +245,9 @@ function! s:View.Call(Fn, ...) abort
   return self
 endfunction
 
-function! s:View.Append(msg) abort
+function! s:View.Append(line_or_lines) abort
   if self.CheckValid("View.Append()")
-    call appendbufline(self.bufnr, line('$', self.winid), a:msg)
+    call appendbufline(self.bufnr, line('$', self.winid), a:line_or_lines)
   endif
   return self
 endfunction
