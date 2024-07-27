@@ -639,6 +639,13 @@ augroup ft_cc
           \ endif
 augroup END
 
+augroup ft_gdb
+    autocmd!
+    autocmd FileType gdb nnoremap <buffer> <localleader>r
+          \ :execute 'Term gdb -q -x' expand('%')<cr>
+    autocmd FileType gdb echom "LOADED GDB"
+augroup END
+
 augroup ft_python
     autocmd!
     autocmd FileType python command! RunPython
