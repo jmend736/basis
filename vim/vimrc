@@ -514,6 +514,11 @@ let g:jm_vimrc.docs.commands['SetupAutoread'] =
 command! -bar SetupAutoread
       \ set autoread | autocmd FocusGained,BufEnter * checktime
 
+let g:jm_vimrc.docs.commands['RemoveTrailingWhitespace'] =
+      \ 'Removes all trailing whitespace from the selected lines'
+command! -range=% RemoveTrailingWhitespace
+      \ <line1>,<line2>s/\s\+$//
+
 let g:jm_vimrc.docs.commands['SetupMatchHex'] =
       \ 'Match hex numbers'
 command! -bar SetupMatchHex
