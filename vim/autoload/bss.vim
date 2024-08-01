@@ -100,7 +100,7 @@ function! bss#PA(array, with_methods = v:false) abort
 endfunction
 
 ""
-" bss#ThreadedPrint('Hello {} world {}', [1, 2], ['hello', 'world'])
+" Eg. bss#ThreadedPrint('Hello {} world {}', [1, 2], ['hello', 'world'])
 "
 function! bss#ThreadedPrint(fmt, ...) abort
   let l:fmt       = a:fmt
@@ -115,6 +115,14 @@ function! bss#ThreadedPrint(fmt, ...) abort
   for l:args in l:arg_lists
     echo call('printf', [l:fmt] + l:args)
   endfor
+endfunction
+
+""
+" Eg. bss#ThreadedPrint('| {} | {}', {a: b, ...}, ['a', ...])
+"
+function! bss#ThreadedPrintKeys(fmt, dict, keys) abort
+  let l:vals = a:keys->mapnew("a:dict[v:val]")
+  call call('bss#ThreadedPrint', [a:fmt, a:keys, l:vals])
 endfunction
 
 " Array Functions
@@ -171,7 +179,8 @@ function! bss#MaxLen(list) abort
 endfunction
 
 function! bss#MaxStrLen(list) abort
-  return a:list->mapnew('len(string(v:val))')->max()
+  let Op = {i, v -> len(type(v) is v:t_string ? v : string(v))}
+  return a:list->mapnew(Op)->max()
 endfunction
 
 " Functional Programming Helpers
