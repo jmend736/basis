@@ -99,6 +99,21 @@ function! bss#PA(array, with_methods = v:false) abort
   eval a:array.ToString(v:true)
 endfunction
 
+function! bss#ThreadedPrint(fmt, ...) abort
+  let l:fmt       = a:fmt
+  let l:lists     = a:000
+  let l:arg_lists = bss#T(l:lists)
+  let l:arg_lens  = l:lists->mapnew('bss#MaxStrLen(v:val)')
+
+  for l:len in l:arg_lens
+    let l:fmt = substitute(l:fmt, "{}", "%"..l:len.."s", "")
+  endfor
+
+  for l:args in l:arg_lists
+    echo call('printf', [l:fmt] + l:args)
+  endfor
+endfunction
+
 " Array Functions
 " ======================================================================
 function! bss#Array(data) abort
@@ -146,6 +161,14 @@ endfunction
 
 function! bss#Most(list) abort
   return empty(a:list) ? [] : a:list[:len(a:list) - 2]
+endfunction
+
+function! bss#MaxLen(list) abort
+  return a:list->mapnew('len(v:val)')->max()
+endfunction
+
+function! bss#MaxStrLen(list) abort
+  return a:list->mapnew('len(string(v:val))')->max()
 endfunction
 
 " Functional Programming Helpers
