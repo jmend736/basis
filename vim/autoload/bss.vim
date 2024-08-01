@@ -99,6 +99,9 @@ function! bss#PA(array, with_methods = v:false) abort
   eval a:array.ToString(v:true)
 endfunction
 
+""
+" bss#ThreadedPrint('Hello {} world {}', [1, 2], ['hello', 'world'])
+"
 function! bss#ThreadedPrint(fmt, ...) abort
   let l:fmt       = a:fmt
   let l:lists     = a:000
@@ -106,7 +109,7 @@ function! bss#ThreadedPrint(fmt, ...) abort
   let l:arg_lens  = l:lists->mapnew('bss#MaxStrLen(v:val)')
 
   for l:len in l:arg_lens
-    let l:fmt = substitute(l:fmt, "{}", "%"..l:len.."s", "")
+    let l:fmt = substitute(l:fmt, '{\([-]\)\?}', '%\1'..l:len..'s', "")
   endfor
 
   for l:args in l:arg_lists
