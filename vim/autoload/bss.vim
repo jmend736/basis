@@ -99,12 +99,9 @@ function! bss#PA(array, with_methods = v:false) abort
   eval a:array.ToString(v:true)
 endfunction
 
-""
-" Eg. bss#ThreadedPrint('Hello {} world {}', [1, 2], ['hello', 'world'])
-"
-function! bss#ThreadedPrint(fmt, ...) abort
+function! bss#ThreadedPrintLists(fmt, lists) abort
   let l:fmt       = a:fmt
-  let l:lists     = a:000
+  let l:lists     = a:lists
   let l:arg_lists = bss#T(l:lists)
   let l:arg_lens  = l:lists->mapnew('bss#MaxStrLen(v:val)')
 
@@ -118,11 +115,30 @@ function! bss#ThreadedPrint(fmt, ...) abort
 endfunction
 
 ""
+" Eg. bss#ThreadedPrint('Hello {} world {}', [1, 2], ['hello', 'world'])
+"
+function! bss#ThreadedPrint(fmt, ...) abort
+  return bss#ThreadedPrintLists(a:fmt, a:000)
+endfunction
+
+""
 " Eg. bss#ThreadedPrint('| {} | {}', {a: b, ...}, ['a', ...])
 "
 function! bss#ThreadedPrintKeys(fmt, dict, keys) abort
   let l:vals = a:keys->mapnew("a:dict[v:val]")
   call call('bss#ThreadedPrint', [a:fmt, a:keys, l:vals])
+endfunction
+
+""
+" {dicts} is a list of dicts with the same keys
+"
+function! bss#ThreadedPrintDicts(fmt, dicts) abort
+  if empty(a:dicts)
+    return
+  endif
+  let l:keys      = keys(a:dicts[0])
+  let l:val_lists = a:dicts->mapnew('values(v:val)')
+  call bss#ThreadedPrintLists(a:fmt, extend([l:keys], l:val_lists)->bss#T())
 endfunction
 
 " Array Functions
