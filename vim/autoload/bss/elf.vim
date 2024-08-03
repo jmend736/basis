@@ -69,13 +69,13 @@ function! bss#elf#Read(bytes) abort
   let l:elf.header.shnum     = b.Half()
   let l:elf.header.shstrndx  = b.Half()
 
-  let hp = bss#elf#bytes#Bytes(b.all[l:elf.header.shoff:])
+  let hp = bss#elf#bytes#Bytes(b.ptr[l:elf.header.shoff:])
   let l:elf.headers = range(l:elf.header.shnum)
         \->map('hp->s:ParseSectionHeader()')
 
-  let sb = bss#elf#bytes#Bytes(b.all[l:elf.GetSectionStringAddress() + 27:])
-  echom sb.Ascii(20)
-  throw "Continuation: Add null terminated string; bytes need to support non-mod ops"
+  let sb = bss#elf#bytes#Bytes(b.ptr[l:elf.GetSectionStringAddress() + 27:])
+
+  call bss#Continuation("Implement String Handling")
 
   if !empty(v:errors)
     for error in v:errors
