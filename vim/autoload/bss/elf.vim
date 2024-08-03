@@ -114,30 +114,17 @@ function! s:Elf.GetSectionStringAddress() abort dict
 endfunction
 
 function! s:Elf.Print() abort dict
-  echo "Elf Header"
-  call bss#ThreadedPrintKeys(" {} --> {-}", self.header, [
-        \   'magic',
-        \   'class',
-        \   'data',
-        \   'elf_version',
-        \   'os_abi',
-        \   'pad',
-        \   'type',
-        \   'machine',
-        \   'version',
-        \   'entry',
-        \   'phoff',
-        \   'shoff',
-        \   'flags',
-        \   'ehsize',
-        \   'phentsize',
-        \   'phnum',
-        \   'shentsize',
-        \   'shnum',
-        \   'shstrndx',
+  echo '>>> Elf Header'
+  echo "\n"
+  call bss#ThreadedPrintKeys("   {} --> {-}", self.header, [
+        \   'magic', 'class', 'data', 'elf_version', 'os_abi', 'pad',
+        \   'type', 'machine', 'version', 'entry', 'phoff', 'shoff',
+        \   'flags', 'ehsize', 'phentsize', 'phnum', 'shentsize', 'shnum', 'shstrndx',
         \ ])
-  echo "Elf Section Headers"
-  call bss#ThreadedPrintDicts(repeat("| {} ", self.headers[0]->len()), self.headers)
+  echo "\n"
+  echo '>>> Elf Section Headers'
+  echo "\n"
+  call bss#ThreadedPrintDicts(self.headers)
 endfunction
 
 if v:true
