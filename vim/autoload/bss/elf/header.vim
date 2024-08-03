@@ -15,6 +15,19 @@ function! bss#elf#header#Parse(bytes) abort
         \   'ELFCLASS64': 8,
         \ }[header.ident.class]
 
+  let header.type      = b.Half() " Object file type
+  let header.machine   = b.Half() " Target architecture
+  let header.version   = b.Word() " Object file format version
+  let header.entry     = b.Addr() " Virtual address of program entry point
+  let header.phoff     = b.Off()  " File offset (bytes) of program header table
+  let header.shoff     = b.Off()  " File offset (bytes) of section header table
+  let header.flags     = b.Word() " Processor-specific flags
+  let header.ehsize    = b.Half() " Size (bytes) of the ELF header
+  let header.phentsize = b.Half() " Size (bytes) of a program header table entry
+  let header.phnum     = b.Half() " Number of entries in program header table
+  let header.shentsize = b.Half() " Size (bytes) of a section header table entry
+  let header.shnum     = b.Half() " Number of entries in the section header table
+  let header.shstrndx  = b.Half() " Section header table index of string table
 
   let header.type = {
         \   0x0000: 'ET_NONE',
@@ -26,24 +39,16 @@ function! bss#elf#header#Parse(bytes) abort
         \   0xFEFF: 'ET_HIOS',
         \   0xFF00: 'ET_LOPROC',
         \   0xFFFF: 'ET_HIPROC',
-        \ }[b.Half()]
+        \ }[header.type]
   let header.machine = {
         \   0x3E: 'AMD X86-64'
-        \ }[b.Half()]
+        \ }[header.machine]
   let header.version = {
         \   0x00000000: 'EV_NONE',
         \   0x00000001: 'EV_CURRENT',
-        \ }[b.Word()]
-  let header.entry     = b.Addr()
-  let header.phoff     = b.Off()
-  let header.shoff     = b.Off()
-  let header.flags     = printf("0x%X", b.Word())
-  let header.ehsize    = b.Half()
-  let header.phentsize = b.Half()
-  let header.phnum     = b.Half()
-  let header.shentsize = b.Half()
-  let header.shnum     = b.Half()
-  let header.shstrndx  = b.Half()
+        \ }[header.version]
+
+  let header.flags = printf("0x%X", header.flags)
 
   return header
 endfunction
@@ -51,8 +56,15 @@ endfunction
 function! bss#elf#header#ParseIdent(bytes) abort
   let b = a:bytes
   let b.little_endian = v:false
+
   let ident = {}
-  let ident.magic = b.ReadBytes(4)
+  let ident.magic       = b.ReadBytes(4) " Magic bytes [0x7F, 'E', 'L', 'F']
+  let ident.class       = b.Read()       " Specifies bit width (32/64)
+  let ident.data        = b.Read()       " Specifies endianness
+  let ident.elf_version = b.Read()       " Should always be 1 (EV_CURRENT)
+  let ident.os_abi      = b.Read()       " OS ABI type
+  let ident.pad         = b.ReadBytes(8) " Padding bytes
+
   if ident.magic != 0z7F454C46
     throw $'ERROR(IllegalState): Invalid magic: {string(ident.magic)}'
   endif
@@ -60,20 +72,20 @@ function! bss#elf#header#ParseIdent(bytes) abort
         \   0: 'ELFCLASSNONE',
         \   1: 'ELFCLASS32',
         \   2: 'ELFCLASS64',
-        \ }[b.Read()]
+        \ }[ident.class]
   let ident.data = {
         \   0: 'ELFDATANONE',
         \   1: 'ELFDATA2LSB',
         \   2: 'ELFDATA2MSB',
-        \ }[b.Read()]
+        \ }[ident.data]
   let ident.elf_version = {
         \   0: 'EV_NONE',
         \   1: 'EV_CURRENT',
-        \ }[b.Read()]
+        \ }[ident.elf_version]
   let ident.os_abi = {
         \   0x00: 'Unix - System V',
         \   0x03: 'Linux',
-        \ }[b.Read()]
-  let ident.pad = b.ReadBytes(8)
+        \ }[ident.os_abi]
+
   return ident
 endfunction
