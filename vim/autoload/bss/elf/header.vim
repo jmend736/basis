@@ -15,18 +15,20 @@ function! bss#elf#header#Parse(bytes) abort
         \   'ELFCLASS64': 8,
         \ }[header.ident.class]
 
+  " [PHT]: Program Header Table : phoff, phentsize, phnum
+  " [SHT]: Section Header Table : shoff, shentsize, shnum
   let header.type      = b.Half() " Object file type
   let header.machine   = b.Half() " Target architecture
   let header.version   = b.Word() " Object file format version
   let header.entry     = b.Addr() " Virtual address of program entry point
-  let header.phoff     = b.Off()  " File offset (bytes) of program header table
-  let header.shoff     = b.Off()  " File offset (bytes) of section header table
+  let header.phoff     = b.Off()  " [PHT] File offset (bytes)
+  let header.shoff     = b.Off()  " [SHT] File offset (bytes)
   let header.flags     = b.Word() " Processor-specific flags
   let header.ehsize    = b.Half() " Size (bytes) of the ELF header
-  let header.phentsize = b.Half() " Size (bytes) of a program header table entry
-  let header.phnum     = b.Half() " Number of entries in program header table
-  let header.shentsize = b.Half() " Size (bytes) of a section header table entry
-  let header.shnum     = b.Half() " Number of entries in the section header table
+  let header.phentsize = b.Half() " [PHT] Size (bytes) of an PHT entry
+  let header.phnum     = b.Half() " [PHT] Number of PHT entries
+  let header.shentsize = b.Half() " [SHT] Size (bytes) of a SHT entry
+  let header.shnum     = b.Half() " [SHT] Number of SHT entries
   let header.shstrndx  = b.Half() " Section header table index of string table
 
   let header.type = {
