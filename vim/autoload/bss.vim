@@ -132,13 +132,15 @@ endfunction
 ""
 " {dicts} is a list of dicts with the same keys
 "
-function! bss#ThreadedPrintDicts(fmt, dicts) abort
+function! bss#ThreadedPrintDicts(dicts, keys = v:none) abort
   if empty(a:dicts)
     return
   endif
-  let l:keys      = keys(a:dicts[0])
-  let l:val_lists = a:dicts->mapnew('values(v:val)')
-  call bss#ThreadedPrintLists(a:fmt, extend([l:keys], l:val_lists)->bss#T())
+  let l:keys      = (a:keys is v:none) ? keys(a:dicts[0]) : a:keys
+  let l:val_lists = a:dicts->mapnew({_, dict -> mapnew(l:keys, 'dict[v:val]')})
+  call bss#ThreadedPrintLists(
+        \ repeat("| {} ", l:keys->len()) .. " |",
+        \ extend([l:keys], l:val_lists)->bss#T())
 endfunction
 
 " Array Functions
