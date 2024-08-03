@@ -48,7 +48,15 @@ function! s:Bytes.Seek(n) abort dict
   if a:n < 0 || a:n >= self.len
     throw 'ERROR(InvalidArguments): Invalid index'
   endif
+  let self.loc = a:n
   return self
+endfunction
+
+function! s:Bytes.SeekNew(n) abort dict
+  if a:n < 0 || a:n >= self.len
+    throw 'ERROR(InvalidArguments): Invalid index'
+  endif
+  return self->extendnew({'loc': a:n})
 endfunction
 
 function! s:Bytes.U(n) abort dict

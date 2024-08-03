@@ -2,45 +2,47 @@
 let s:Elf = {}
 
 function! bss#elf#Read(bytes) abort
-  let l:elf = s:Elf->extendnew({})
+  let elf = s:Elf->extendnew({
+        \   'b': a:bytes
+        \ })
 
   let b               = a:bytes
   let b.little_endian = v:false
   let v:errors = []
 
-  let l:elf.header = {}
-  let l:elf.header.magic = b.ReadBytes(4)
-  call assert_equal(0z7F454C46, l:elf.header.magic)
-  let l:elf.header.class = {
+  let elf.header = {}
+  let elf.header.magic = b.ReadBytes(4)
+  call assert_equal(0z7F454C46, elf.header.magic)
+  let elf.header.class = {
         \   0: 'ELFCLASSNONE',
         \   1: 'ELFCLASS32',
         \   2: 'ELFCLASS64',
         \ }[b.Read()]
-  let l:elf.header.data = {
+  let elf.header.data = {
         \   0: 'ELFDATANONE',
         \   1: 'ELFDATA2LSB',
         \   2: 'ELFDATA2MSB',
         \ }[b.Read()]
-  let l:elf.header.elf_version = {
+  let elf.header.elf_version = {
         \   0: 'EV_NONE',
         \   1: 'EV_CURRENT',
         \ }[b.Read()]
-  let l:elf.header.os_abi = {
+  let elf.header.os_abi = {
         \   0x00: 'Unix - System V',
         \   0x03: 'Linux',
         \ }[b.Read()]
-  let l:elf.header.pad = b.ReadBytes(8)
+  let elf.header.pad = b.ReadBytes(8)
 
   let b.little_endian = {
         \   'ELFDATA2LSB': v:true,
         \   'ELFDATA2MSB': v:false,
-        \ }[l:elf.header.data]
+        \ }[elf.header.data]
   let b.size = {
         \   'ELFCLASS32': 4,
         \   'ELFCLASS64': 8,
-        \ }[l:elf.header.class]
+        \ }[elf.header.class]
 
-  let l:elf.header.type = {
+  let elf.header.type = {
         \   0x0000: 'ET_NONE',
         \   0x0001: 'ET_REL',
         \   0x0002: 'ET_EXEC',
@@ -51,31 +53,36 @@ function! bss#elf#Read(bytes) abort
         \   0xFF00: 'ET_LOPROC',
         \   0xFFFF: 'ET_HIPROC',
         \ }[b.Half()]
-  let l:elf.header.machine = {
+  let elf.header.machine = {
         \   0x3E: 'AMD X86-64'
         \ }[b.Half()]
-  let l:elf.header.version = {
+  let elf.header.version = {
         \   0x00000000: 'EV_NONE',
         \   0x00000001: 'EV_CURRENT',
         \ }[b.Word()]
-  let l:elf.header.entry     = b.Addr()
-  let l:elf.header.phoff     = b.Off()
-  let l:elf.header.shoff     = b.Off()
-  let l:elf.header.flags     = printf("0x%X", b.Word())
-  let l:elf.header.ehsize    = b.Half()
-  let l:elf.header.phentsize = b.Half()
-  let l:elf.header.phnum     = b.Half()
-  let l:elf.header.shentsize = b.Half()
-  let l:elf.header.shnum     = b.Half()
-  let l:elf.header.shstrndx  = b.Half()
+  let elf.header.entry     = b.Addr()
+  let elf.header.phoff     = b.Off()
+  let elf.header.shoff     = b.Off()
+  let elf.header.flags     = printf("0x%X", b.Word())
+  let elf.header.ehsize    = b.Half()
+  let elf.header.phentsize = b.Half()
+  let elf.header.phnum     = b.Half()
+  let elf.header.shentsize = b.Half()
+  let elf.header.shnum     = b.Half()
+  let elf.header.shstrndx  = b.Half()
 
-  let hp = bss#elf#bytes#Bytes(b.ptr[l:elf.header.shoff:])
-  let l:elf.headers = range(l:elf.header.shnum)
-        \->map('hp->s:ParseSectionHeader()')
+  call b.Seek(elf.header.shoff)
+  let elf.headers = range(elf.header.shnum)
+        \->map('b->s:ParseSectionHeader()')
 
-  let sb = bss#elf#bytes#Bytes(b.ptr[l:elf.GetSectionStringAddress() + 27:])
+  let string_base = elf.headers[elf.header.shstrndx].offset
+  for header in elf.headers
+    let header.name_str =
+          \ b.Seek(string_base + header.name)
+          \ .AsciiNull()
+  endfor
 
-  call bss#Continuation("Implement String Handling")
+  "call bss#Continuation("Implement String Handling")
 
   if !empty(v:errors)
     for error in v:errors
@@ -83,7 +90,7 @@ function! bss#elf#Read(bytes) abort
     endfor
     throw 'ERROR(Failed)'
   endif
-  return l:elf
+  return elf
 endfunction
 
 function! s:ParseSectionHeader(b) abort
