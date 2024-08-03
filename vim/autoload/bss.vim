@@ -316,3 +316,13 @@ function! bss#DumpAndThrow(exception) abort
   endtry
   throw 'ERROR(Failure): Failed to throw error?'
 endfunction
+
+function! bss#Continuation(state) abort
+  try
+    throw $"(Continuation): {a:state}"
+  catch /.*/
+    call bss#DumpCurrentException()
+    throw v:exception
+  endtry
+  throw 'ERROR(Failure): Failed to throw error?'
+endfunction
