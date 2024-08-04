@@ -20,7 +20,7 @@ endfunction
 
 function! bss#elf#section_header#PrintAll(section_headers) abort
   echo "\n"
-  echo '>>> Elf Section Headers'
+  echo '>>> ELF Section Headers'
   echo "\n"
   call bss#ThreadedPrintDicts(a:section_headers, [
         \   'name', 'type', 'flags', 'addr', 'offset', 'size', 'link', 'info', 'addralign', 'entsize'

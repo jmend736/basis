@@ -26,14 +26,14 @@ function! bss#elf#program_header#Parse(bytes) abort
   let program_header.align  = b.Xword() " Alignment of segment
 
   " Interpret
-  call bss#Continuation("Implement this.")
+  call bss#Continuation("Implement interpretation of program header fields.")
 
   return program_header
 endfunction
 
 function! bss#elf#program_header#PrintAll(program_headers) abort
   echo "\n"
-  echo '>>> Elf Program Headers'
+  echo '>>> ELF Program Headers'
   echo "\n"
   call bss#ThreadedPrintDicts(a:program_headers, [
         \   'type', 'flags', 'offset', 'vaddr', 'padder', 'filesz', 'memsz', 'align'
