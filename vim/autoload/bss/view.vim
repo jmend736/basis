@@ -227,6 +227,7 @@ endfunction
 
 function! s:View.Run(cmd) abort dict
   let l:cmd = empty(a:cmd) ? [&shell] : a:cmd
+  let l:cmd = substitute(l:cmd, "%", expand("%"), "a")
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()
