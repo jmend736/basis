@@ -290,9 +290,13 @@ endfunction
 
 " Exception Handling
 " ======================================================================
-function! bss#DumpCurrentException() abort
-  echom v:exception
-  for elem in v:throwpoint->split('\.\.')->reverse()
+function! bss#DumpCurrentException(
+      \ echo_exception = v:true,
+      \ skip = 0) abort
+  if a:echo_exception
+    echom v:exception
+  endif
+  for elem in v:throwpoint->split('\.\.')->reverse()[a:skip:]
     echom '  at' elem
   endfor
 endfunction
@@ -327,4 +331,12 @@ function! bss#Continuation(state) abort
     throw v:exception
   endtry
   throw 'ERROR(Failure): Failed to throw error?'
+endfunction
+
+function! bss#DumpStack(msg = '<bss#DumpStack>') abort
+  try
+    throw a:msg
+  catch /.*/
+    call bss#DumpCurrentException(v:true, 1)
+  endtry
 endfunction
