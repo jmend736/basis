@@ -1,8 +1,7 @@
 function! bss#elf#section_header#ParseAll(
       \ bytes, shoff, shnum, shstrndx) abort
   " Setup
-  let b = a:bytes
-  call b.Seek(a:shoff)
+  let b = a:bytes.Seek(a:shoff)
 
   " Read
   let headers = range(a:shnum)
@@ -20,6 +19,7 @@ function! bss#elf#section_header#ParseAll(
 endfunction
 
 
+" TODO: Join with above.
 function! bss#elf#section_header#Parse(bytes) abort
   " Setup
   let b = a:bytes
