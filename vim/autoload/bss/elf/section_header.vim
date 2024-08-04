@@ -1,17 +1,19 @@
 function! bss#elf#section_header#ParseAll(
       \ bytes, shoff, shnum, shstrndx) abort
+  " Setup
   let b = a:bytes
-
-  " Parse Section Headers
   call b.Seek(a:shoff)
+
+  " Read
   let headers = range(a:shnum)
         \->map('bss#elf#section_header#Parse(b)')
 
-  let string_base = headers[a:shstrndx].offset
+  " Interpret
+  let string_table = headers[a:shstrndx].offset
   for header in headers
-    let header.name_str =
-          \ b.Seek(string_base + header.name)
-          \ .AsciiNull()
+    let header.name =
+          \ b.Seek(string_table + header.name)
+          \ .AsciiNull() .. printf(" (0x%X)", header.name)
   endfor
 
   return headers
@@ -19,26 +21,33 @@ endfunction
 
 
 function! bss#elf#section_header#Parse(bytes) abort
+  " Setup
   let b = a:bytes
 
+  " Read
   let section_header = {}
-  let section_header.name      = b.Word()  " (TODO)
-  let section_header.type      = b.Word()  " (TODO)
-  let section_header.flags     = b.Xword() " (TODO)
-  let section_header.addr      = b.Addr()  " (TODO)
-  let section_header.offset    = b.Off()   " (TODO)
-  let section_header.size      = b.Xword() " (TODO)
-  let section_header.link      = b.Word()  " (TODO)
-  let section_header.info      = b.Word()  " (TODO)
-  let section_header.addralign = b.Xword() " (TODO)
-  let section_header.entsize   = b.Xword() " (TODO)
+  let section_header.name      = b.Word()  " Section name (byte offset into String Table)
+  let section_header.type      = b.Word()  " Section type (see s:SectionHeader.Type)
+  let section_header.flags     = b.Xword() " Section attributes
+  let section_header.addr      = b.Addr()  " Virtual address in memory
+  let section_header.offset    = b.Off()   " Offset in file
+  let section_header.size      = b.Xword() " Size of section
+  let section_header.link      = b.Word()  " Link to other section
+  let section_header.info      = b.Word()  " Misc. information
+  let section_header.addralign = b.Xword() " Address alignment boundary
+  let section_header.entsize   = b.Xword() " Size of entries, if section has table
 
+  " Interpret
   let section_header.type =
         \ s:SectionHeader.Type.parse(section_header.type)
+  let section_header.flags =
+        \ s:SectionHeader.Flags.parse(section_header.flags)
+
   return section_header
 endfunction
 
 let s:SectionHeader = {}
+
 let s:SectionHeader.Type = {}
 function! s:SectionHeader.Type.parse(value) abort
   if has_key(s:SectionHeader.Type, a:value)
@@ -73,3 +82,27 @@ let s:SectionHeader.Type[0x60000000] = 'SHT_LOOS'          " Environment-specifi
 let s:SectionHeader.Type[0x6FFFFFFF] = 'SHT_HIOS'          " Environment-specific use
 let s:SectionHeader.Type[0x70000000] = 'SHT_LOPROC'        " Processor-specific use
 let s:SectionHeader.Type[0x7FFFFFFF] = 'SHT_HIPROC'        " Processor-specific use
+
+let s:SectionHeader.Flags = {}
+function! s:SectionHeader.Flags.parse(value) abort
+  let l:flag_strings = []
+  for [str_bit, Name] in items(s:SectionHeader.Flags)
+    if str_bit ==# 'parse' | continue | endif
+    if and(str2nr(str_bit), a:value)
+      call add(l:flag_strings, Name)
+    endif
+  endfor
+  return join(l:flag_strings, ',') .. printf(" (0x%X)", a:value)
+endfunction
+let s:SectionHeader.Flags[0x0000000000000001] = 'SHF_WRITE'            " Section contains writable data
+let s:SectionHeader.Flags[0x0000000000000002] = 'SHF_ALLOC'            " Section is allocated in memory image of program
+let s:SectionHeader.Flags[0x0000000000000004] = 'SHF_EXECINSTR'        " Section contains executable instructions
+let s:SectionHeader.Flags[0x0000000000000010] = 'SHF_MERGE'            " Section might be merged (???)
+let s:SectionHeader.Flags[0x0000000000000020] = 'SHF_STRINGS'          " Contains nul-terminated strings
+let s:SectionHeader.Flags[0x0000000000000040] = 'SHF_INFO_LINK'        " sh_info contains SHT index
+let s:SectionHeader.Flags[0x0000000000000100] = 'SHF_OS_NONCONFORMING' " (TODO)
+let s:SectionHeader.Flags[0x0000000000000200] = 'SHF_GROUP'            " (TODO)
+let s:SectionHeader.Flags[0x0000000000000400] = 'SHF_TLS'              " (TODO)
+let s:SectionHeader.Flags[0x0000000000000800] = 'SHF_COMPRESSED'       " (TODO)
+let s:SectionHeader.Flags[0x000000000F000000] = 'SHF_MASKOS'           " Environment-specific use
+let s:SectionHeader.Flags[0x00000000F0000000] = 'SHF_MASKPROC'         " Processor-specific use

@@ -29,7 +29,7 @@ function! bss#elf#file_header#Parse(bytes) abort
   let header.phnum     = b.Half() " [PHT] Number of PHT entries
   let header.shentsize = b.Half() " [SHT] Size (bytes) of a SHT entry
   let header.shnum     = b.Half() " [SHT] Number of SHT entries
-  let header.shstrndx  = b.Half() " Section header table index of string table
+  let header.shstrndx  = b.Half() " Section header table index of String Table
 
   let header.type = {
         \   0x0000: 'ET_NONE',
