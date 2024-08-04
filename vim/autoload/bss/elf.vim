@@ -41,11 +41,11 @@ endfunction
 
 function! s:Elf.Print() abort dict
   call self.PrintFileHeader()
-  call self.PrintProgramHeaders()
   call self.PrintSectionHeaders()
+  call self.PrintProgramHeaders()
 endfunction
 
 if exists('g:bss_elf_test')
   let elf = bss#elf#Read(bss#elf#bytes#File("/tmp/pg-OP3S/a.out"))
-  call elf.Print()
+  call elf.PrintProgramHeaders()
 endif
