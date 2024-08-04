@@ -41,7 +41,8 @@ function! s:Bytes.ReadByte() abort dict
 endfunction
 
 function! s:Bytes.Read() abort dict
-  return len(self.ptr) ? self.ReadBytes(1)[0] : 0
+  let byte = self.ReadBytes(1)
+  return len(byte) ? byte[0] : 0
 endfunction
 
 function! s:Bytes.Seek(n) abort dict
@@ -71,10 +72,7 @@ function! s:Bytes.U(n) abort dict
 endfunction
 
 function! s:Bytes.AsciiNull() abort dict
-  let l:index = self.ptr->index(0x00, self.loc)
-  if l:index == -1
-    throw 'ERROR(IllegalState): Null byte not found'
-  endif
+  let l:index = self.FindNext(0x00)
   let l:bytes = self.ReadBytes(l:index - self.loc + 1, v:false)
   let l:value = ''
   for b in l:bytes[:-2]
@@ -85,6 +83,16 @@ function! s:Bytes.AsciiNull() abort dict
     throw 'ERROR(IllegalState): Invalid ASCII Byte: ' .. b
   endfor
   return l:value
+endfunction
+
+function! s:Bytes.FindNext(search) abort dict
+  let l:index = self.ptr->index(a:search, self.loc)
+  if l:index == -1
+    throw $'ERROR(IllegalState): FindNext failed to find '
+          \ .. $'{printf("0x%02X", a:search)} at/after index '
+          \ .. $'{self.loc}.'
+  endif
+  return l:index
 endfunction
 
 if v:false
@@ -109,7 +117,18 @@ if v:false
   call assert_equal(0z,     b.ReadBytes(0))
   call assert_equal(0zCDAB, b.ReadBytes(2))
   call assert_equal(0z01EF, b.ReadBytes(2))
-  call assert_equal(0z, b.ReadBytes(2))
+  call assert_equal(0z,     b.ReadBytes(2))
+
+  let b = bss#bytes#Bytes(0zABCDEF01)
+  silent! call assert_fails('call b.FindNext(0x00)')
+  call assert_equal(0, b.FindNext(0xAB))
+  call assert_equal(0, b.FindNext(0xAB)) " Does not advance
+
+  let b = bss#bytes#Bytes(0z4C4F4C00)
+  call assert_equal("LOL", b.AsciiNull())
+
+  let b = bss#bytes#Bytes(0z00)
+  call assert_equal("", b.AsciiNull())
 
   if empty(v:errors)
     echo ">>> PASSED"
