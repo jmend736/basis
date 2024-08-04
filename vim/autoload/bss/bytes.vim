@@ -26,7 +26,7 @@ function! s:Bytes.ReadBytes(
       \ n,
       \ little_endian = self.little_endian) abort dict
   if self.verbose
-    echom printf('Reading 0x%X from 0x%X', a:n, self.loc)
+    call printf('Reading 0x%X from 0x%X', a:n, self.loc)->bss#DumpStack()
   endif
   if a:n == 0
     return 0z
@@ -99,7 +99,7 @@ function! s:Bytes.FindNext(search) abort dict
   return l:index
 endfunction
 
-if v:false
+if v:true
   let v:errors = []
 
   let b = bss#bytes#Bytes(0z00FF, v:false)
