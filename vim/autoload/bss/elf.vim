@@ -35,32 +35,27 @@ function! bss#elf#Parse(bytes) abort
 
   for section_header in elf.section_headers
     if section_header.name ==# '.interp'
-      let elf['.interp'] = section_header.Seek().AsciiNull()
+      let elf.interp = section_header.Seek().AsciiNull()
     elseif section_header.name ==# '.symtab'
       let sh = section_header
-      let elf['.symtab'] = bss#elf#symtab#ParseAll(
+      let elf.symtab = bss#elf#symtab#ParseAll(
             \ section_header.Seek(),
             \ sh.size,
             \ sh.entsize)
     elseif section_header.name ==# '.strtab'
       let sh = section_header
-      let elf['.strtab'] = b.SeekNew(sh.offset)
+      let elf.strtab = b.SeekNew(sh.offset)
     endif
   endfor
 
-  if has_key(elf, '.symtab') && has_key(elf, '.strtab')
-     let symtab = elf['.symtab']
-     let strtab = elf['.strtab']
-
-     for sym in symtab
-       if sym.name == 0
-         continue
-       endif
-       let sb = strtab->copy()
-       call sb.ReadBytes(sym.name)
-       let sym.name = sb.AsciiNull()
-     endfor
-  endif
+   for sym in elf.symtab
+     if sym.name == 0
+       continue
+     endif
+     let sb = elf.strtab->copy()
+     call sb.ReadBytes(sym.name)
+     let sym.name = sb.AsciiNull()
+   endfor
 
   return elf
 endfunction
@@ -69,23 +64,9 @@ function! s:Elf.Print() abort dict
   call self.PrintFileHeader()
   call self.PrintSectionHeaders()
   call self.PrintProgramHeaders()
-  call self.PrintSections()
-endfunction
-
-function! s:Elf.PrintSections() abort dict
-  for [k, v] in filter(self, {k, v -> k =~# '\..*'})->items()
-    echo '## ENTRY:' k
-    if type(v) is v:t_dict
-      PP v
-    elseif type(v) is v:t_list
-      call bss#ThreadedPrintDicts(v)
-    else
-      echom v
-    endif
-  endfor
 endfunction
 
 if exists('g:bss_elf_test')
   let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
-  call bss#ThreadedPrintDicts(elf['.symtab'])
+  call bss#ThreadedPrintDicts(elf.symtab)
 endif
