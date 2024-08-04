@@ -8,7 +8,7 @@ function! bss#elf#Read(bytes) abort
   let b = a:bytes
 
   " Parse Header
-  let elf.header = bss#elf#header#Parse(b)
+  let elf.header = bss#elf#file_header#Parse(b)
 
   let elf.section_headers = bss#elf#section_header#ParseAll(
         \ b,
@@ -25,10 +25,6 @@ function! bss#elf#Read(bytes) abort
     throw 'ERROR(Failed)'
   endif
   return elf
-endfunction
-
-function! s:Elf.GetSectionStringAddress() abort dict
-  return self.headers[self.header.shstrndx].offset
 endfunction
 
 function! s:Elf.Print() abort dict

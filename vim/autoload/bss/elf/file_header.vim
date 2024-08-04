@@ -1,9 +1,9 @@
-function! bss#elf#header#Parse(bytes) abort
+function! bss#elf#file_header#Parse(bytes) abort
   let b = a:bytes
   let b.little_endian = v:false
 
   let header = {}
-  let header.ident = bss#elf#header#ParseIdent(b)
+  let header.ident = bss#elf#file_header#ParseIdent(b)
 
   " Setup bytes size and endianness
   let b.little_endian = {
@@ -55,7 +55,7 @@ function! bss#elf#header#Parse(bytes) abort
   return header
 endfunction
 
-function! bss#elf#header#ParseIdent(bytes) abort
+function! bss#elf#file_header#ParseIdent(bytes) abort
   let b = a:bytes
   let b.little_endian = v:false
 
