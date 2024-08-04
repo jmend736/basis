@@ -99,7 +99,7 @@ function! s:Bytes.FindNext(search) abort dict
   return l:index
 endfunction
 
-if v:true
+if exists('g:bss_bytes_test')
   let v:errors = []
 
   let b = bss#bytes#Bytes(0z00FF, v:false)
