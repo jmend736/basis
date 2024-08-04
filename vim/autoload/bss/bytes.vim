@@ -22,12 +22,16 @@ function! bss#bytes#Bytes(blob, little_endian=v:true) abort
   return this
 endfunction
 
-function! s:Bytes.ReadBytes(n, little_endian = self.little_endian) abort dict
-  if self.verbose | echom printf('Reading 0x%X from 0x%X', a:n, self.loc) | endif
+function! s:Bytes.ReadBytes(
+      \ n,
+      \ little_endian = self.little_endian) abort dict
+  if self.verbose
+    echom printf('Reading 0x%X from 0x%X', a:n, self.loc)
+  endif
   if a:n == 0
     return 0z
   elseif a:n < 0
-    throw 'ERROR(InvalidArguments): s:Bytes.ReadBytes() cannot accept negative n, got ' .. a:n
+    throw $'ERROR(InvalidArguments): n must be positive, got {a:n}'
   else " a:n > 0
     let new_loc = self.loc + a:n
     let l:bytes = self.ptr[self.loc:(new_loc - 1)]
