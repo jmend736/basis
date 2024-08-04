@@ -16,7 +16,12 @@ function! bss#elf#Read(bytes) abort
         \ elf.header.shnum,
         \ elf.header.shstrndx)
 
-  "call bss#Continuation("Implement String Handling")
+  let elf.program_headers = bss#elf#program_header#ParseAll(
+        \ b,
+        \ elf.header.phoff,
+        \ elf.header.phnum)
+
+  call bss#Continuation("Implement String Handling")
 
   if !empty(v:errors)
     for error in v:errors
@@ -47,6 +52,13 @@ function! s:Elf.Print() abort dict
   call bss#ThreadedPrintDicts(self.section_headers)
 endfunction
 
-if v:true
-  call bss#elf#Read(bss#elf#bytes#File("/tmp/pg-OP3S/a.out")).Print()
+if exists('g:bss_elf_test')
+  let s:ph = bss#elf#Read(bss#elf#bytes#File("/tmp/pg-OP3S/a.out")).program_headers
+
+  let s:data = s:ph
+        \->map({_, v -> [v.filesz, v.memsz]})
+
+  echom s:data
+
+  call bss#ThreadedPrintLists("{} | {}", s:data)
 endif
