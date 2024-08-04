@@ -91,3 +91,19 @@ function! bss#elf#file_header#ParseIdent(bytes) abort
 
   return ident
 endfunction
+
+function! bss#elf#file_header#Print(file_header) abort
+  echo "\n"
+  echo '>>> Elf File Header Ident'
+  echo "\n"
+  call bss#ThreadedPrintKeys("   {} --> {-}", a:file_header.ident, [
+        \   'magic', 'class', 'data', 'elf_version', 'os_abi', 'pad',
+        \ ])
+  echo "\n"
+  echo '>>> Elf File Header'
+  echo "\n"
+  call bss#ThreadedPrintKeys("   {} --> {-}", a:file_header, [
+        \   'type', 'machine', 'version', 'entry', 'phoff', 'shoff',
+        \   'flags', 'ehsize', 'phentsize', 'phnum', 'shentsize', 'shnum', 'shstrndx',
+        \ ])
+endfunction

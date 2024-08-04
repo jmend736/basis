@@ -13,9 +13,9 @@ endfunction
 function! bss#elf#program_header#Parse(bytes) abort
   " Setup
   let b = a:bytes
-  let program_header = {}
 
-  " 
+  " Read
+  let program_header        = {}
   let program_header.type   = b.Word()  " Type of segment
   let program_header.flags  = b.Word()  " Segment attributes
   let program_header.offset = b.Off()   " Offset in file
@@ -30,3 +30,13 @@ function! bss#elf#program_header#Parse(bytes) abort
 
   return program_header
 endfunction
+
+function! bss#elf#program_header#PrintAll(program_headers) abort
+  echo "\n"
+  echo '>>> Elf Program Headers'
+  echo "\n"
+  call bss#ThreadedPrintDicts(a:program_headers, [
+        \   'type', 'flags', 'offset', 'vaddr', 'padder', 'filesz', 'memsz', 'align'
+        \ ])
+endfunction
+

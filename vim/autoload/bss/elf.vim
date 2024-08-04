@@ -8,18 +8,25 @@ function! bss#elf#Read(bytes) abort
   let b = a:bytes
 
   " Parse Header
+  call bss#Continuation("Rename header to file_header")
   let elf.header = bss#elf#file_header#Parse(b)
+  let elf.PrintFileHeader =
+        \ {-> bss#elf#file_header#Print(elf.header)}
 
   let elf.section_headers = bss#elf#section_header#ParseAll(
         \ b,
         \ elf.header.shoff,
         \ elf.header.shnum,
         \ elf.header.shstrndx)
+  let elf.PrintSectionHeaders =
+        \ {-> bss#elf#section_header#PrintAll(elf.section_headers)}
 
   let elf.program_headers = bss#elf#program_header#ParseAll(
         \ b,
         \ elf.header.phoff,
         \ elf.header.phnum)
+  let elf.PrintProgramHeaders =
+        \ {-> bss#elf#program_header#PrintAll(elf.program_headers)}
 
   call bss#Continuation("Implement String Handling")
 
@@ -33,32 +40,12 @@ function! bss#elf#Read(bytes) abort
 endfunction
 
 function! s:Elf.Print() abort dict
-  echo "\n"
-  echo '>>> Elf Header Ident'
-  echo "\n"
-  call bss#ThreadedPrintKeys("   {} --> {-}", self.header.ident, [
-        \   'magic', 'class', 'data', 'elf_version', 'os_abi', 'pad',
-        \ ])
-  echo "\n"
-  echo '>>> Elf Header'
-  echo "\n"
-  call bss#ThreadedPrintKeys("   {} --> {-}", self.header, [
-        \   'type', 'machine', 'version', 'entry', 'phoff', 'shoff',
-        \   'flags', 'ehsize', 'phentsize', 'phnum', 'shentsize', 'shnum', 'shstrndx',
-        \ ])
-  echo "\n"
-  echo '>>> Elf Section Headers'
-  echo "\n"
-  call bss#ThreadedPrintDicts(self.section_headers)
+  call self.PrintFileHeader()
+  call self.PrintProgramHeaders()
+  call self.PrintSectionHeaders()
 endfunction
 
 if exists('g:bss_elf_test')
-  let s:ph = bss#elf#Read(bss#elf#bytes#File("/tmp/pg-OP3S/a.out")).program_headers
-
-  let s:data = s:ph
-        \->map({_, v -> [v.filesz, v.memsz]})
-
-  echom s:data
-
-  call bss#ThreadedPrintLists("{} | {}", s:data)
+  let elf = bss#elf#Read(bss#elf#bytes#File("/tmp/pg-OP3S/a.out"))
+  call elf.Print()
 endif

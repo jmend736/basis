@@ -18,8 +18,15 @@ function! bss#elf#section_header#ParseAll(
   return headers
 endfunction
 
+function! bss#elf#section_header#PrintAll(section_headers) abort
+  echo "\n"
+  echo '>>> Elf Section Headers'
+  echo "\n"
+  call bss#ThreadedPrintDicts(a:section_headers, [
+        \   'name', 'type', 'flags', 'addr', 'offset', 'size', 'link', 'info', 'addralign', 'entsize'
+        \ ])
+endfunction
 
-" TODO: Join with above.
 function! bss#elf#section_header#Parse(bytes) abort
   " Setup
   let b = a:bytes
