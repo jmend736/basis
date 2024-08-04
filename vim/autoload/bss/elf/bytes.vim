@@ -33,18 +33,15 @@ function! s:Bytes.Word() abort
 endfunction
 
 function! s:Bytes.Sword() abort
-  " TODO: Fix
-  return self.U(self.size / 2)
+  return self.S(self.size / 2)
 endfunction
 
 function! s:Bytes.Xword() abort
-  " TODO: Fix
   return self.U(self.size)
 endfunction
 
 function! s:Bytes.Sxword() abort
-  " TODO: Fix
-  return self.U(self.size)
+  return self.S(self.size)
 endfunction
 
 if v:false

@@ -75,6 +75,14 @@ function! s:Bytes.U(n) abort dict
   endif
 endfunction
 
+function! s:Bytes.S(n) abort dict
+  let unsigned = self.U(a:n)
+  let sign_val = 1 << ((8 * a:n) - 1)
+  return and(unsigned, sign_val)
+        \ ? xor(unsigned, sign_val) - sign_val
+        \ : unsigned
+endfunction
+
 function! s:Bytes.AsciiNull() abort dict
   let l:index = self.FindNext(0x00)
   let l:bytes = self.ReadBytes(l:index - self.loc + 1, v:false)
@@ -133,6 +141,12 @@ if exists('g:bss_bytes_test')
 
   let b = bss#bytes#Bytes(0z00)
   call assert_equal("", b.AsciiNull())
+
+  let b = bss#bytes#Bytes(0zFFF0FA)
+  call assert_equal(-1,  b.S(1))
+  call assert_equal(-16, b.S(1))
+  call assert_equal(-6,  b.S(1))
+
 
   if empty(v:errors)
     echo ">>> PASSED"
