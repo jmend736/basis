@@ -323,8 +323,17 @@ function! bss#DumpAndThrow(exception) abort
   throw 'ERROR(Failure): Failed to throw error?'
 endfunction
 
+function! bss#Continue(num) abort
+  let g:bss_continuation = get(g:, 'bss_continuation', 0) + a:num
+endfunction
+
 function! bss#Continuation(state) abort
+  if !exists('g:bss_continuation') || g:bss_continuation <= 0
+    return
+  endif
+
   try
+    let g:bss_continuation -= 1
     throw $"(Continuation): {a:state}"
   catch /.*/
     call bss#DumpCurrentException()
