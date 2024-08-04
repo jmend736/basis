@@ -12,7 +12,7 @@ function! bss#elf#section_header#ParseAll(
   for header in headers
     let header.name =
           \ b.Seek(string_table + header.name)
-          \ .AsciiNull() .. printf(" (0x%X)", header.name)
+          \ .AsciiNull()
   endfor
 
   return headers
@@ -51,12 +51,18 @@ function! bss#elf#section_header#Parse(bytes) abort
         \ s:SectionHeader.Flags.parse(section_header.flags)
   let section_header.Seek =
         \ function('s:SectionHeader_Seek', [b], section_header)
+  let section_header.SeekNew =
+        \ function('s:SectionHeader_SeekNew', [b], section_header)
 
   return section_header
 endfunction
 
 function! s:SectionHeader_Seek(bytes) abort dict
   return a:bytes.Seek(self.offset)
+endfunction
+
+function! s:SectionHeader_SeekNew(bytes) abort dict
+  return a:bytes.SeekNew(self.offset)
 endfunction
 
 let s:SectionHeader = {}
