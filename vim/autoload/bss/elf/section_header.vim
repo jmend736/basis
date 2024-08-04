@@ -49,8 +49,14 @@ function! bss#elf#section_header#Parse(bytes) abort
         \ s:SectionHeader.Type.parse(section_header.type)
   let section_header.flags =
         \ s:SectionHeader.Flags.parse(section_header.flags)
+  let section_header.Seek =
+        \ function('s:SectionHeader_Seek', [b], section_header)
 
   return section_header
+endfunction
+
+function! s:SectionHeader_Seek(bytes) abort dict
+  return a:bytes.Seek(self.offset)
 endfunction
 
 let s:SectionHeader = {}
