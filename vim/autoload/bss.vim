@@ -139,7 +139,7 @@ function! bss#ThreadedPrintDicts(dicts, keys = v:none) abort
   let l:keys      = (a:keys is v:none) ? keys(a:dicts[0]) : a:keys
   let l:val_lists = a:dicts->mapnew({_, dict -> mapnew(l:keys, 'dict[v:val]')})
   call bss#ThreadedPrintLists(
-        \ repeat("| {} ", l:keys->len()) .. " |",
+        \ repeat("| {} ", l:keys->len()) .. "|",
         \ extend([l:keys], l:val_lists)->bss#T())
 endfunction
 
