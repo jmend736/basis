@@ -51,6 +51,9 @@
 "   s:View.Append([{line}...])
 "     Appends all lines [{line}...] to buffer
 "
+"   s:View.AppendPretty({expr})
+"     Appends pretty printed likes of {expr} to buffer
+"
 "   s:View.Clear()
 "     Clear all lines in View's buffer
 "
@@ -265,7 +268,20 @@ endfunction
 
 function! s:View.Append(line_or_lines) abort
   if self.CheckValid("View.Append()")
-    call appendbufline(self.bufnr, line('$', self.winid), a:line_or_lines)
+    call appendbufline(
+          \ self.bufnr,
+          \ line('$', self.winid),
+          \ a:line_or_lines)
+  endif
+  return self
+endfunction
+
+function! s:View.AppendPretty(expr) abort
+  if self.CheckValid("View.AppendPretty()")
+    call appendbufline(
+          \ self.bufnr,
+          \ line('$', self.winid),
+          \ bss#pretty#PPLines(a:expr))
   endif
   return self
 endfunction
