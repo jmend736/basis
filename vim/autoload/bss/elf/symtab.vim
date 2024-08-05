@@ -23,22 +23,21 @@ function! bss#elf#symtab#Parse(bytes) abort
 
   " Interpret
   call bss#Continuation("Implement interpretation")
-  let entry.info = s:SymbolTable.ParseInfo(entry.info)
+  let entry.info_binding = s:SymbolTable.Info.Bindings[and(0xF0, entry.info)]
+  let entry.info_type    = s:SymbolTable.Info.Types[and(0x0F, entry.info)]
+  let entry.info         = printf('0x%02X', entry.info)
 
   return entry
 endfunction
 
 function! bss#elf#symtab#PrintAll(symtab) abort
-  call bss#ThreadedPrintDicts(a:symtab)
+  call bss#ThreadedPrintDicts(a:symtab, [
+        \   'name', 'info', 'info_binding', 'info_type',
+        \   'other', 'shndx', 'value', 'size'
+        \ ])
 endfunction
 
-let s:SymbolTable           = {}
-function! s:SymbolTable.ParseInfo(info) abort dict
-  let info = []
-  eval info->add(self.Info.Bindings[and(0xF0, a:info)])
-  eval info->add(self.Info.Types[and(0x0F, a:info)])
-  return join(info->filter('!empty(v:val)'), ',')
-endfunction
+let s:SymbolTable                     = {}
 let s:SymbolTable.Info                = {}
 let s:SymbolTable.Info.Bindings       = {}
 let s:SymbolTable.Info.Bindings[0x00] = 'STB_LOCAL'   " Local
