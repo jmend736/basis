@@ -29,12 +29,15 @@ function! bss#elf#Parse(bytes) abort
   for section_header in elf.section_headers
     if section_header.name ==# '.interp'
       let elf.interp = section_header.Seek().AsciiNull()
-    elseif section_header.name =~# '\v\.(symtab|dynsym)'
+    elseif section_header.type ==# 'SHT_SYMTAB'
       let elf[section_header.name[1:]] =
             \ bss#elf#symtab#ParseAll(
             \   section_header.Seek(),
             \   section_header.size,
             \   section_header.entsize)
+    elseif section_header.type ==# 'SHT_RELA'
+      let elf[section_header.name[1:]] =
+            \ bss#elf#rela#ParseAll(section_header)
     elseif section_header.name ==# '.strtab'
       let elf.strtab = b.SeekNew(section_header.offset)
     endif
@@ -70,5 +73,5 @@ endfunction
 if exists('g:bss_elf_test')
   let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
   "call bss#elf#symtab#PrintAll(elf.symtab)
-  call elf.PrintSectionHeaders()
+  call bss#elf#rela#PrintAll(elf['rela.dyn'])
 endif

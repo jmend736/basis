@@ -53,6 +53,8 @@ function! bss#elf#section_header#Parse(bytes) abort
         \ function('s:SectionHeader_Seek', [b], section_header)
   let section_header.SeekNew =
         \ function('s:SectionHeader_SeekNew', [b], section_header)
+  let section_header.NumElements =
+        \ function('s:SectionHeader_NumElements', [], section_header)
 
   return section_header
 endfunction
@@ -63,6 +65,10 @@ endfunction
 
 function! s:SectionHeader_SeekNew(bytes) abort dict
   return a:bytes.SeekNew(self.offset)
+endfunction
+
+function! s:SectionHeader_NumElements() abort dict
+  return self.size / self.entsize
 endfunction
 
 ""
