@@ -34,7 +34,7 @@ endfunction
 
 let s:SymbolTable           = {}
 function! s:SymbolTable.ParseInfo(info) abort dict
-  let info = [printf("0x%X (0b%b)", a:info, a:info)]
+  let info = []
   eval info->add(bss#elf#util#MaskDictNumber(
         \   self.Info.Bindings,
         \   a:info,
@@ -45,7 +45,7 @@ function! s:SymbolTable.ParseInfo(info) abort dict
         \   a:info,
         \   self.Info.Types->keys()->sort('n')
         \ ))
-  return join(info, ',')
+  return join(info->filter('!empty(v:val)'), ',')
 endfunction
 let s:SymbolTable.Info                = {}
 let s:SymbolTable.Info.Bindings       = {}
