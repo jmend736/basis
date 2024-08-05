@@ -33,6 +33,7 @@ function! bss#elf#Parse(bytes) abort
   let elf.PrintProgramHeaders =
         \ {-> bss#elf#program_header#PrintAll(elf.program_headers)}
 
+  " Process section_headers individually
   for section_header in elf.section_headers
     if section_header.name ==# '.interp'
       let elf.interp = section_header.Seek().AsciiNull()
@@ -48,6 +49,7 @@ function! bss#elf#Parse(bytes) abort
     endif
   endfor
 
+  " Process section_header intradependencies
    for sym in elf.symtab
      if sym.name == 0
        continue
