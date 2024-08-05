@@ -35,16 +35,8 @@ endfunction
 let s:SymbolTable           = {}
 function! s:SymbolTable.ParseInfo(info) abort dict
   let info = []
-  eval info->add(bss#elf#util#MaskDictNumber(
-        \   self.Info.Bindings,
-        \   a:info,
-        \   self.Info.Bindings->keys()->sort('n')
-        \ ))
-  eval info->add(bss#elf#util#MaskDictNumber(
-        \   self.Info.Types,
-        \   a:info,
-        \   self.Info.Types->keys()->sort('n')
-        \ ))
+  eval info->add(self.Info.Bindings[and(0xF0, a:info)])
+  eval info->add(self.Info.Types[and(0x0F, a:info)])
   return join(info->filter('!empty(v:val)'), ',')
 endfunction
 let s:SymbolTable.Info                = {}
