@@ -70,5 +70,5 @@ endfunction
 
 if exists('g:bss_elf_test')
   let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
-  call bss#ThreadedPrintDicts(elf.symtab)
+  call bss#ThreadedPrintDicts([elf.symtab[56]])
 endif

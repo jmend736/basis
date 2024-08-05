@@ -1,8 +1,12 @@
-function! bss#elf#util#MaskDictNumber(dict, value, sep=',', keys=v:none) abort
+function! bss#elf#util#MaskDictNumber(dict, value, keys=v:none, sep=',') abort
   let keys = (a:keys is v:none ? a:dict->keys() : a:keys)->map('str2nr(v:val)')
   let results = []
   for key in keys
-    if and(key, a:value)
+    if key == 0
+      if a:value == 0
+        eval results->add(a:dict[key])
+      endif
+    elseif and(key, a:value) == key
       eval results->add(a:dict[key])
     endif
   endfor
@@ -40,6 +44,7 @@ if exists('g:bss_elf_util_test')
         \     2: "WORLD",
         \   },
         \   0b11,
+        \   v:none,
         \   '|'
         \ ))
 
@@ -51,6 +56,7 @@ if exists('g:bss_elf_util_test')
         \     2: "WORLD",
         \   },
         \   0b11,
+        \   v:none,
         \   '|'
         \ ))
 
