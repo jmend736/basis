@@ -22,10 +22,11 @@ function! bss#elf#symtab#Parse(bytes) abort
   let entry.size  = b.Xword() " Size of object
 
   " Interpret
-  call bss#Continuation("Implement interpretation")
+  call bss#Continuation($"Implement interpretation [other, shndx, value, size]")
   let entry.info_binding = s:SymbolTable.Info.Bindings[and(0xF0, entry.info)]
   let entry.info_type    = s:SymbolTable.Info.Types[and(0x0F, entry.info)]
   let entry.info         = printf('0x%02X', entry.info)
+  let entry.other        = s:SymbolTable.Others[entry.other]
   let entry.shndx        = bss#elf#section_header#ParseIndex(entry.shndx)
 
   return entry
@@ -41,9 +42,9 @@ endfunction
 let s:SymbolTable                     = {}
 let s:SymbolTable.Info                = {}
 let s:SymbolTable.Info.Bindings       = {}
-let s:SymbolTable.Info.Bindings[0x00] = 'STB_LOCAL'   " Local
-let s:SymbolTable.Info.Bindings[0x10] = 'STB_GLOBAL'  " Global
-let s:SymbolTable.Info.Bindings[0x20] = 'STB_WEAK'    " Global with weaker precedence
+let s:SymbolTable.Info.Bindings[0x00] = 'STB_LOCAL'  " Local
+let s:SymbolTable.Info.Bindings[0x10] = 'STB_GLOBAL' " Global
+let s:SymbolTable.Info.Bindings[0x20] = 'STB_WEAK'   " Global with weaker precedence
 "let s:SymbolTable.Info.Bindings[0x30] = 'STB_NUM'    " Number of defined types
 "let s:SymbolTable.Info.Bindings[0xA0] = 'STB_LOOS'   " Start of OS-specific
 "let s:SymbolTable.Info.Bindings[0xC0] = 'STB_HIOS'   " End of OS-specific
@@ -57,8 +58,13 @@ let s:SymbolTable.Info.Types[0x03]    = 'STT_SECTION' " Symbol associated with a
 let s:SymbolTable.Info.Types[0x04]    = 'STT_FILE'    " Symbol's name is file name
 let s:SymbolTable.Info.Types[0x05]    = 'STT_COMMON'  " Symbol is a common data object
 let s:SymbolTable.Info.Types[0x06]    = 'STT_TLS'     " Symbol is thread-local data objec
-"let s:SymbolTable.Info.Types[0x07]    = 'STT_NUM'     " Number of defined types.
+"let s:SymbolTable.Info.Types[0x07]    = 'STT_NUM'    " Number of defined types.
 "let s:SymbolTable.Info.Types[0x0A]    = 'STT_LOOS'   " Start of OS-specific
 "let s:SymbolTable.Info.Types[0x0C]    = 'STT_HIOS'   " End of OS-specific
 "let s:SymbolTable.Info.Types[0x0D]    = 'STT_LOPROC' " Start of processor-specific
 "let s:SymbolTable.Info.Types[0x0F]    = 'STT_HIPROC' " End of processor-specific
+let s:SymbolTable.Others              = {}
+let s:SymbolTable.Others[0]           = 'STV_DEFAULT'   " TODO
+let s:SymbolTable.Others[1]           = 'STV_INTERNAL'  " TODO
+let s:SymbolTable.Others[2]           = 'STV_HIDDEN'    " TODO
+let s:SymbolTable.Others[3]           = 'STV_PROTECTED' " TODO

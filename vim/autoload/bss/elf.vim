@@ -69,5 +69,6 @@ endfunction
 
 if exists('g:bss_elf_test')
   let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
-  call bss#elf#symtab#PrintAll(elf.symtab)
+  "call bss#elf#symtab#PrintAll(elf.symtab)
+  call elf.PrintSectionHeaders()
 endif
