@@ -65,7 +65,28 @@ function! s:SectionHeader_SeekNew(bytes) abort dict
   return a:bytes.SeekNew(self.offset)
 endfunction
 
+""
+" Given an {index} of a section header, returns the string representation.
+"
+"     bss#elf#section_header#ParseIndex(0) --> UND
+"
+function! bss#elf#section_header#ParseIndex(index) abort
+  if a:index == 0
+    return 'SHN_UNDEF'
+  elseif a:index == 0xFFF1
+    return 'SHN_ABS'
+  elseif a:index == 0xFFF2
+    return 'SHN_COMMON'
+  else
+    return a:index
+  endif
+endfunction
+
 let s:SectionHeader = {}
+let s:SectionHeader.Index = {}
+let s:SectionHeader.Index[0x0000] = 'SHN_UNDEF'  " Undefined index to a section header
+let s:SectionHeader.Index[0xFFF1] = 'SHN_ABS'    " Absolute index (does not participate in relocation)
+let s:SectionHeader.Index[0xFFF2] = 'SHN_COMMON' " Hello
 
 let s:SectionHeader.Type = {}
 function! s:SectionHeader.Type.parse(value) abort

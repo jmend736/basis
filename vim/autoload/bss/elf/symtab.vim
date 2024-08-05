@@ -26,6 +26,7 @@ function! bss#elf#symtab#Parse(bytes) abort
   let entry.info_binding = s:SymbolTable.Info.Bindings[and(0xF0, entry.info)]
   let entry.info_type    = s:SymbolTable.Info.Types[and(0x0F, entry.info)]
   let entry.info         = printf('0x%02X', entry.info)
+  let entry.shndx        = bss#elf#section_header#ParseIndex(entry.shndx)
 
   return entry
 endfunction

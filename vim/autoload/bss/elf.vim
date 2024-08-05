@@ -25,27 +25,18 @@ function! bss#elf#Parse(bytes) abort
   let elf.PrintSectionHeaders =
         \ {-> bss#elf#section_header#PrintAll(elf.section_headers)}
 
-  " Parse Program Headers
-  let elf.program_headers = bss#elf#program_header#ParseAll(
-        \ b,
-        \ elf.file_header.phoff,
-        \ elf.file_header.phnum)
-  let elf.PrintProgramHeaders =
-        \ {-> bss#elf#program_header#PrintAll(elf.program_headers)}
-
   " Process section_headers individually
   for section_header in elf.section_headers
     if section_header.name ==# '.interp'
       let elf.interp = section_header.Seek().AsciiNull()
-    elseif section_header.name ==# '.symtab'
-      let sh = section_header
-      let elf.symtab = bss#elf#symtab#ParseAll(
-            \ section_header.Seek(),
-            \ sh.size,
-            \ sh.entsize)
+    elseif section_header.name =~# '\v\.(symtab|dynsym)'
+      let elf[section_header.name[1:]] =
+            \ bss#elf#symtab#ParseAll(
+            \   section_header.Seek(),
+            \   section_header.size,
+            \   section_header.entsize)
     elseif section_header.name ==# '.strtab'
-      let sh = section_header
-      let elf.strtab = b.SeekNew(sh.offset)
+      let elf.strtab = b.SeekNew(section_header.offset)
     endif
   endfor
 
@@ -58,6 +49,14 @@ function! bss#elf#Parse(bytes) abort
      call sb.ReadBytes(sym.name)
      let sym.name = sb.AsciiNull()
    endfor
+
+  " Parse Program Headers
+  let elf.program_headers = bss#elf#program_header#ParseAll(
+        \ b,
+        \ elf.file_header.phoff,
+        \ elf.file_header.phnum)
+  let elf.PrintProgramHeaders =
+        \ {-> bss#elf#program_header#PrintAll(elf.program_headers)}
 
   return elf
 endfunction
