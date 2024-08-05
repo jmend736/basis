@@ -248,7 +248,8 @@ function! s:View.Exec(cmd) abort
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()
-    call execute(a:cmd)
+    let l:lines = execute(a:cmd)->split("\n")
+    call self.Append(l:lines)
   finally
     call l:cursor.Restore()
   endtry
