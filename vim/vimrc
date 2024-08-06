@@ -581,7 +581,8 @@ endfunction
 " The Silver Searcher
 if executable('ag')
     " Use ag over grep
-    set grepprg=ag\ --nogroup\ --nocolor\ --ignore=tags
+    set grepprg=ag\ --nogroup\ --nocolor\ --ignore=tags\ --vimgrep
+    set grepformat^=%f:%l:%c:%m
 endif
 " }}} Commands
 
