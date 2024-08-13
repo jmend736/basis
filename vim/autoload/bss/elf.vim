@@ -72,6 +72,8 @@ endfunction
 
 if exists('g:bss_elf_test')
   let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
-  "call bss#elf#symtab#PrintAll(elf.symtab)
-  call bss#elf#rela#PrintAll(elf['rela.dyn'])
+  echom ".rela.dyn:"
+  eval elf['rela.dyn']->bss#elf#rela#PrintAll()
+  "eval elf.dynstr->bss#elf#symtab#PrintAll()
+  call elf.PrintSectionHeaders()
 endif

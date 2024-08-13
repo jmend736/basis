@@ -1154,10 +1154,17 @@ function! s:ConcealK(repl_str) abort
 endfunction
 " }}}
 
+" ReadExecute
+"   Execute then read the output of that vim command
+" {{{
 let g:jm_vimrc.docs.commands['ReadExecute'] =
       \ 'Execute then read the output of that vim command'
 command! -nargs=* -complete=command ExecuteRead eval append(line('.'), execute(<q-args>)->split("\n"))
+" }}}
 
+" Bdz
+"   Run buildozer on current target (or :__pkg__ if none exists)
+" {{{
 let g:jm_vimrc.docs.commands['Bdz'] =
       \ 'Run buildozer on current target (or :__pkg__ if none exists)'
 command! -nargs=* Bdz echom
@@ -1165,10 +1172,17 @@ command! -nargs=* Bdz echom
       \   join([<f-args>], ' '),
       \   BlazeTarget() != '???' ? BlazeTarget() : ':__pkg__'
       \ ))
+" }}}
 
+" JemFormat
+"   Format lines between "format:`cmd`" to "format: END"
+" {{{
+let g:jm_vimrc.docs.commands['JemFormat'] =
+      \ 'Format lines between "format:`cmd`" to "format: END"'
 command! -nargs=* -complete=customlist,<SID>JemFormatComplete JemFormat eval s:JemFormat[<q-args>]()
 let s:JemFormat = {
-      \   'help': {-> bss#PP(s:JemFormat, v:true)},
+      \   ''     : {-> s:JemFormat.format()},
+      \   'help' : {-> bss#PP(s:JemFormat, v:true)},
       \ }
 function! s:JemFormatComplete(arglead, cmdline, curpos) abort
   return keys(s:JemFormat)->filter({k, v -> !stridx(v, a:arglead)})
@@ -1199,13 +1213,7 @@ function! s:JemFormat.find() abort dict
   let command = substitute(start_line.text, start_pat, '\1', '')
   return join([range, command], ' ')
 endfunction
-
-function! s:ClassesInJars(jars) abort
-  for l:jar in a:jars
-    let l:classes = systemlist(printf('jar tf %s', l:jar))
-          \->filter('v:val =~')
-  endfor
-endfunction
+" }}}
 
 " }}} Misc
 
