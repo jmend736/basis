@@ -209,6 +209,9 @@ set shiftwidth=2    " Sets what >> and << ops do
 set expandtab       " Replace tabs with spaces when editing
 set smarttab        " More reasonable tab actions
 
+set autoindent      " Copy indent from current line when starting a new line
+set smartindent     " Adds indents after {, or 'cinwords'
+
                     " Reasonable backspace functionality
 set backspace=indent,eol,start
 
@@ -728,7 +731,8 @@ augroup END
 
 augroup ft_markdown
     autocmd!
-    autocmd FileType markdown set textwidth=72 smartindent
+    autocmd FileType markdown set textwidth=72 smartindent autoindent
+    autocmd FileType markdown set cinwords+=:
 
     autocmd FileType markdown nnoremap <buffer> ]h :<c-u>call search('\v^#+ ', 'Wz')<cr>
     autocmd FileType markdown nnoremap <buffer> [h :<c-u>call search('\v^#+ ', 'bWz')<cr>
