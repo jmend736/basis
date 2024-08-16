@@ -254,6 +254,14 @@ function! bss#ExtendAll(func_list) abort
   return function('s:ExtendAllImpl', [a:func_list])
 endfunction
 
+" String helpers
+" ======================================================================
+
+function! bss#Hex(x) abort
+  return printf("0x%X", a:x)
+endfunction
+
+
 " Math helpers
 " ======================================================================
 
