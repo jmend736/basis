@@ -27,6 +27,7 @@ function! bss#elf#program_header#Parse(bytes) abort
 
   " Interpret
   call bss#Continuation("Implement interpretation of program header fields.")
+  let program_header.type = s:ProgramHeader.ParseType(program_header.type)
 
   return program_header
 endfunction
@@ -40,3 +41,37 @@ function! bss#elf#program_header#PrintAll(program_headers) abort
         \ ])
 endfunction
 
+let s:ProgramHeader = {}
+
+let s:ProgramHeader.Type = {}
+
+function! s:ProgramHeader.ParseType(value) abort
+  if has_key(self.Type, a:value)
+    return self.Type[a:value]
+  elseif 0x60000000 <= a:value && a:value <= 0x6FFFFFFF
+    return printf('<OS specific(0x%X)>', a:value)
+  elseif 0x70000000 <= a:value && a:value <= 0x7FFFFFFF
+    return printf('<PROC specific(0x%X)>', a:value)
+  else
+    return printf('<Unknown(%d)>', a:value)
+  endif
+endfunction
+
+let s:ProgramHeader.Type[0x00000000] = 'PT_NULL'         " Unused Entry
+let s:ProgramHeader.Type[0x00000001] = 'PT_LOAD'         " Loadable Segment
+let s:ProgramHeader.Type[0x00000002] = 'PT_DYNAMIC'      " Dynamic Linking Tables
+let s:ProgramHeader.Type[0x00000003] = 'PT_INTERP'       " Program interpreter path name
+let s:ProgramHeader.Type[0x00000004] = 'PT_NOTE'         " Note sections
+let s:ProgramHeader.Type[0x00000005] = 'PT_SHLIB'        " Reserved
+let s:ProgramHeader.Type[0x00000006] = 'PT_PHDR'         " Program Header Table
+let s:ProgramHeader.Type[0x60000000] = 'PT_LOOS'         " Environment-specific use
+let s:ProgramHeader.Type[0x6474E550] = 'PT_GNU_EH_FRAME' " GCC .eh_frame_hdr segment
+let s:ProgramHeader.Type[0x6474E551] = 'PT_GNU_STACK'    " Indicates stack executability
+let s:ProgramHeader.Type[0x6474E552] = 'PT_GNU_RELRO'    " Read-only after relocation
+let s:ProgramHeader.Type[0x6474E553] = 'PT_GNU_PROPERTY' " (TODO)
+let s:ProgramHeader.Type[0x6FFFFFFA] = 'PT_LOSUNW'       " Sun specific use
+let s:ProgramHeader.Type[0x6FFFFFFA] = 'PT_SUNWBSS'      " Sun specific Segment
+let s:ProgramHeader.Type[0x6FFFFFFB] = 'PT_SUNWSTACK'    " Stack segment
+let s:ProgramHeader.Type[0x6FFFFFFF] = 'PT_HIOS'         " Environment-specific use
+let s:ProgramHeader.Type[0x70000000] = 'PT_HIPROC'       " Processor-specific use
+let s:ProgramHeader.Type[0x7FFFFFFF] = 'PT_HIPROC'       " Processor-specific use
