@@ -81,10 +81,8 @@ function! s:Elf.Print() abort dict
   call self.PrintProgramHeaders()
 endfunction
 
+" let g:bss_elf_test = 1
 if exists('g:bss_elf_test')
-  let elf = bss#elf#ParseFile("/tmp/pg-OP3S/a.out")
-  echom ".rela.dyn:"
-  eval elf['rela.dyn']->bss#elf#rela#PrintAll()
-  "eval elf.dynstr->bss#elf#symtab#PrintAll()
-  call elf.PrintSectionHeaders()
+  let elf = bss#elf#ParseFile($OBJ)
+  call elf.PrintProgramHeaders()
 endif
