@@ -81,8 +81,8 @@ function! s:Elf.Print() abort dict
   call self.PrintProgramHeaders()
 endfunction
 
-" let g:bss_elf_test = 1
-if exists('g:bss_elf_test')
-  let elf = bss#elf#ParseFile($OBJ)
+" $BSS_ELF_TEST must point to an object file.
+if exists('$BSS_ELF_TEST')
+  let elf = bss#elf#ParseFile($BSS_ELF_TEST)
   call elf.PrintProgramHeaders()
 endif
