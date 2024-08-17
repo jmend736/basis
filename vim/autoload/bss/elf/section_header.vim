@@ -99,9 +99,9 @@ function! s:SectionHeader.Type.parse(value) abort
   if has_key(s:SectionHeader.Type, a:value)
     return s:SectionHeader.Type[a:value]
   elseif 0x60000000 <= a:value && a:value <= 0x6FFFFFFF
-    return '<OS Specific>'
+    return printf('<OS specific(0x%X)>', a:value)
   elseif 0x70000000 <= a:value && a:value <= 0x7FFFFFFF
-    return '<OS Specific>'
+    return printf('<PROC specific(0x%X)>', a:value)
   else
     return printf('<Unknown(%d)>', a:value)
   endif
