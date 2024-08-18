@@ -386,7 +386,7 @@ set pastetoggle=<F10>
 
 let g:jm_vimrc.docs.mappings['<F9>'] =
       \ 'Toggle virtualedit=all'
-nnoremap <F9> :let &ve = empty(&ve) ? 'all' : ''<cr>
+nnoremap <F9> :let &ve = <C-r>=empty(&ve) ? '"all"' : '""'<cr><cr>
 
 let g:jm_vimrc.docs.mappings['<C-r><C-f>'] =
       \ '[modes:ic] Insert file name root'
