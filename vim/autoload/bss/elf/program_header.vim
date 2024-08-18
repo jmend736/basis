@@ -26,8 +26,18 @@ function! bss#elf#program_header#Parse(bytes) abort
   let program_header.align  = b.Xword() " Alignment of segment
 
   " Interpret
-  call bss#Continuation("Implement interpretation of program header fields.")
+  let todoFields =<< trim END
+  flags
+  offset
+  vaddr
+  padder
+  filesz
+  memsz
+  align
+  END
+  call bss#Continuation($"Implement interpretation of program header {todoFields}.")
   let program_header.type = s:ProgramHeader.ParseType(program_header.type)
+  let program_header.flags = s:ProgramHeader.ParseFlags(program_header.flags)
 
   return program_header
 endfunction
@@ -75,3 +85,14 @@ let s:ProgramHeader.Type[0x6FFFFFFB] = 'PT_SUNWSTACK'    " Stack segment
 let s:ProgramHeader.Type[0x6FFFFFFF] = 'PT_HIOS'         " Environment-specific use
 let s:ProgramHeader.Type[0x70000000] = 'PT_HIPROC'       " Processor-specific use
 let s:ProgramHeader.Type[0x7FFFFFFF] = 'PT_HIPROC'       " Processor-specific use
+
+let s:ProgramHeader.Flags = {}
+
+let s:ProgramHeader.Flags[0x00000001] = 'PF_X' " Execute permission
+let s:ProgramHeader.Flags[0x00000002] = 'PF_W' " Write permission
+let s:ProgramHeader.Flags[0x00000004] = 'PF_R' " Read permission
+
+let s:ProgramHeader.ParseFlags =
+      \ {value ->
+      \   bss#elf#util#MaskDictNumber(
+      \     s:ProgramHeader.Flags, value, [4, 2, 1])}
