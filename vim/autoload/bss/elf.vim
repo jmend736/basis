@@ -51,6 +51,12 @@ function! bss#elf#Parse(bytes) abort
       let elf.sections[section_header.name] =
             \ b.SeekNew(section_header.offset)
 
+    elseif section_header.name ==# '.got'
+      let sb = section_header.Seek()
+      let elf.sections[section_header.name] =
+            \ range(section_header.NumElements())->map({
+            \   -> sb.Addr()
+            \ })
     endif
   endfor
 
@@ -84,5 +90,5 @@ endfunction
 " $BSS_ELF_TEST must point to an object file.
 if exists('$BSS_ELF_TEST')
   let elf = bss#elf#ParseFile($BSS_ELF_TEST)
-  call elf.PrintProgramHeaders()
+  PB elf
 endif
