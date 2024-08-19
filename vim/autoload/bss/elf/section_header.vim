@@ -53,6 +53,10 @@ function! bss#elf#section_header#Parse(bytes) abort
         \ function('s:SectionHeader_Seek', [b], section_header)
   let section_header.SeekNew =
         \ function('s:SectionHeader_SeekNew', [b], section_header)
+  let section_header.Read =
+        \ function('s:SectionHeader_Read', [], section_header)
+  let section_header.ReadElements =
+        \ function('s:SectionHeader_ReadElements', [], section_header)
   let section_header.NumElements =
         \ function('s:SectionHeader_NumElements', [], section_header)
 
@@ -65,6 +69,15 @@ endfunction
 
 function! s:SectionHeader_SeekNew(bytes) abort dict
   return a:bytes.SeekNew(self.offset)
+endfunction
+
+function! s:SectionHeader_Read() abort dict
+  return self.SeekNew().ReadBytes(self.size)
+endfunction
+
+function! s:SectionHeader_ReadElements() abort dict
+  let b = self.SeekNew()
+  return range(self.NumElements())->map({ -> b.ReadBytes(self.entsize) })
 endfunction
 
 function! s:SectionHeader_NumElements() abort dict
