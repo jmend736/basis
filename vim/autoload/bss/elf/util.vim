@@ -26,13 +26,14 @@ let s:LookupDict_DefaultRange = {
 "   {value}  key to look up
 "   {ranges} dict from name to list containing [min, max] (inclusive)
 "
-function! bss#elf#util#LookupDict(dict, key, ranges=s:LookupDict_DefaultRange) abort
+function! bss#elf#util#LookupDict(dict, key, ranges=v:none) abort
+  let ranges = (a:ranges is v:none) ? s:LookupDict_DefaultRange : a:ranges
   if has_key(a:dict, a:key)
     return a:dict[a:key]
   else
     let key     = str2nr(a:key)
     let key_str = printf("0x%X", key)
-    for [l:range_name, l:range] in items(a:ranges)
+    for [l:range_name, l:range] in items(ranges)
       let [min, max] = l:range
       if min <= key && key <= max
         return $'<{l:range_name} ({key_str})>'

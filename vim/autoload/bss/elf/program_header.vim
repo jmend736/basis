@@ -54,19 +54,8 @@ endfunction
 let s:ProgramHeader = {}
 
 let s:ProgramHeader.Type = {}
-
-function! s:ProgramHeader.ParseType(value) abort
-  if has_key(self.Type, a:value)
-    return self.Type[a:value]
-  elseif 0x60000000 <= a:value && a:value <= 0x6FFFFFFF
-    return printf('<OS specific(0x%X)>', a:value)
-  elseif 0x70000000 <= a:value && a:value <= 0x7FFFFFFF
-    return printf('<PROC specific(0x%X)>', a:value)
-  else
-    return printf('<Unknown(%d)>', a:value)
-  endif
-endfunction
-
+let s:ProgramHeader.ParseType =
+      \ {value -> bss#elf#util#LookupDict(s:ProgramHeader.Type, value)}
 let s:ProgramHeader.Type[0x00000000] = 'PT_NULL'         " Unused Entry
 let s:ProgramHeader.Type[0x00000001] = 'PT_LOAD'         " Loadable Segment
 let s:ProgramHeader.Type[0x00000002] = 'PT_DYNAMIC'      " Dynamic Linking Tables
@@ -87,12 +76,10 @@ let s:ProgramHeader.Type[0x70000000] = 'PT_HIPROC'       " Processor-specific us
 let s:ProgramHeader.Type[0x7FFFFFFF] = 'PT_HIPROC'       " Processor-specific use
 
 let s:ProgramHeader.Flags = {}
-
-let s:ProgramHeader.Flags[0x00000001] = 'PF_X' " Execute permission
-let s:ProgramHeader.Flags[0x00000002] = 'PF_W' " Write permission
-let s:ProgramHeader.Flags[0x00000004] = 'PF_R' " Read permission
-
 let s:ProgramHeader.ParseFlags =
       \ {value ->
       \   bss#elf#util#MaskDictNumber(
       \     s:ProgramHeader.Flags, value, [4, 2, 1])}
+let s:ProgramHeader.Flags[0x00000001] = 'PF_X' " Execute permission
+let s:ProgramHeader.Flags[0x00000002] = 'PF_W' " Write permission
+let s:ProgramHeader.Flags[0x00000004] = 'PF_R' " Read permission
