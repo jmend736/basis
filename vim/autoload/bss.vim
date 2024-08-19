@@ -257,8 +257,12 @@ endfunction
 " String helpers
 " ======================================================================
 
-function! bss#Hex(x) abort
-  return printf("0x%X", a:x)
+function! bss#Hex(x, size=0) abort
+  if a:size <= 0
+    return printf("0x%X", a:x)
+  else
+    return printf($"0x%0{2*a:size}X", a:x)
+  endif
 endfunction
 
 
