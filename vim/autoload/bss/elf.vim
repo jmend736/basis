@@ -46,10 +46,15 @@ function! bss#elf#Parse(bytes) abort
       let elf.sections[section_header.name] =
             \ bss#elf#rela#ParseAll(section_header)
 
-    " Parse .strtab, .shstrtab, and .dynstr section
+    " Parse .strtab, .shstrtab, and .dynstr sections
     elseif section_header.type ==# 'SHT_STRTAB'
       let elf.sections[section_header.name] =
             \ b.SeekNew(section_header.offset)
+
+    " Parse .dynamic section
+    elseif section_header.type ==# 'SHT_DYNAMIC'
+      let elf.sections[section_header.name] =
+            \ bss#elf#dyn#ParseAll(section_header)
 
     elseif section_header.name ==# '.got'
       let sb = section_header.Seek()
@@ -90,5 +95,6 @@ endfunction
 " $BSS_ELF_TEST must point to an object file.
 if exists('$BSS_ELF_TEST')
   let elf = bss#elf#ParseFile($BSS_ELF_TEST)
-  PB elf
+  let v = bss#view#DataView(elf.sections['.dynamic'])
+        \.Exec('set nowrap')
 endif
