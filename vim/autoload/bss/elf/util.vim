@@ -35,11 +35,11 @@ function! bss#elf#util#LookupDict(dict, key, ranges=s:LookupDict_DefaultRange) a
     for [l:range_name, l:range] in items(a:ranges)
       let [min, max] = l:range
       if min <= key && key <= max
-        return printf($'<{l:range_name} ({key_str})>')
+        return $'<{l:range_name} ({key_str})>'
       endif
     endfor
   endif
-  throw $'ERROR(InvalidArgument): Key "{a:key}" not found in dict {string(a:dict)} or ranges {string(a:ranges)}'
+  return $'<Unknown ({key_str})>'
 endfunction
 
 function! bss#elf#util#ParseLookupDictRange(value) abort
@@ -113,12 +113,8 @@ if exists('g:bss_elf_util_test')
         \ bss#elf#util#LookupDict({1: 2}, 10, {'FOO': [0, 10]})
         \->bss#elf#util#ParseLookupDictRange())
 
-  try
-    call bss#elf#util#LookupDict({1: 2}, 100, {"FOO": [0, 10]})
-    call assert_false(v:true, "MUST fail")
-  catch /.*/
-    call assert_exception('ERROR(InvalidArgument)')
-  endtry
+  call assert_equal('<Unknown (0x64)>',
+        \ bss#elf#util#LookupDict({1: 2}, 100, {'FOO': [0, 10]}))
 
   if empty(v:errors)
     echom "PASSED"
