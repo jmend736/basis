@@ -95,6 +95,6 @@ endfunction
 " $BSS_ELF_TEST must point to an object file.
 if exists('$BSS_ELF_TEST')
   let elf = bss#elf#ParseFile($BSS_ELF_TEST)
-  let v = bss#view#DataView(elf.sections['.dynamic'])
+  let v = bss#view#DataView(elf)
         \.Exec('set nowrap')
 endif

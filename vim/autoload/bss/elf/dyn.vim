@@ -4,7 +4,7 @@ function! bss#elf#dyn#ParseAll(section_header) abort
 
   for _ in a:section_header.NumElements()->range()
     let entry = {}
-    let entry.tag = b.Sxword()
+    let entry.tag = bss#elf#util#LookupDict(s:Tags, b.Sxword())
 
     if s:UseVal(entry.tag)
       let entry.val = b.Xword()

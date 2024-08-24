@@ -935,8 +935,8 @@ function! s:Javap(arg, search) abort
     endif
   endif
 
-  call g:jm_term
-        \.Run([g:jm_vimrc.deps.javap, l:cls])
+  eval g:jm_term
+        \.Run(join([g:jm_vimrc.deps.javap, l:cls], ' '))
         \.Exec('set ft=java')
 endfunction
 
