@@ -95,7 +95,7 @@ endfunction
 
 function! s:DocMap(name, dict) abort
   let l:length = keys(a:dict)
-        \->map({_, cmd -> strlen(cmd)})
+        \->map({_, cmd -> strdisplaywidth(cmd)})
         \->max()
   let l:lines = [a:name .. ':']
   for [cmd, desc] in sort(items(a:dict))
