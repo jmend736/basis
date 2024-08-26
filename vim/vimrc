@@ -356,6 +356,13 @@ noremap <C-k> <C-W>k
 noremap <C-h> <C-W>h
 noremap <C-l> <C-W>l
 
+let g:jm_vimrc.docs.mappings['<C-(Up|Down|Left|Right)>'] =
+      \ 'Move visual selection'
+vnoremap <C-Up> koko
+vnoremap <C-Down> jojo
+vnoremap <C-Left> hoho
+vnoremap <C-Right> lolo
+
 let g:jm_vimrc.docs.mappings['[['] =
       \ 'Enable [[,][,]],[] to operate on non-col-1-{}'
 " From :h object-motions
@@ -395,8 +402,8 @@ cnoremap <C-r><C-f> <C-r>=expand('%:p:t:r')<cr>
 
 let g:jm_vimrc.docs.mappings['<C-r><C-t>'] =
       \ '[modes:ic] Insert file name root'
-inoremap <C-r><C-t> <C-r>=BlazeTarget()<cr>
-cnoremap <C-r><C-t> <C-r>=BlazeTarget()<cr>
+inoremap <C-r><C-t> <C-r>=bss#blaze#BlazeTarget()<cr>
+cnoremap <C-r><C-t> <C-r>=bss#blaze#BlazeTarget()<cr>
 
 let g:jm_vimrc.docs.mappings['<C-p>'] =
       \ 'Fuzzy-search PWD'
