@@ -4,7 +4,6 @@ let s:Ops = {
       \   'bss#draw#align#Right':  {e -> [e - 1, 1]},
       \ }
 
-
 function! bss#draw#align#RegisterMappings() abort
   vnoremap <expr> <Plug>(bss#draw#align#Center) bss#draw#align#AlignOp('bss#draw#align#Center')
   vnoremap <expr> <Plug>(bss#draw#align#Left) bss#draw#align#AlignOp('bss#draw#align#Left')
