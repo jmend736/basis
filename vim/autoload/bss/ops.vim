@@ -95,7 +95,7 @@ function! bss#ops#Ranges(type='char', begin_mark="'[", end_mark="']") abort
     let l:pos = getpos(a:begin_mark)
     let l:ranges[l:pos[1] - l:first_lnum][1] = l:pos[2]
     let l:pos = getpos(a:end_mark)
-    if l:pos[2] != 2147483647
+    if l:pos[2] != 0x7FFFFFFF
       let l:ranges[l:pos[1] - l:first_lnum][2] = l:pos[2]
     endif
   elseif a:type == 'block'

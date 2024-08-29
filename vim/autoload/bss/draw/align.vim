@@ -4,6 +4,13 @@ let s:Ops = {
       \   'bss#draw#align#Right':  {e -> [e - 1, 1]},
       \ }
 
+
+function! bss#draw#align#RegisterMappings() abort
+  vnoremap <expr> <Plug>(bss#draw#align#Center) bss#draw#align#AlignOp('bss#draw#align#Center')
+  vnoremap <expr> <Plug>(bss#draw#align#Left) bss#draw#align#AlignOp('bss#draw#align#Left')
+  vnoremap <expr> <Plug>(bss#draw#align#Right) bss#draw#align#AlignOp('bss#draw#align#Right')
+endfunction
+
 function! bss#draw#align#AlignOp(Op, type = '__setup__') abort
   if a:type == '__setup__'
     let &operatorfunc = function('bss#draw#align#AlignOp', [a:Op])
