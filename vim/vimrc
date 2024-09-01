@@ -80,7 +80,8 @@ let g:jm_vimrc.has_python = has('python3')
 " Some system dependencies
 let g:jm_vimrc.deps.JavaClassnameList      = {-> systemlist('fish -c "classpath list-all-classes"')}
 let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "jars list"')}
-let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
+"let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
+let g:jm_vimrc.deps.google_java_executable = 'google-java-format'
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " }}}
 
@@ -290,7 +291,7 @@ let g:lightline = {
       \   },
       \ }
 
-let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+let $FZF_DEFAULT_COMMAND = 'ag -l'
 
 "let g:lsc_server_commands = {}
 "let g:lsc_enable_autocomplete = v:true
@@ -711,7 +712,7 @@ augroup ft_java
             \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     elseif filereadable('gradlew')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :Term ./gradlew run<cr>
+            \ :Term ./gradlew test -i --rerun<cr>
     endif
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
