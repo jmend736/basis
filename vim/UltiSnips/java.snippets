@@ -228,6 +228,15 @@ try {
 }
 endsnippet
 
+snippet tryi
+try {
+	${1:${VISUAL}}
+} catch(InterruptedException e) {
+	Thread.currentThread().interrupt();
+	throw new RuntimeException(e);
+}
+endsnippet
+
 snippet ca
 catch(${1:Exception} e) {
 	${2:${VISUAL:throw new RuntimeException(e)}};
@@ -258,7 +267,7 @@ snippet thi
 throw new IllegalStateException($1);
 endsnippet
 
-snippet thu
+snippet /thu/ "" r
 throw new UnsupportedOperationException($1);
 endsnippet
 
@@ -282,26 +291,6 @@ endsnippet
 
 snippet T= "Type, name, and value" i
 ${1:T} ${2:`!p type_to_name(snip, t[1])`} = ${3:new `!p type_to_name(snip, t[1])`($4)};
-endsnippet
-
-snippet _L "List<T>" i
-List<${1:String}>
-endsnippet
-
-snippet _IL "ListenableFuture<T>" i
-ImmutableList<${1:String}>
-endsnippet
-
-snippet _IL.of "ListenableFuture<T>" i
-ImmutableList.of($1)$0
-endsnippet
-
-snippet _M "Map<K, V>" i
-Map<${1:String}, ${2:String}>
-endsnippet
-
-snippet _LF "ListenableFuture<T>" i
-ListenableFuture<${1:String}>
 endsnippet
 
 # Misc Snippets
