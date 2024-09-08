@@ -309,3 +309,19 @@ public void ${3:${1:actionTaken}_${2:expectedResult}}() {
 	assertThat(null).isNull();
 }
 endsnippet
+
+snippet sub "Flow.Subscriber" i
+new Flow.Subscriber<${1:T}>() {
+	@Override
+	public void onSubscribe(Flow.Subscription subscription) {}
+
+	@Override
+	public void onNext($1 value) {}
+
+	@Override
+	public void onError(Throwable error) {}
+
+	@Override
+	public void onComplete() {}
+}
+endsnippet
