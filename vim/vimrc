@@ -147,6 +147,9 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
+if isdirectory('$OCAML_OCP_INDENT')
+  Plug $OCAML_OCP_INDENT
+endif
 if exists("$BASIS")
   Plug $BASIS, { 'rtp': 'vim' }
 else
@@ -264,6 +267,20 @@ set sessionoptions=
       \terminal
 
 set directory=~/.swaps//
+
+" Some mathematical digraphs
+digraphs el 8712 " Element in
+digraphs in 8712 " Element in
+digraphs ni 8713 " element not in
+digraphs es 8709 " Empty Set
+digraphs ss 8834 " Subset
+digraphs se 8838 " Subset equals
+digraphs ns 8836 " Not subset
+digraphs nS 8840 " Not subset equals
+digraphs nn 8745 " Intersection
+digraphs uu 8746 " Union
+digraphs un 8746 " Union
+digraphs co 8728 " Composition
 
 " Themes
 colorscheme gruvbox
@@ -451,6 +468,10 @@ let g:jm_vimrc.docs.mappings['\a'] =
 xmap <leader>a <Plug>(EasyAlign)
 nmap <leader>a <Plug>(EasyAlign)
 
+let g:jm_vimrc.docs.mappings["C-W !"] =
+      \ 'Toggle buflisted'
+nnoremap <C-W>l :set buflisted!<cr>
+
 let g:jm_vimrc.docs.mappings['\a[:(]'] =
       \ 'Extra/overriden EasyAlign items'
 let g:easy_align_delimiters = bss#extra#EasyAlignDelimiters()
@@ -563,6 +584,26 @@ command! ToggleFoldOpenSearch
       \   set foldopen-=search |
       \   echo "DISABLED foldopen search" |
       \ endif
+
+let g:jm_vimrc.docs.commands['SetupMath'] =
+      \ 'Set up abbreviations for math symbols'
+command! SetupMath
+      \ execute 'iabbrev nn ∩' |
+      \ execute 'iabbrev uu ∪' |
+      \ execute 'iabbrev in ∈' |
+      \ execute 'iabbrev ni ∉' |
+      \ execute 'iabbrev ss ⊂' |
+      \ execute 'iabbrev se ⊆' |
+      \ execute 'iabbrev ns ⊄' |
+      \ execute 'iabbrev AN ∧' |
+      \ execute 'iabbrev OR ∨' |
+      \ execute 'iabbrev es ∅' |
+      \ execute 'iabbrev => ⇒' |
+      \ execute 'iabbrev == ⇔' |
+      \ execute 'iabbrev != ≠' |
+      \ execute 'iabbrev co ∘' |
+      \ execute 'iabbrev FA ∀' |
+      \ execute 'iabbrev TE ∃'
 
 let g:jm_vimrc.docs.commands['PyHelp'] =
       \ 'Look-up help for python expression (: PyHelp <pkg> <cls>)'
@@ -805,6 +846,27 @@ augroup ft_make
     autocmd!
     autocmd FileType make nnoremap <buffer> <localleader>r
           \ :Term make<cr>
+augroup END
+
+augroup ft_ocaml
+    autocmd!
+    autocmd FileType ocaml
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+    autocmd FileType ocaml nnoremap <space>f :FormatCode<cr>
+    autocmd FileType ocaml vnoremap <space>f :FormatLines<cr>
+    if filereadable('Makefile')
+      autocmd FileType ocaml nnoremap <silent> <buffer> <localleader>r
+            \ :Term make<cr>
+    elseif filereadable('dune-project')
+      autocmd FileType ocaml nnoremap <silent> <buffer> <localleader>r
+            \ :Term dune build<cr>
+    else
+      autocmd FileType ocaml nnoremap <silent> <buffer> <localleader>r
+            \ :execute 'Term ocaml' expand("%")<cr>
+    endif
+    if isdirectory('/usr/bin/ocaml')
+      autocmd FileType ocaml set path+=/usr/lib/ocaml
+    endif
 augroup END
 
 " Use quickfix window when using :make
@@ -1235,6 +1297,84 @@ function! s:JemFormat.find() abort dict
 endfunction
 " }}}
 
+" AppendMarkdownBlock <fname>
+"   Append the current buffer's lines to the file <fname>.
+"   Adds an empty line if the last line in <fname> is non-empty.
+"
+" SetupAppendMarkdownBlock <fname>
+"   Setup \r nmap in the current buffer
+" 
+" {{{
+command! -nargs=1 -complete=file SetupAppendMarkdownBlock
+      \ nnoremap <buffer> \r :AppendMarkdownBlock <args><cr>
+command! -nargs=1 -complete=file -range=% AppendMarkdownBlock
+      \ eval AppendMarkdownBlock(<q-args>, <line1>, <line2>)
+command! -nargs=1 -complete=file AppendMarkdownBlockDebug
+      \ eval AppendMarkdownBlock(<q-args>, 0, '$', v:true)
+
+function! AppendMarkdownBlock(fname, begin=0, end='$', debug=v:false) abort
+  let lines = getline(a:begin, a:end)->s:Markdown_lines2codeblock()
+  if !a:debug
+    call s:AppendMarkdownBlock_write(a:fname, lines)
+  else
+    call s:AppendMarkdownBlock_dump(a:fname, lines)
+  endif
+endfunction
+
+""
+" Convert a list of lines to a list of codeblock lines.
+"
+function! s:Markdown_lines2codeblock(lines) abort
+  let prefix = '```'
+  let suffix = prefix
+  return [prefix] + a:lines + [suffix]
+endfunction
+
+
+""
+" Add a block to a markdown file.
+"
+function! s:AppendMarkdownBlock_write(fname, lines) abort
+  let prefix = (readfile(a:fname)->bss#Last()->empty())
+        \ ? [] : [""]
+  call writefile(prefix + a:lines, a:fname, 'a')
+  echom "Wrote file" a:fname
+endfunction
+
+""
+" Dump debug information.
+"
+function! s:AppendMarkdownBlock_dump(fname, lines) abort
+  " Dump debug output
+  echo 'fname:' a:fname
+  echo 'lines:'
+  echo
+  for l in a:lines
+    echo '  ' .. l
+  endfor
+endfunction
+" }}}
+
+" SetupSlimeTarget
+"   Wrapper for setting the g:slime_target
+" {{{
+command! -nargs=? -complete=customlist,s:SetupSlimeTarget_Complete SetupSlimeTarget call s:SetupSlimeTarget(<q-args>)
+let s:SlimeTargets = [
+      \   'tmux',
+      \   'vimterminal',
+      \ ]
+function! s:SetupSlimeTarget(arg) abort
+  if empty(a:arg)
+    echom printf('Current slime target: %s', g:slime_target)
+  else
+    let g:slime_target = a:arg
+  endif
+endfunction
+function! s:SetupSlimeTarget_Complete(arg, ...) abort
+  return s:SlimeTargets->filter('stridx(v:val, a:arg) == 0')
+endfunction
+" }}}
+
 " }}} Misc
 
 " Notes {{{
@@ -1252,6 +1392,34 @@ let g:jm_vimrc.java_import_cache = #{
       \   Set                : 'java.util.Set',
       \   Stream             : 'java.util.stream.Stream',
       \   Collectors         : 'java.util.stream.Collectors',
+      \   counting           : 'static java.util.stream.Collectors.counting',
+      \   averagingDouble    : 'static java.util.stream.Collectors.averagingDouble',
+      \   averagingInt       : 'static java.util.stream.Collectors.averagingInt',
+      \   averagingLong      : 'static java.util.stream.Collectors.averagingLong',
+      \   collectingAndThen  : 'static java.util.stream.Collectors.collectingAndThen',
+      \   filtering          : 'static java.util.stream.Collectors.filtering',
+      \   flatMapping        : 'static java.util.stream.Collectors.flatMapping',
+      \   groupingBy         : 'static java.util.stream.Collectors.groupingBy',
+      \   joining            : 'static java.util.stream.Collectors.joining',
+      \   mapping            : 'static java.util.stream.Collectors.mapping',
+      \   maxBy              : 'static java.util.stream.Collectors.maxBy',
+      \   minBy              : 'static java.util.stream.Collectors.minBy',
+      \   partitioningBy     : 'static java.util.stream.Collectors.partitioningBy',
+      \   reducing           : 'static java.util.stream.Collectors.reducing',
+      \   summarizingDouble  : 'static java.util.stream.Collectors.summarizingDouble',
+      \   summarizingInt     : 'static java.util.stream.Collectors.summarizingInt',
+      \   summarizingLong    : 'static java.util.stream.Collectors.summarizingLong',
+      \   summingDouble      : 'static java.util.stream.Collectors.summingDouble',
+      \   summingInt         : 'static java.util.stream.Collectors.summingInt',
+      \   summingLong        : 'static java.util.stream.Collectors.summingLong',
+      \   toCollection       : 'static java.util.stream.Collectors.toCollection',
+      \   toConcurrentMap    : 'static java.util.stream.Collectors.toConcurrentMap',
+      \   toList             : 'static java.util.stream.Collectors.toList',
+      \   toMap              : 'static java.util.stream.Collectors.toMap',
+      \   toSet              : 'static java.util.stream.Collectors.toSet',
+      \   toUnmodifiableList : 'static java.util.stream.Collectors.toUnmodifiableList',
+      \   toUnmodifiableMap  : 'static java.util.stream.Collectors.toUnmodifiableMap',
+      \   toUnmodifiableSet  : 'static java.util.stream.Collectors.toUnmodifiableSet',
       \   Collector          : 'java.util.stream.Collector',
       \   List               : 'java.util.List',
       \   ArrayList          : 'java.util.ArrayList',

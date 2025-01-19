@@ -1,0 +1,19 @@
+snippet exec
+(executable
+	(name ${1:name})
+	(public_name $1)
+	(libraries$2))$0
+endsnippet
+
+snippet lib "Library with all mods"
+(library
+	(name ${1:name})
+	(libraries$2))$0
+endsnippet
+
+snippet lib "Library with some mods"
+(library
+	(name ${1:name})
+	(modules $2)
+	(libraries$3))$0
+endsnippet

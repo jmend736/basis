@@ -228,12 +228,20 @@ try {
 }
 endsnippet
 
-snippet tryi
+snippet tryi "forward interrupt and throw"
 try {
 	${1:${VISUAL}}
 } catch(InterruptedException e) {
 	Thread.currentThread().interrupt();
 	throw new RuntimeException(e);
+}
+endsnippet
+
+snippet tryi "return"
+try {
+	${1:${VISUAL}}
+} catch(InterruptedException e) {
+	return;
 }
 endsnippet
 
@@ -323,5 +331,58 @@ new Flow.Subscriber<${1:T}>() {
 
 	@Override
 	public void onComplete() {}
+}
+endsnippet
+
+snippet ibench
+import org.openjdk.jmh.annotations.AuxCounters;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.CompilerControl;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Group;
+import org.openjdk.jmh.annotations.GroupThreads;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Timeout;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.BenchmarkParams;
+import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.infra.Control;
+import org.openjdk.jmh.infra.IterationParams;
+import org.openjdk.jmh.infra.ThreadParams;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.CommandLineOptionException;
+import org.openjdk.jmh.runner.options.CommandLineOptions;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+endsnippet
+
+snippet cbench
+@BenchmarkMode(Mode.AverageTime)
+@Fork(2)
+@Warmup(iterations = 2, time = 2, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@State(Scope.Benchmark)
+public class ${1:`!v expand('%:t:r')`} {
+	$0
+}
+endsnippet
+
+snippet bench
+@Benchmark
+public Object ${1:benchmark}() {
+	return null;
 }
 endsnippet
