@@ -387,3 +387,30 @@ public Object ${1:benchmark}() {
 	return null;
 }
 endsnippet
+
+snippet benchm "Provided main"
+org.openjdk.jmh.Main.main(new String[]{$1});$0
+endsnippet
+
+snippet benchm "Call Runner"
+new Runner(
+		new OptionsBuilder() //
+		.include(".*")
+		.forks(1)
+		.build())
+.run();
+endsnippet
+
+snippet benchmain "Provided main"
+org.openjdk.jmh.Main.main(new String[]{$1});$0
+endsnippet
+
+snippet benchmain "Call Runner"
+new Runner(
+		new OptionsBuilder() //
+		.include(".*")
+		.forks(1)
+		.build())
+.run();
+endsnippet
+
