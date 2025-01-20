@@ -1526,6 +1526,7 @@ let g:jm_vimrc.java_import_cache = #{
       \   CommandLineOptions         : 'org.openjdk.jmh.runner.options.CommandLineOptions',
       \   Options                    : 'org.openjdk.jmh.runner.options.Options',
       \   OptionsBuilder             : 'org.openjdk.jmh.runner.options.OptionsBuilder',
+      \   ResultFormatType           : 'org.openjdk.jmh.results.format.ResultFormatType',
       \ }
 " }}} Java Import Cache
 
