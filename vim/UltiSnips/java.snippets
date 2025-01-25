@@ -414,3 +414,13 @@ new Runner(
 .run();
 endsnippet
 
+snippet benchr "Runner"
+new Runner(
+		new OptionsBuilder() //
+		.include(".*")
+		.result("/tmp/last_benchmark.csv")
+		.resultFormat(ResultFormatType.CSV)
+		.forks(1)
+		.build())
+.run();
+endsnippet

@@ -1,8 +1,8 @@
 function! bss#tmpl#java#BasicMainContent(package, classname) abort
   let lines =<< eval trim END
-    package {package};
+    package {a:package};
 
-    public class {classname} {{
+    public class {a:classname} {{
       public static void main(String[] args) {{
         System.out.println("Hello, world!");
       }}
@@ -13,13 +13,13 @@ endfunction
 
 function! bss#tmpl#java#BasicMainTestContent(package, classname) abort
   let lines =<< eval trim END
-    package {package};
+    package {a:package};
 
     import static com.google.common.truth.Truth.assertThat;
 
     import org.junit.Test;
 
-    public class {classname}Test {{
+    public class {a:classname}Test {{
       @Test
       public void actionTaken_expectedResult() {{
         assertThat(true).isFalse();

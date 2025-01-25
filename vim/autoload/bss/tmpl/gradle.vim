@@ -15,7 +15,7 @@ function! bss#tmpl#gradle#AddLib(name, package) abort
         \       $'{main_class}.java': bss#tmpl#java#BasicMainContent(package_java, main_class),
         \     },
         \     $'src/test/java/{package_path}': {
-        \       $'{main_test}.java': bss#tmpl#java#BasicMainTestContent(package_java, main_class),
+        \       $'{main_class}Test.java': bss#tmpl#java#BasicMainTestContent(package_java, main_class),
         \     },
         \     'build.gradle': bss#tmpl#gradle#LibraryBuildGradleContent(),
         \   },
