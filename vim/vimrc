@@ -100,6 +100,7 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \     cg: 'Files ~/code/guava/guava/src',
       \     cj: 'Files ~/code/jdk/src/java.base/share/classes',
       \     cv: 'Files ~/code/opencv/modules/core',
+      \     cp: 'Files ~/code/pandas',
       \     n:  'Files ~/jmendio/n',
       \     v:  'edit ~/.vimrc',
       \   }
@@ -293,17 +294,17 @@ set bg=dark
 let g:lightline = {
       \   'active': {
       \     'left': [['mode', 'paste'], ['filename', 'modified']],
-      \     'right': [['winid_bufnr', 'lineinfo'], ['percent', 'foldlevel'], ['readonly']]
+      \     'right': [['winlayout', 'winid_bufnr', 'lineinfo'], ['percent', 'foldlevel'], ['readonly']]
       \   },
       \   'inactive': {
       \     'left': [['filename', 'modified']],
-      \     'right': [['winid_bufnr', 'lineinfo'], ['readonly']]
+      \     'right': [['winlayout', 'winid_bufnr', 'lineinfo'], ['readonly']]
       \   },
       \   'component_type': {
       \     'readonly': 'error',
       \   },
       \   'component': {
-      \     'winid_bufnr': '[%{winnr()}/%{win_getid()}]{%{bufnr()}}',
+      \     'winid_bufnr': '[%{winnr()}/%{win_getid()}(%{Layout()[win_getid()]})]{%{bufnr()}}',
       \     'foldlevel': '%{(&foldenable) ? &foldlevel : "-"}f',
       \   },
       \ }
@@ -1375,6 +1376,28 @@ function! s:SetupSlimeTarget_Complete(arg, ...) abort
 endfunction
 " }}}
 
+function! Layout() abort
+  let layout = winlayout()
+  return s:InvertLayout(layout)
+endfunction
+function! s:InvertLayout(l, path=[]) abort
+  if len(a:l) != 2
+    throw "ERROR(InvalidArguments): s:InvertLayout expects only 2-element lists"
+  endif
+  let [kind, val] = a:l
+  if kind ==# 'leaf'
+    return {val: join(a:path, '')}
+  elseif kind ==# 'col'
+    return val
+          \->map('s:InvertLayout(v:val, a:path + ["|"])')
+          \->reduce({a, b -> extend(a, b)})
+  elseif kind ==# 'row'
+    return val
+          \->map('s:InvertLayout(v:val, a:path + ["-"])')
+          \->reduce({a, b -> extend(a, b)})
+  endif
+endfunction
+
 " }}} Misc
 
 " Notes {{{
@@ -1485,6 +1508,13 @@ let g:jm_vimrc.java_import_cache = #{
       \   ExecutorService            : 'java.util.concurrent.ExecutorService',
       \   Executors                  : 'java.util.concurrent.Executors',
       \   TimeUnit                   : 'java.util.concurrent.TimeUnit',
+      \   DAYS                       : 'static java.util.concurrent.TimeUnit.DAYS',
+      \   HOURS                      : 'static java.util.concurrent.TimeUnit.HOURS',
+      \   MINUTES                    : 'static java.util.concurrent.TimeUnit.MINUTES',
+      \   SECONDS                    : 'static java.util.concurrent.TimeUnit.SECONDS',
+      \   MILLISECONDS               : 'static java.util.concurrent.TimeUnit.MILLISECONDS',
+      \   MICROSECONDS               : 'static java.util.concurrent.TimeUnit.MICROSECONDS',
+      \   NANOSECONDS                : 'static java.util.concurrent.TimeUnit.NANOSECONDS',
       \   ThreadPoolExecutor         : 'java.util.concurrent.ThreadPoolExecutor',
       \   AtomicInteger              : 'java.util.concurrent.atomic.AtomicInteger',
       \   AtomicLong                 : 'java.util.concurrent.atomic.AtomicLong',
