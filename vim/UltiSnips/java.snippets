@@ -131,6 +131,12 @@ snippet pp
 System.out.format("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}${2:${VISUAL}}${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
+snippet po
+System.out.println(
+	MoreObjects.toStringHelper(${1:"name"}) //
+		.add(${2:"x", 0}));
+endsnippet
+
 snippet re "return"
 return ${2:${1:${VISUAL:null/;//}};}
 endsnippet
@@ -381,6 +387,13 @@ public class ${1:`!v expand('%:t:r')`} {
 }
 endsnippet
 
+snippet sbench
+@Setup(Level.Iteration)
+public void setup() {
+	$0
+}
+endsnippet
+
 snippet bench
 @Benchmark
 public Object ${1:benchmark}() {
@@ -423,4 +436,8 @@ new Runner(
 		.forks(1)
 		.build())
 .run();
+endsnippet
+
+snippet ths
+throws ${1:Exception}
 endsnippet

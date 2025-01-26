@@ -523,6 +523,11 @@ let g:jm_vimrc.docs.commands['StopAllJobs'] =
       \ 'Stop all running jobs'
 command! -bar StopAllJobs eval job_info()->map('job_stop(v:val)')
 
+let g:jm_vimrc.docs.commands['ListAllJobs'] =
+      \ 'Stop all running jobs'
+command! -bar -bang ListAllJobs
+      \ call bss#PP(job_info()->filter('<bang>0 || (job_status(v:val) == "run")'))
+
 let g:jm_vimrc.docs.commands['SetupClasspath'] =
       \ 'Set classpath to jm_vimrc.deps.ClasspathJarList()'
 command! -bar SetupClasspath
