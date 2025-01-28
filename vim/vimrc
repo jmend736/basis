@@ -1036,7 +1036,7 @@ command! -nargs=1 MavenSearch call <SID>MavenSearch(<q-args>)
 command! -nargs=1 M MavenSearch <args>
 function! s:MavenSearch(query) abort
   const l:query_url = printf(
-        \ 'https://search.maven.org/solrsearch/select?q=%s&rows=10&wt=json',
+        \ 'https://search.maven.org/solrsearch/select?q=%s&rows=20&wt=json',
         \ a:query)
 
   const l:query_cmd = join([
