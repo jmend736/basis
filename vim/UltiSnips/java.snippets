@@ -441,3 +441,85 @@ endsnippet
 snippet ths
 throws ${1:Exception}
 endsnippet
+
+snippet Phased
+static class Phased implements Executor {
+	private Phaser p = new Phaser(1);
+	private Phaser d = new Phaser(1);
+	private ExecutorService exec;
+
+	public Phased() {
+		this(Executors.newCachedThreadPool());
+	}
+
+	public Phased(ExecutorService exec) {
+		this.exec = exec;
+	}
+
+	@Override
+	public void execute(Runnable runnable) {
+		p.register();
+		d.register();
+		exec.execute(() -> taskFor(runnable));
+	}
+
+	public void runAndAwait() {
+		p.arrive();
+		d.arriveAndAwaitAdvance();
+	}
+
+	public void shutdown() {
+		p.forceTermination();
+		d.forceTermination();
+		exec.shutdownNow();
+	}
+
+	private void taskFor(Runnable runnable) {
+		int phase    = p.arriveAndDeregister();
+		int newPhase = p.awaitAdvance(phase);
+		if (newPhase < 0) return; // Terminated.
+		runnable.run();
+		d.arriveAndDeregister();
+	}
+}
+endsnippet
+
+snippet await "CyclicBarrier.await"
+try {
+	${1:barrier}.await();
+} catch (InterruptedException e) {
+	throw new RuntimeException(e);
+} catch (BrokenBarrierException e) {
+	throw new RuntimeException(e);
+}
+endsnippet
+
+snippet await "Phaser.awaitAdvance(phase)"
+${1:phaser}.awaitAdvance(${2:phase});
+endsnippet
+
+snippet await "Phaser.arriveAndAwaitAdvance()"
+${1:phaser}.arriveAndAwaitAdvance();
+endsnippet
+
+snippet get "Future.get"
+try {
+	$2${1:future}.get();
+} catch (InterruptedException e) {
+	throw new RuntimeException(e);
+} catch (ExecutionException e) {
+	throw new RuntimeException(e);
+}
+endsnippet
+
+snippet stream "map a list"
+${1:list}.stream()
+	.map(${2:Function.identity()})
+	.collect(${3:Collectors.toList()});
+endsnippet
+
+snippet range
+IntStream.range(0, ${1:10}).forEach(u -> {
+	${2:System.out.println(u);}
+});
+endsnippet

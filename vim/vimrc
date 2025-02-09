@@ -282,6 +282,7 @@ digraphs nn 8745 " Intersection
 digraphs uu 8746 " Union
 digraphs un 8746 " Union
 digraphs co 8728 " Composition
+digraphs \|> 8614 " Maps to
 
 " Themes
 colorscheme gruvbox
@@ -473,6 +474,14 @@ let g:jm_vimrc.docs.mappings["C-W !"] =
       \ 'Toggle buflisted'
 nnoremap <C-W>l :set buflisted!<cr>
 
+nnoremap <space>c  :YcmCompleter GetType<cr>
+nnoremap <space>cq :YcmCompleter GoToDocumentOutline<cr>
+nnoremap <space>cc :YcmCompleter GoToCallers<cr>
+nnoremap <space>cC :YcmCompleter GoToDefinition<cr>
+nnoremap <space>cf :YcmCompleter FixIt<cr>
+nnoremap <space>cd :YcmCompleter GetDoc<cr>
+nnoremap <space>ct :YcmCompleter GetType<cr>
+
 let g:jm_vimrc.docs.mappings['\a[:(]'] =
       \ 'Extra/overriden EasyAlign items'
 let g:easy_align_delimiters = bss#extra#EasyAlignDelimiters()
@@ -594,22 +603,23 @@ command! ToggleFoldOpenSearch
 let g:jm_vimrc.docs.commands['SetupMath'] =
       \ 'Set up abbreviations for math symbols'
 command! SetupMath
-      \ execute 'iabbrev nn ∩' |
-      \ execute 'iabbrev uu ∪' |
-      \ execute 'iabbrev in ∈' |
-      \ execute 'iabbrev ni ∉' |
-      \ execute 'iabbrev ss ⊂' |
-      \ execute 'iabbrev se ⊆' |
-      \ execute 'iabbrev ns ⊄' |
-      \ execute 'iabbrev AN ∧' |
-      \ execute 'iabbrev OR ∨' |
-      \ execute 'iabbrev es ∅' |
-      \ execute 'iabbrev => ⇒' |
-      \ execute 'iabbrev == ⇔' |
-      \ execute 'iabbrev != ≠' |
-      \ execute 'iabbrev co ∘' |
-      \ execute 'iabbrev FA ∀' |
-      \ execute 'iabbrev TE ∃'
+      \ execute 'iabbrev <buffer> nn ∩' |
+      \ execute 'iabbrev <buffer> uu ∪' |
+      \ execute 'iabbrev <buffer> in ∈' |
+      \ execute 'iabbrev <buffer> ni ∉' |
+      \ execute 'iabbrev <buffer> ss ⊂' |
+      \ execute 'iabbrev <buffer> se ⊆' |
+      \ execute 'iabbrev <buffer> ns ⊄' |
+      \ execute 'iabbrev <buffer> AN ∧' |
+      \ execute 'iabbrev <buffer> OR ∨' |
+      \ execute 'iabbrev <buffer> es ∅' |
+      \ execute 'iabbrev <buffer> => ⇒' |
+      \ execute 'iabbrev <buffer> == ⇔' |
+      \ execute 'iabbrev <buffer> != ≠' |
+      \ execute 'iabbrev <buffer> co ∘' |
+      \ execute 'iabbrev <buffer> FA ∀' |
+      \ execute 'iabbrev <buffer> TE ∃' |
+      \ execute 'iabbrev <buffer> \|> ↦'
 
 let g:jm_vimrc.docs.commands['PyHelp'] =
       \ 'Look-up help for python expression (: PyHelp <pkg> <cls>)'
@@ -760,6 +770,9 @@ augroup ft_java
     elseif filereadable('gradlew')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
             \ :Term ./gradlew test -i --rerun<cr>
+    else
+      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+            \ :MakeOrSetup java %<cr>
     endif
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
@@ -777,8 +790,6 @@ augroup ft_class
   autocmd BufReadCmd *.class
         \ call bss#java#javap#Browse(expand("<amatch>"))
 augroup END
-
-
 
 augroup ft_javascript
     autocmd!
