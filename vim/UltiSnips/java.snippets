@@ -153,6 +153,18 @@ if (${2:${VISUAL:/;//}}) {
 }
 endsnippet
 
+snippet for "for statement"
+for (var ${1:elem} : ${2:List.of()}) {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet fori "for statement"
+for (var ${1:i} = 0; $1 < ${2:10}; $1++) {
+	${VISUAL}$0
+}
+endsnippet
+
 snippet v "var field"
 var ${1:name} = ${3:${2:${VISUAL:null/;//}};}$0
 endsnippet
@@ -264,8 +276,8 @@ finally {
 endsnippet
 
 snippet tryr
-try (${1:${VISUAL/([^;\n]*);\n(.*)/$1/}}) {
-	${2:${VISUAL/([^;\n]*);\n\s*(.*)/$2/}}
+try (${1:${VISUAL/([^;\n]*);(\n(.*))?/$1/}}) {
+	${2:${VISUAL/([^;\n]*);(\n(.*))?/$2/}}
 }
 endsnippet
 
@@ -522,4 +534,33 @@ snippet range
 IntStream.range(0, ${1:10}).forEach(u -> {
 	${2:System.out.println(u);}
 });
+endsnippet
+
+snippet var
+var ${1:x} = ${2:${VISUAL:null/;$//}};
+endsnippet
+
+snippet varp
+var ${1:x} = ${2:${VISUAL:null/;$//}};
+System.out.println($1);
+endsnippet
+
+snippet aint
+AtomicInteger ${1:x} = new AtomicInteger(${2:0});
+endsnippet
+
+snippet along
+AtomicLong ${1:x} = new AtomicLong(${2:0L});
+endsnippet
+
+snippet afloat
+AtomicFloat ${1:x} = new AtomicFloat(${2:0.0f});
+endsnippet
+
+snippet adouble
+AtomicDouble ${1:x} = new AtomicDouble(${2:0.0});
+endsnippet
+
+snippet aref
+AtomicReference<${2:T}> ${1:x} = new AtomicReference<>();
 endsnippet

@@ -1573,6 +1573,8 @@ let g:jm_vimrc.java_import_cache = #{
       \   Options                    : 'org.openjdk.jmh.runner.options.Options',
       \   OptionsBuilder             : 'org.openjdk.jmh.runner.options.OptionsBuilder',
       \   ResultFormatType           : 'org.openjdk.jmh.results.format.ResultFormatType',
+      \   ReflectionToStringBuilder  : 'org.apache.commons.lang3.builder.ReflectionToStringBuilder',
+      \   ToStringStyle              : 'org.apache.commons.lang3.builder.ToStringStyle',
       \ }
 " }}} Java Import Cache
 
