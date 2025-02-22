@@ -127,6 +127,10 @@ snippet pa
 package `!v substitute(split(expand('%:p:h'), '/java/')[-1], '/', '.', 'g')`;
 endsnippet
 
+snippet im
+import `!v substitute(split(expand('%:p:h'), '/java/')[-1], '/', '.', 'g')`$1;
+endsnippet
+
 snippet pp
 System.out.format("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}${2:${VISUAL}}${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
@@ -315,8 +319,20 @@ snippet Tt "Type, and name" i
 ${1:T} ${2:`!p type_to_name(snip, t[1])`}$0
 endsnippet
 
+snippet tt "Type, and name" i
+${1:T} ${2:`!p type_to_name(snip, t[1])`}$0
+endsnippet
+
 snippet T= "Type, name, and value" i
 ${1:T} ${2:`!p type_to_name(snip, t[1])`} = ${3:new `!p type_to_name(snip, t[1])`($4)};
+endsnippet
+
+snippet t= "Type, name, and value" i
+${1:T} ${2:`!p type_to_name(snip, t[1])`} = ${3:new `!p type_to_name(snip, t[1])`($4)};
+endsnippet
+
+snippet tpt "Type, and provider for t" i
+${1:T} provide${1/<.*//}($1 ${1/(.*)(<.*)/\l$1/})
 endsnippet
 
 # Misc Snippets
@@ -563,4 +579,73 @@ endsnippet
 
 snippet aref
 AtomicReference<${2:T}> ${1:x} = new AtomicReference<>();
+endsnippet
+
+snippet provides
+@Provides
+static ${1:Integer} provide${1/<.*//}(${2:${1/<.*//}}) {
+	return ${3:1000};
+}
+endsnippet
+
+snippet binds
+@Binds
+${1:T} provide${1/<.*//}(${1/<.*//}Impl impl)
+endsnippet
+
+snippet produces
+@Produces
+static ${1:Integer} produce${1/<.*//}($2) {
+	return ${3:1000};
+}
+endsnippet
+
+snippet mod
+@Module
+public interface ${1:ExampleModule} {
+	$2
+}
+endsnippet
+
+snippet comp
+@Component(modules = {})
+interface ${1:C} {
+	$1 get();
+
+	public static $1 create() {
+		// return DaggerSurrounding_$1.create();
+		return Dagger$1.create();
+	}
+}
+endsnippet
+
+snippet pcomp
+@ProductionComponent(modules = {ExecutorModule.class})
+interface ${1:C} {
+	$1 get();
+
+	public static $1 create() {
+		// return DaggerSurrounding_$1.create();
+		return Dagger$1.create();
+	}
+}
+endsnippet
+
+snippet ExecutorModule
+@Module
+public static class ExecutorModule {
+	private final ExecutorService executor;
+
+	@Provides
+	@Singleton
+	ExecutorService provideExecutorService() {
+		return Executors.newSingleThreadExecutor();
+	}
+
+	@Provides
+	@Production
+	Executor provideExecutor() {
+		return executor;
+	}
+}
 endsnippet

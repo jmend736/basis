@@ -1,10 +1,13 @@
 function mkrt --description 'Make a random temporary directory'
     switch $argv[1]
-        case make
+        case help --help -h
+            echo 'make   : Create an empty temporary directly'
+            echo 'gradle : Create a new gradle project'
+        case make m --make -m
             set -l dir (mktemp -d /tmp/pg-XXXX)
             ln -s -f $dir /tmp/pg-latest
             pushd $dir
-        case gradle g
+        case gradle g -g --gradle
             mkrt make
             gradle wrapper --gradle-version=8.8 $argv[2..]
             # To get details of options:
