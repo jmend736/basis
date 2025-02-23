@@ -37,6 +37,13 @@ sync: vim/doc/tags
 	cp ~/.tmux.conf tmux/tmux.conf
 	$(FISH) fish/scripts/sync.fish
 
+.PHONY: deploy
+deploy:
+	git pull
+	git add .
+	git commit -m sync
+	git push
+
 .PHONY: install
 install:
 	cp -i vim/vimrc ~/.vimrc

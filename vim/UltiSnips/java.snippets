@@ -471,9 +471,10 @@ throws ${1:Exception}
 endsnippet
 
 snippet Phased
-static class Phased implements Executor {
+class Phased implements Executor {
 	private Phaser pending = new Phaser(1);
 	private Phaser done = new Phaser(1);
+	private List<Runnable> tasks = new ArrayList<>();
 	private ExecutorService exec;
 
 	@dagger.Module
@@ -506,13 +507,21 @@ static class Phased implements Executor {
 	}
 
 	@Override
-	public void execute(Runnable runnable) {
-		pending.register();
-		done.register();
-		exec.execute(() -> taskFor(runnable));
+	public synchronized void execute(Runnable runnable) {
+		tasks.add(runnable);
 	}
 
 	public void runAndAwait() {
+		Collection<Runnable> runnables;
+		synchronized (this) {
+			runnables = tasks.stream().collect(Collectors.toList());
+			tasks.clear();
+		}
+		for (var r : runnables) {
+			pending.register();
+			done.register();
+			exec.execute(() -> taskFor(r));
+		}
 		pending.arrive();
 		done.arriveAndAwaitAdvance();
 	}
@@ -628,6 +637,60 @@ public interface ${1:ExampleModule} {
 }
 endsnippet
 
+snippet pmod
+@ProducerModule
+public interface ${1:ExampleModule} {
+	$2
+}
+endsnippet
+
+snippet mmod
+@Module
+public interface MonitorModule {
+	@Provides
+	static ProductionComponentMonitor.Factory provideMonitor() {
+		return new ProductionComponentMonitor.Factory() {
+			@Override
+			public ProductionComponentMonitor create(Object component) {
+				return new ProductionComponentMonitor() {
+					@Override
+					public ProducerMonitor producerMonitorFor(ProducerToken token) {
+						return new ProducerMonitor() {
+							/**
+							 * Called before calling {@code collectDependencies()} and creating the transformed
+							 * future by binding {@code callProducesMethod()}.
+							 */
+							public void requested() {}
+
+							/** Called before scheduling {@code callProducesMethod()} on the executor. */
+							public void ready() {}
+
+							/** Called before executing {@code callProducesMethod()}. */
+							public void methodStarting() {}
+
+							/** Called after executing {@code callProducesMethod()}. */
+							public void methodFinished() {}
+
+							/**
+							 * Called after creating the transformed future. Schedules {@link #succeeded} and
+							 * {@link #failed} using a direct executor.
+							 */
+							// public <T> void addCallbackTo(ListenableFuture<T> future)
+
+							/** Called after the future completes successfully. */
+							public void succeeded(Object value) {}
+
+							/** Called after the future fails. */
+							public void failed(Throwable t) {}
+						};
+					}
+				};
+			}
+		};
+	}
+}
+endsnippet
+
 snippet comp
 @Component(modules = {})
 interface ${1:C} {
@@ -655,7 +718,7 @@ endsnippet
 snippet ExecutorModule
 @Module
 public static class ExecutorModule {
-	private final ExecutorService executor;
+	private final ExecutorService executor = Executors.newCachedThreadPool();
 
 	@Provides
 	@Singleton
