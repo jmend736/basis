@@ -472,9 +472,22 @@ endsnippet
 
 snippet Phased
 static class Phased implements Executor {
-	private Phaser p = new Phaser(1);
-	private Phaser d = new Phaser(1);
+	private Phaser pending = new Phaser(1);
+	private Phaser done = new Phaser(1);
 	private ExecutorService exec;
+
+	@dagger.Module
+	public interface Module {
+		@Provides
+		@ProductionScope
+		static Phased providePhased() {
+			return new Phased();
+		}
+
+		@Binds
+		@Production
+		Executor provideExecutor(Phased pending);
+	}
 
 	public Phased() {
 		this(Executors.newCachedThreadPool());
@@ -484,30 +497,38 @@ static class Phased implements Executor {
 		this.exec = exec;
 	}
 
+	public Phaser getPendingPhaser() {
+		return pending;
+	}
+
+	public Phaser getDonePhaser() {
+		return done;
+	}
+
 	@Override
 	public void execute(Runnable runnable) {
-		p.register();
-		d.register();
+		pending.register();
+		done.register();
 		exec.execute(() -> taskFor(runnable));
 	}
 
 	public void runAndAwait() {
-		p.arrive();
-		d.arriveAndAwaitAdvance();
+		pending.arrive();
+		done.arriveAndAwaitAdvance();
 	}
 
 	public void shutdown() {
-		p.forceTermination();
-		d.forceTermination();
+		pending.forceTermination();
+		done.forceTermination();
 		exec.shutdownNow();
 	}
 
 	private void taskFor(Runnable runnable) {
-		int phase    = p.arriveAndDeregister();
-		int newPhase = p.awaitAdvance(phase);
+		int newPhase = pending.arriveAndAwaitAdvance();
 		if (newPhase < 0) return; // Terminated.
 		runnable.run();
-		d.arriveAndDeregister();
+		pending.arriveAndDeregister();
+		done.arriveAndDeregister();
 	}
 }
 endsnippet
