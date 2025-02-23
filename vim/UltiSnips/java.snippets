@@ -739,6 +739,10 @@ endsnippet
 snippet MonitorFactory
 public abstract class MonitorFactory extends ProductionComponentMonitor.Factory {
 
+	public static Builder builder() {
+		return AutoValue_MonitorFactory.builder();
+	}
+
 	public interface Handler {
 		void handle(Object component, ProducerToken token);
 	}
