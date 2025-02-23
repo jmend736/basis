@@ -602,7 +602,7 @@ snippet aref
 AtomicReference<${2:T}> ${1:x} = new AtomicReference<>();
 endsnippet
 
-snippet provides
+snippet prov
 @Provides
 static ${1:Integer} provide${1/<.*//}(${2:${1/<.*//}}) {
 	return ${3:1000};
@@ -614,7 +614,7 @@ snippet binds
 ${1:T} provide${1/<.*//}(${1/<.*//}Impl impl)
 endsnippet
 
-snippet produces
+snippet prod
 @Produces
 static ${1:Integer} produce${1/<.*//}($2) {
 	return ${3:1000};
