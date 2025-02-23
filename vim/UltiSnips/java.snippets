@@ -648,11 +648,13 @@ snippet mmod
 @Module
 public interface MonitorModule {
 	@Provides
+	@IntoSet
 	static ProductionComponentMonitor.Factory provideMonitor() {
 		return new ProductionComponentMonitor.Factory() {
 			@Override
 			public ProductionComponentMonitor create(Object component) {
 				return new ProductionComponentMonitor() {
+					/** Called at entry to {@code compute()} */
 					@Override
 					public ProducerMonitor producerMonitorFor(ProducerToken token) {
 						return new ProducerMonitor() {
@@ -730,6 +732,116 @@ public static class ExecutorModule {
 	@Production
 	Executor provideExecutor() {
 		return executor;
+	}
+}
+endsnippet
+
+snippet MonitorFactory
+public abstract class MonitorFactory extends ProductionComponentMonitor.Factory {
+
+	public interface Handler {
+		void handle(Object component, ProducerToken token);
+	}
+
+	public interface SuccessHandler {
+		void handle(Object component, ProducerToken token, Object value);
+	}
+
+	public interface FailureHandler {
+		void handle(Object component, ProducerToken token, Throwable throwable);
+	}
+
+	protected abstract ImmutableList<Handler> requestedHandlers();
+
+	protected abstract ImmutableList<Handler> readyHandlers();
+
+	protected abstract ImmutableList<Handler> methodStartingHandlers();
+
+	protected abstract ImmutableList<Handler> methodFinishedHandlers();
+
+	protected abstract ImmutableList<SuccessHandler> succeededHandlers();
+
+	protected abstract ImmutableList<FailureHandler> failedHandlers();
+
+	@Override
+	public ProductionComponentMonitor create(Object component) {
+		return new ProductionComponentMonitor() {
+			@Override
+			public ProducerMonitor producerMonitorFor(ProducerToken token) {
+				return new ProducerMonitor() {
+					public void requested() {
+						requestedHandlers().forEach(handler -> handler.handle(component, token));
+					}
+
+					public void ready() {
+						readyHandlers().forEach(handler -> handler.handle(component, token));
+					}
+
+					public void methodStarting() {
+						methodStartingHandlers().forEach(handler -> handler.handle(component, token));
+					}
+
+					public void methodFinished() {
+						methodFinishedHandlers().forEach(handler -> handler.handle(component, token));
+					}
+
+					public void succeeded(Object value) {
+						succeededHandlers().forEach(handler -> handler.handle(component, token, value));
+					}
+
+					public void failed(Throwable t) {
+						failedHandlers().forEach(handler -> handler.handle(component, token, t));
+					}
+				};
+			}
+		};
+	}
+
+	@AutoValue.Builder
+	public interface Builder {
+		ImmutableList.Builder<Handler> requestedHandlersBuilder();
+
+		default Builder requested(Handler handler) {
+			requestedHandlersBuilder().add(handler);
+			return this;
+		}
+
+		ImmutableList.Builder<Handler> readyHandlersBuilder();
+
+		default Builder ready(Handler handler) {
+			readyHandlersBuilder().add(handler);
+			return this;
+		}
+
+		ImmutableList.Builder<Handler> methodStartingHandlersBuilder();
+
+		default Builder methodStarting(Handler handler) {
+			methodStartingHandlersBuilder().add(handler);
+			return this;
+		}
+
+		ImmutableList.Builder<Handler> methodFinishedHandlersBuilder();
+
+		default Builder methodFinished(Handler handler) {
+			methodFinishedHandlersBuilder().add(handler);
+			return this;
+		}
+
+		ImmutableList.Builder<SuccessHandler> succeededHandlersBuilder();
+
+		default Builder succeeded(SuccessHandler handler) {
+			succeededHandlersBuilder().add(handler);
+			return this;
+		}
+
+		ImmutableList.Builder<FailureHandler> failedHandlersBuilder();
+
+		default Builder failed(FailureHandler handler) {
+			failedHandlersBuilder().add(handler);
+			return this;
+		}
+
+		MonitorFactory build();
 	}
 }
 endsnippet
