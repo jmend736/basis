@@ -740,7 +740,7 @@ snippet MonitorFactory
 public abstract class MonitorFactory extends ProductionComponentMonitor.Factory {
 
 	public static Builder builder() {
-		return AutoValue_MonitorFactory.builder();
+		return new AutoValue_MonitorFactory.Builder();
 	}
 
 	public interface Handler {
