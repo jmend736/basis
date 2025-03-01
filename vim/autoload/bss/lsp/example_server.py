@@ -16,20 +16,19 @@ methods = {
         }
 
 def response(req_id, result, error):
-    r = None
-    res = dict()
+    resp = dict()
     if req_id is Missing:
         log(dict(result=result, error=error))
     else:
-        res.update({'id': req_id})
+        resp.update({'id': req_id})
         if error is None:
-            res['result'] = result
+            resp['result'] = result
         else:
-            res['error'] = {
+            resp['error'] = {
                 'code': -32000,
                 'message': error,
             }
-        print(json.dumps(res))
+        print(json.dumps(resp))
 
 class Missing:
     pass

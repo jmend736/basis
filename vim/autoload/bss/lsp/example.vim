@@ -1,8 +1,14 @@
 mess clear
 
-let g:next_id = 1
+let s:next_id = 1
+function! s:get_next_id() abort
+  let id = s:next_id
+  let s:next_id += 1
+  return id
+endfunction
 
-let g:job = job_start('python3 example_server.py --loop=True', {'mode': 'nl'})
+" nl / pipe job
+let s:job = job_start('python3 example_server.py --loop=True')
 
 ""
 " Like `call()` but performs a synchronous RPC according to the JSON-RPC 2.0
@@ -15,13 +21,12 @@ let g:job = job_start('python3 example_server.py --loop=True', {'mode': 'nl'})
 "     The parameters to pass to the method
 "
 function! Call(method, params) abort
-  let resp = ch_evalraw(g:job, json_encode({
+  let resp = ch_evalraw(s:job, json_encode({
         \   'jsonrpc' : '2.0',
-        \   'id'      : g:next_id,
+        \   'id'      : s:get_next_id(),
         \   'method'  : a:method,
         \   'params'  : a:params,
         \ }) .. "\n")
-  let g:next_id += 1
   return json_decode(resp)
 endfunction
 
@@ -29,5 +34,7 @@ echom Call('f', [1])
 echom Call('f', [2])
 echom Call('f', [3])
 echom Call('f', [])
+echom Call('f', {'x': 10})
+echom Call('f', {'y': 10})
 
-call job_stop(job, "kill")
+call job_stop(s:job, "kill")
