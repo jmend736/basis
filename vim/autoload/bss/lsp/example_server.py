@@ -25,7 +25,10 @@ def response(req_id, result, error):
         if error is None:
             res['result'] = result
         else:
-            res['error'] = error
+            res['error'] = {
+                'code': -32000,
+                'message': error,
+            }
         print(json.dumps(res))
 
 class Missing:
