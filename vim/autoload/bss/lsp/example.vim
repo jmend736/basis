@@ -36,5 +36,6 @@ echom Call('f', [3])
 echom Call('f', [])
 echom Call('f', {'x': 10})
 echom Call('f', {'y': 10})
+echom Call('hello', {'y': 0xDEADBEEF})
 
 call job_stop(s:job, "kill")
