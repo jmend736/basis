@@ -45,7 +45,7 @@ def apply(f, params):
     elif params is Missing:
         return f()
     else:
-        raise Exception()
+        raise Exception(f'Invalid params: {params}')
 
 
 def handle(line):
