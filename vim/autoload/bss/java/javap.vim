@@ -1,3 +1,10 @@
+""
+" Defines bss#java#javap#Browse() which is similar to zip#Browse() but for
+" java classfiles.
+"
+" TODO: Show help when pressing `?`.
+" TODO: Write into the current buffer rather than creating a new one.
+"
 
 " Command to run javap
 call bss#SetDefault(g:, 'bss_java_javap_command', { -> 'javap' })
