@@ -849,3 +849,19 @@ public abstract class MonitorFactory extends ProductionComponentMonitor.Factory 
 	}
 }
 endsnippet
+
+snippet pre
+<pre>{@code$1}</pre>$0
+endsnippet
+
+snippet exec
+try (var ${1:executor} = Executors.newCachedThreadPool()) {
+	$0
+}
+endsnippet
+
+snippet lexec
+try (var ${1:executor} = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool())) {
+	$0
+}
+endsnippet
