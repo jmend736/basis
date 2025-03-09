@@ -3,6 +3,7 @@
 " java classfiles.
 "
 " TODO: Add setup method.
+" TODO: Ensure nested classes work.
 "
 " DONE: Write into the current buffer rather than creating a new one.
 "
