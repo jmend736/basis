@@ -106,6 +106,17 @@ function! bss#view#View(...) abort
   return instance
 endfunction
 
+function! bss#view#CurrentView(...) abort
+  let instance = deepcopy(s:View)
+  for args in a:000
+    call instance.Extend({
+          \   'bufnr': 'current',
+          \   'winid': 'current'
+          \ }).Extend(args)
+  endfor
+  return instance
+endfunction
+
 function! bss#view#TermView(args = {}) abort
   return bss#view#View({
         \   'options': [

@@ -2,8 +2,9 @@
 " Defines bss#java#javap#Browse() which is similar to zip#Browse() but for
 " java classfiles.
 "
-" TODO: Show help when pressing `?`.
-" TODO: Write into the current buffer rather than creating a new one.
+" TODO: Add setup method.
+"
+" DONE: Write into the current buffer rather than creating a new one.
 "
 
 " Command to run javap
@@ -19,6 +20,22 @@ call bss#SetDefault(g:, 'bss_java_javap_view', {
 let s:view = g:bss_java_javap_view
 
 ""
+" Enable unit test.
+"
+" Source this file to run the unit tests.
+"
+function! bss#java#javap#SetupTest() abort
+  let g:bss_java_javap_test = v:true
+endfunction
+
+""
+" Disable unit test.
+"
+function! bss#java#javap#DisableTest() abort
+  unlet g:bss_java_javap_test
+endfunction
+
+""
 " name: A file path of a .class file
 "
 function! bss#java#javap#Browse(name, args=[]) abort
@@ -26,7 +43,7 @@ function! bss#java#javap#Browse(name, args=[]) abort
   let l:prefix =<< trim eval END
   // bss#java#javap#Browse for
   //   {a:name}
-  // with args: {a:args}
+  // with args: {string(a:args)}
   END
   let l:help =<< trim eval END
   //
@@ -39,9 +56,11 @@ function! bss#java#javap#Browse(name, args=[]) abort
   //  P : Toggle -private
   //  s : Toggle -s (internal type signatures)
   //  S : Toggle -sysinfo
+  //  ? : Toggle this key mapping.
   END
+  call s:view.Extend({'bufnr': bufnr(), 'winid': win_getid()})
   call s:view.Open()
-        \.Exec('setlocal modifiable')
+        \.Exec('setlocal modifiable ft=java foldlevel=1')
         \.SetLines(l:prefix + (get(b:, 'view_help', v:false) ? l:help : []) + l:lines)
         \.Call({ -> extend(b:, {
         \   'view'         : s:view,
@@ -57,6 +76,7 @@ function! bss#java#javap#Browse(name, args=[]) abort
         \.Exec('nnoremap <buffer> P :call bss#java#javap#Browse(b:view_name, b:ViewToggle("-private"))<CR>')
         \.Exec('nnoremap <buffer> # :call bss#java#javap#Browse(b:view_name, b:ViewToggle("-protected"))<CR>')
         \.Exec('nnoremap <buffer> p :call bss#java#javap#Browse(b:view_name, b:ViewToggle("-public"))<CR>')
+        \.Exec('nnoremap <buffer> ? :eval [extend(b:, {"view_help": !get(b:, "view_help", v:false)}), bss#java#javap#Browse(b:view_name, b:view_options)][-1]<CR>')
         \.Exec('setlocal nomodifiable')
 endfunction
 
@@ -122,5 +142,7 @@ if g:bss_java_javap_test
   call writefile(A_java_cont, A_java)
   call system($'javac {A_java}')
 
-  call bss#Try({ -> bss#java#javap#Browse(s:A_class) })
+  let b = bufadd(s:A_class)
+  call bufload(b)
+  "call bss#Try({ -> bss#java#javap#Browse(s:A_class) })
 endif
