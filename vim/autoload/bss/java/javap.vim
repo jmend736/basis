@@ -2,9 +2,9 @@
 " Defines bss#java#javap#Browse() which is similar to zip#Browse() but for
 " java classfiles.
 "
-" TODO: Add setup method.
-" TODO: Ensure nested classes work.
+" TODO: Add setup method to do the autocmd for users.
 "
+" DONE: Nested classes work (escape $ in fname)
 " DONE: Write into the current buffer rather than creating a new one.
 "
 
@@ -85,6 +85,7 @@ function! s:CallJavap(fname, args) abort
   let l:fname = a:fname
         \->substitute('zipfile:', 'jar:file:', '')
         \->substitute('::', '!/', '')
+        \->substitute('\$', '\\$', 'g')
   let l:cmd = $"{g:bss_java_javap_command} {join(a:args, ' ')} {l:fname}"
   let l:lines = systemlist(l:cmd)
   if v:shell_error
