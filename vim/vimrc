@@ -1,4 +1,4 @@
-" Copyright (c) 2024 Julian Mendoza
+" Copyright (c) 2024 Julian Mendoza;
 "
 " MIT License
 "
@@ -101,6 +101,7 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \     cj: 'Files ~/code/jdk/src/java.base/share/classes',
       \     cv: 'Files ~/code/opencv/modules/core',
       \     cp: 'Files ~/code/pandas',
+      \     cd: 'Files ~/code/dagger',
       \     n:  'Files ~/jmendio/n',
       \     v:  'edit ~/.vimrc',
       \   }
@@ -745,6 +746,18 @@ augroup ft_python
           \ :RunPythonTypechecks<cr>
     autocmd FileType python nnoremap <buffer> <space>f
           \ :FormatCode<CR>
+
+    autocmd BufNewFile .ycm_extra_conf.py call setline('.', [
+          \   'def Settings(**kwargs):',
+          \   '    if kwargs["language"] == "java":',
+          \   '        return {',
+          \   '            "ls": {',
+          \   '                "java.project.referencedLibraries": ["~/.jars/*.jar"]',
+          \   '            }',
+          \   '        }',
+          \ ])
+
+
 augroup END
 
 augroup ft_scheme
@@ -759,6 +772,8 @@ augroup ft_java
     autocmd!
     autocmd FileType java
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+    autocmd FileType java
+          \ setlocal foldmethod=marker foldmarker={,}
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
     if filereadable('Makefile')
@@ -769,7 +784,7 @@ augroup ft_java
             \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     elseif filereadable('gradlew')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :Term ./gradlew test -i --rerun<cr>
+            \ :Term ./gradlew --console=plain test -i --rerun<cr>
     else
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
             \ :MakeOrSetup java %<cr>
@@ -783,6 +798,8 @@ augroup ft_jar
   autocmd!
   autocmd FileType jar
         \ call zip#Browse(expand("<amatch>"))
+  autocmd FileType jar
+        \ setlocal buflisted
 augroup END
 
 augroup ft_class
@@ -953,7 +970,7 @@ function! s:FindImport(word) abort
     let l:results = g:jm_vimrc.deps.JavaClassnameList()
           \->filter('v:val =~# a:word')
           \->map('"import " .. v:val .. ";"')
-  endif
+  else
 
   if len(l:results) == 1
     call s:AddImport(l:results[0])
@@ -1491,10 +1508,12 @@ let g:jm_vimrc.java_import_cache = #{
       \   Inject                     : 'javax.inject.Inject',
       \   Qualifier                  : 'javax.inject.Qualifier',
       \   Singleton                  : 'javax.inject.Singleton',
+      \   Named                      : 'javax.inject.Named',
       \   Binds                      : 'dagger.Binds',
       \   Module                     : 'dagger.Module',
       \   Component                  : 'dagger.Component',
       \   Provides                   : 'dagger.Provides',
+      \   BindsInstance              : 'dagger.BindsInstance',
       \   Multibinds                 : 'dagger.multibindings.Multibinds',
       \   IntoSet                    : 'dagger.multibindings.IntoSet',
       \   IntoMap                    : 'dagger.multibindings.IntoMap',
@@ -1503,6 +1522,18 @@ let g:jm_vimrc.java_import_cache = #{
       \   StringKey                  : 'dagger.multibindings.StringKey',
       \   ClassKey                   : 'dagger.multibindings.ClassKey',
       \   ElementsIntoSet            : 'dagger.multibindings.ElementsIntoSet',
+      \   Produced                   : 'dagger.producers.Produced',
+      \   Producer                   : 'dagger.producers.Producer',
+      \   ProducerModule             : 'dagger.producers.ProducerModule',
+      \   Producers                  : 'dagger.producers.Producers',
+      \   Produces                   : 'dagger.producers.Produces',
+      \   Production                 : 'dagger.producers.Production',
+      \   ProductionComponent        : 'dagger.producers.ProductionComponent',
+      \   ProductionScope            : 'dagger.producers.ProductionScope',
+      \   ProductionSubcomponent     : 'dagger.producers.ProductionSubcomponent',
+      \   ProductionComponentMonitor : 'dagger.producers.monitoring.ProductionComponentMonitor',
+      \   ProducerToken              : 'dagger.producers.monitoring.ProducerToken',
+      \   ProducerMonitor            : 'dagger.producers.monitoring.ProducerMonitor',
       \   MapKey                     : 'dagger.MapKey',
       \   Path                       : 'java.nio.file.Path',
       \   Files                      : 'java.nio.file.Files',
@@ -1513,13 +1544,20 @@ let g:jm_vimrc.java_import_cache = #{
       \   FieldVisitor               : 'org.objectweb.asm.FieldVisitor',
       \   MethodVisitor              : 'org.objectweb.asm.MethodVisitor',
       \   TypePath                   : 'org.objectweb.asm.TypePath',
+      \   JavaFile                   : 'com.squareup.javapoet.JavaFile',
+      \   MethodSpec                 : 'com.squareup.javapoet.MethodSpec',
+      \   TypeSpec                   : 'com.squareup.javapoet.TypeSpec',
+      \   Element                    : 'javax.lang.model.element.Element',
+      \   TypeElement                : 'javax.lang.model.element.TypeElement',
       \   Modifier                   : 'java.lang.reflect.Modifier',
       \   Executable                 : 'java.lang.reflect.Executable',
       \   Field                      : 'java.lang.reflect.Field',
       \   Method                     : 'java.lang.reflect.Method',
       \   Type                       : 'java.lang.reflect.Type',
       \   AnnotatedElement           : 'java.lang.reflect.AnnotatedElement',
+      \   GenericDeclaration         : 'java.lang.reflect.GenericDeclaration',
       \   Executor                   : 'java.util.concurrent.Executor',
+      \   ExecutionException         : 'java.util.concurrent.ExecutionException',
       \   Future                     : 'java.util.concurrent.Future',
       \   ExecutorService            : 'java.util.concurrent.ExecutorService',
       \   Executors                  : 'java.util.concurrent.Executors',
@@ -1539,6 +1577,7 @@ let g:jm_vimrc.java_import_cache = #{
       \   Stopwatch                  : 'com.google.common.base.Stopwatch',
       \   StatsAccumulator           : 'com.google.common.math.StatsAccumulator',
       \   ConcurrentHashMap          : 'java.util.concurrent.ConcurrentHashMap',
+      \   ListenableFuture           : 'com.google.common.util.concurrent.ListenableFuture',
       \   assertThat                 : 'static com.google.common.truth.Truth.assertThat',
       \   assertWithMessage          : 'static com.google.common.truth.Truth.assertWithMessage',
       \   AuxCounters                : 'org.openjdk.jmh.annotations.AuxCounters',
@@ -1573,8 +1612,22 @@ let g:jm_vimrc.java_import_cache = #{
       \   Options                    : 'org.openjdk.jmh.runner.options.Options',
       \   OptionsBuilder             : 'org.openjdk.jmh.runner.options.OptionsBuilder',
       \   ResultFormatType           : 'org.openjdk.jmh.results.format.ResultFormatType',
+      \   RunResult                  : 'org.openjdk.jmh.results.RunResult',
       \   ReflectionToStringBuilder  : 'org.apache.commons.lang3.builder.ReflectionToStringBuilder',
       \   ToStringStyle              : 'org.apache.commons.lang3.builder.ToStringStyle',
+      \   AbstractProcessor          : 'javax.annotation.processing.AbstractProcessor',
+      \   Completion                 : 'javax.annotation.processing.Completion',
+      \   Completions                : 'javax.annotation.processing.Completions',
+      \   Filer                      : 'javax.annotation.processing.Filer',
+      \   FilerException             : 'javax.annotation.processing.FilerException',
+      \   Generated                  : 'javax.annotation.processing.Generated',
+      \   Messager                   : 'javax.annotation.processing.Messager',
+      \   ProcessingEnvironment      : 'javax.annotation.processing.ProcessingEnvironment',
+      \   Processor                  : 'javax.annotation.processing.Processor',
+      \   RoundEnvironment           : 'javax.annotation.processing.RoundEnvironment',
+      \   SupportedAnnotationTypes   : 'javax.annotation.processing.SupportedAnnotationTypes',
+      \   SupportedOptions           : 'javax.annotation.processing.SupportedOptions',
+      \   SupportedSourceVersion     : 'javax.annotation.processing.SupportedSourceVersion',
       \ }
 " }}} Java Import Cache
 

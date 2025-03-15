@@ -1,9 +1,12 @@
 function classpath --description '$CLASSPATH management'
-    switch $argv[1]
+    set -l command $argv[1]
+    set -l args $argv[2..]
+    switch $command
         case help
             string collect -- \
-                "setup	'Set global \$CLASSPATH to \$jars'" \
-                "add	'Select jar from .gradle to track in \$jars'" \
+                "setup	'[]: Set global \$CLASSPATH to \$jars'" \
+                "add	'[{file}]: Add {file} to \$jars.'" \
+                "add-gradle	'Select jar from .gradle to track in \$jars'" \
                 "reset	'Clear \$jars'" \
                 "list	'List tracked \$jars'" \
                 "list-all-classes	'outputs classes all \$jars'" \
@@ -11,10 +14,16 @@ function classpath --description '$CLASSPATH management'
                 "help	'Print this help'"
         case setup
             set -xg CLASSPATH $jars
-        case add
+        case reset
+            set -U jars
+        case find
             pushd $HOME/.gradle/
-            set -Ua jars (realpath (fzf -m))
+            realpath (fzf $args)
             popd
+        case add
+            set -Ua jars (realpath $args)
+        case add-gradle
+            classpath add (classpath find -m)
         case reset
             set -Ue jars
         case list
@@ -24,7 +33,7 @@ function classpath --description '$CLASSPATH management'
                 classpath list-classes $jar
             end
         case list-classes
-            jar tf $argv[2] \
+            jar tf $args \
                 | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
                 | string match --invert --regex '\$' \
                 | string match --invert --regex 'package-info' \
@@ -36,7 +45,6 @@ function classpath --description '$CLASSPATH management'
                 -xa "(classpath help | string replace \t "\\t")"
 
         case '*'
-            echo 'Invalid subcommand'
-            return 1
+            classpath list
     end
 end

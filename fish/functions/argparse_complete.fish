@@ -55,9 +55,9 @@ ARGSTRING
     # ==================================================================
     argparse --stop-nonopt h/help c/command= -- $argv
 
-    set -l complete
-    if string match -rq '(--complete)' $argv
-        set complete yes
+    if set -q _flag_help
+        echo $helptext
+        return
     end
 
     if not set -q _flag_command
@@ -65,10 +65,7 @@ ARGSTRING
         return 1
     end
 
-    if set -q _flag_help
-        echo $helptext
-        return
-    end
+    set -l complete
 
     # `argparse` DSL Patterns
     # ==================================================================
@@ -86,7 +83,10 @@ ARGSTRING
         # complete Argument Construction
         # ==============================================================
 
-        if test -n "$tail"
+        if test "$fmt" = "--complete"
+            set complete yes
+            continue
+        else if test -n "$tail"
             echo $fmt
             continue
         else if test "$fmt" = "--"
@@ -126,11 +126,10 @@ ARGSTRING
 
         # Format Argument Handling
         # ==============================================================
-        if test -n "$complete"
+        if test "$complete" = "yes"
             # Define Completions
             # ----------------------------------------------------------
-            complete -c $_flag_command $args
-            echo -s - -
+            echo complete -c $_flag_command $args
         else
             # Forward Argument
             # ----------------------------------------------------------
