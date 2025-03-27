@@ -10,7 +10,7 @@ function! bss#buf#Create(bufnr = v:none) abort
 endfunction
 
 function! bss#buf#Lines(bufnr = v:none) abort
-  call getbufline(s:fix_bufnr(a:bufnr), 1, '$')
+  return getbufline(s:fix_bufnr(a:bufnr), 1, '$')
 endfunction
 
 function! bss#buf#Reset(bufnr, text) abort
