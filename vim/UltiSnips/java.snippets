@@ -164,7 +164,19 @@ for (var ${1:elem} : ${2:List.of()}) {
 endsnippet
 
 snippet fori "for statement"
-for (var ${1:i} = 0; $1 < ${2:10}; $1++) {
+for (int ${1:i} = 0; $1 < ${2:10}; $1++) {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet forl "for statement"
+for (long ${1:i} = 0; $1 < ${2:10}; $1++) {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet ford "for statement"
+for (double ${1:i} = 0.0; $1 < ${2:10.0}; $1++) {
 	${VISUAL}$0
 }
 endsnippet
@@ -870,4 +882,12 @@ endsnippet
 snippet .build "" i
 $0
 		.build();
+endsnippet
+
+snippet /(busy|sleep|work)/ "busy loop" r
+try {
+	Thread.sleep(${1:1000});
+} catch(Exception e) {
+	throw new RuntimeException(e);
+}$0
 endsnippet
