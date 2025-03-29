@@ -1,3 +1,13 @@
+
+let s:Buf = {
+      \   'Lines': function('bss#buf#Lines', [a:bufnr]),
+      \   'Append': function('bss#buf#Append', [a:bufnr]),
+      \   'AppendJson': function('bss#buf#AppendJson', [a:bufnr]),
+      \   'Clear': function('bss#buf#Clear', [a:bufnr]),
+      \   'Set': function('bss#buf#Set', [a:bufnr]),
+      \   'Reset': function('bss#buf#Reset', [a:bufnr]),
+      \ }
+
 function! bss#buf#Create(bufnr = v:none) abort
   return {
         \   'Lines': function('bss#buf#Lines', [a:bufnr]),
