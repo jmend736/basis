@@ -17,16 +17,36 @@ priority -1
 #  cl<mods> f<mods> m<mods> in<mods> ct<mods>
 #
 # Java core:
-#  re ~ return
-#  if ~ if statement
+#  re   ~ return
+#  if   ~ if statement
+#  for  ~ for each loop
+#  fori ~ for int loop
+#  forl ~ for long loop
+#  ford ~ for double loop
+#  v    ~ variable defintion
+#  sw   ~ switch statment
+#  cs   ~ switch case statement
+#  br   ~ break statement
+#  ->   ~ lambda
+#  try  ~ try, catching Exception
+#  tryi ~ try, catching InterruptedException
+#  ca   ~ catch block
+#  fi   ~ finally block
+#  tryr ~ try-with-resources block
+#  th   ~ throw $1;
+#  thr  ~ throw new RuntimeException($1);
+#  thi  ~ throw new IllegalStateException($1);
+#  thu  ~ throw new UnsupportedOperationException($1);
+#  thin ~ if (interrupted) throw new InterruptedException();
+#  intr ~ if (interrupted) throw new InterruptedException();
 #
 # Java doc:
-#  ** *p *r
+#  ** ~ Make new javadoc
+#  *p ~ @param
+#  *r ~ @return
 #
 # Types:
 #  S L M LF
-#
-# Lambda: ->
 #
 # Misc:
 #  Tt T=
@@ -74,52 +94,6 @@ def modifiers(snip, mods, default=''):
 	snip.rv = ' '.join(mod_strings) + after
 
 endglobal
-
-# Packages
-
-snippet d.
-dagger.
-endsnippet
-
-snippet d.m
-dagger.multibindings.
-endsnippet
-
-snippet d.p
-dagger.producers.
-endsnippet
-
-snippet d.p.m
-dagger.producers.monitoring.
-endsnippet
-
-snippet j.u
-java.util.
-endsnippet
-
-snippet j.i
-java.io.
-endsnippet
-
-snippet j.cn
-java.util.concurrent.
-endsnippet
-
-snippet j.s
-java.util.stream.
-endsnippet
-
-snippet g.b
-com.google.common.base.
-endsnippet
-
-snippet g.c
-com.google.common.collect.
-endsnippet
-
-snippet g.cn
-com.google.common.util.concurrent.
-endsnippet
 
 # Core Language
 
@@ -364,7 +338,7 @@ public void ${3:${1:actionTaken}_${2:expectedResult}}() {
 }
 endsnippet
 
-snippet sub "Flow.Subscriber" i
+snippet Flow.Subscriber "Flow.Subscriber" i
 new Flow.Subscriber<${1:T}>() {
 	@Override
 	public void onSubscribe(Flow.Subscription subscription) {}
@@ -625,7 +599,7 @@ endsnippet
 
 snippet prov
 @Provides
-static ${1:Integer} provide${1/<.*//}(${2:${1/<.*//}}) {
+static ${1:Integer} provide${1/<.*//}($2) {
 	return ${3:1000};
 }
 endsnippet
