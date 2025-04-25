@@ -891,3 +891,60 @@ try {
 	throw new RuntimeException(e);
 }$0
 endsnippet
+
+snippet rng "Deterministic rng"
+var ${1:rng} = new Random($2);$0
+endsnippet
+
+snippet rng "Non-deterministic rng"
+var ${1:rng} = new Random(System.currentTimeMillis());$0
+endsnippet
+
+snippet Comp "Dagger Component"
+@Component(modules = {$1.Bindings.class})
+public static interface ${1:Name} {
+	$1 get();
+
+	@ProductionSubcomponent.Factory
+	public interface Factory {
+		$1 create();
+	}
+
+	@Module(subcomponents = {$1.class})
+	public interface Binder {}
+
+	@Module
+	public interface Bindings {}
+}
+endsnippet
+
+snippet Prod "Dagger Producer"
+@ProductionSubcomponent(modules = {$1.Bindings.class})
+public static interface ${1:Name} {
+	ListenableFuture<Void> status();
+
+	@ProductionSubcomponent.Factory
+	public interface Factory {
+		$1 create();
+	}
+
+	@Module(subcomponents = {$1.class})
+	public interface Binder {}
+
+	@ProducerModule
+	public interface Bindings {
+		@Produces
+		static Void produceVoid() {
+			return null;
+		}
+	}
+}
+endsnippet
+
+snippet Sw "started"
+var ${1:sw} = Stopwatch.createStarted();
+endsnippet
+
+snippet Sw "unstarted"
+var ${1:sw} = Stopwatch.createUnstarted();
+endsnippet
