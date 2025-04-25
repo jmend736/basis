@@ -79,7 +79,7 @@ let g:jm_vimrc.has_python = has('python3')
 
 " Some system dependencies
 let g:jm_vimrc.deps.JavaClassnameList      = {-> systemlist('fish -c "classpath list-all-classes"')}
-let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c "jars list"')}
+let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c classpath')}
 "let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format'
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
@@ -655,6 +655,37 @@ function! s:MakeOrSetup(cmds) abort
   endif
 endfunction
 
+let g:jm_vimrc.docs.commands['SetupYcmClasspath'] =
+      \ 'Create .ycm_extra_conf.py with CLASSPATH'
+command! -bang SetupYcmClasspath
+      \ call s:SetupYcmClasspath($CLASSPATH)
+function! s:SetupYcmClasspath(classpath) abort
+  let l:classpath = split(a:classpath, ':')
+  let l:lines = s:GenerateYcm(l:classpath)
+  if filereadable('.ycm_extra_conf.py')
+    throw 'ERROR(FileExists): .ycm_extra_conf.py already exists!'
+  else
+    call writefile(l:lines, '.ycm_extra_conf.py')
+    YcmRestartServer
+  endif
+endfunction
+function! s:GenerateYcm(classpath) abort
+  let l:path = a:classpath
+        \->map('string(v:val)')
+        \->join(", ")
+  let l:lines =<< eval trim END
+    def Settings(**kwargs):
+        if kwargs["language"] == "java":
+            return {{
+                "ls": {{
+                  "java.project.referencedLibraries": [{l:path}]
+                }}
+            }}
+  END
+  return l:lines
+endfunction
+
+
 " The Silver Searcher
 if executable('ag')
     " Use ag over grep
@@ -771,10 +802,11 @@ augroup END
 augroup ft_java
     autocmd!
     autocmd FileType java
-          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 shiftwidth=2 smarttab
     autocmd FileType java
           \ setlocal foldmethod=marker foldmarker={,}
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
+    autocmd FileType java nnoremap <space>F :set bt=nowrite <bar> FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
     if filereadable('Makefile')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
@@ -784,7 +816,7 @@ augroup ft_java
             \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
     elseif filereadable('gradlew')
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :Term ./gradlew --console=plain test -i --rerun<cr>
+            \ :Term ./gradlew test --rerun<cr>
     else
       autocmd FileType java nnoremap <silent> <buffer> <localleader>r
             \ :MakeOrSetup java %<cr>
@@ -970,7 +1002,7 @@ function! s:FindImport(word) abort
     let l:results = g:jm_vimrc.deps.JavaClassnameList()
           \->filter('v:val =~# a:word')
           \->map('"import " .. v:val .. ";"')
-  else
+  endif
 
   if len(l:results) == 1
     call s:AddImport(l:results[0])
@@ -1578,6 +1610,10 @@ let g:jm_vimrc.java_import_cache = #{
       \   StatsAccumulator           : 'com.google.common.math.StatsAccumulator',
       \   ConcurrentHashMap          : 'java.util.concurrent.ConcurrentHashMap',
       \   ListenableFuture           : 'com.google.common.util.concurrent.ListenableFuture',
+      \   MoreExecutors              : 'com.google.common.util.concurrent.MoreExecutors',
+      \   directExecutor             : 'static com.google.common.util.concurrent.MoreExecutors.directExecutor',
+      \   SettableFuture             : 'com.google.common.util.concurrent.SettableFuture',
+      \   Futures                    : 'com.google.common.util.concurrent.Futures',
       \   assertThat                 : 'static com.google.common.truth.Truth.assertThat',
       \   assertWithMessage          : 'static com.google.common.truth.Truth.assertWithMessage',
       \   AuxCounters                : 'org.openjdk.jmh.annotations.AuxCounters',

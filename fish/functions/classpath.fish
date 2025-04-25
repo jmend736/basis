@@ -45,6 +45,6 @@ function classpath --description '$CLASSPATH management'
                 -xa "(classpath help | string replace \t "\\t")"
 
         case '*'
-            classpath list
+            classpath list | ag '\.jar$' | string join ':'
     end
 end
