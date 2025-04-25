@@ -317,7 +317,7 @@ EasyAlign:
     <Right>  : >             : stick_to_right
 
     <C-f>    : [gv]/.*/      : filter
-    <C-g>    : ig[.*]        : ignore_groups
+    <C-g>    : ig\[.*\]      : ignore_groups
     <C-u>    : iu[01]        : ignore_unmatched
 
   stick_to_(left|right)
