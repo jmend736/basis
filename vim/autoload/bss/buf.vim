@@ -1,13 +1,4 @@
 
-let s:Buf = {
-      \   'Lines': function('bss#buf#Lines', [a:bufnr]),
-      \   'Append': function('bss#buf#Append', [a:bufnr]),
-      \   'AppendJson': function('bss#buf#AppendJson', [a:bufnr]),
-      \   'Clear': function('bss#buf#Clear', [a:bufnr]),
-      \   'Set': function('bss#buf#Set', [a:bufnr]),
-      \   'Reset': function('bss#buf#Reset', [a:bufnr]),
-      \ }
-
 function! bss#buf#Create(bufnr = v:none) abort
   return {
         \   'Lines': function('bss#buf#Lines', [a:bufnr]),
@@ -15,6 +6,7 @@ function! bss#buf#Create(bufnr = v:none) abort
         \   'AppendJson': function('bss#buf#AppendJson', [a:bufnr]),
         \   'Clear': function('bss#buf#Clear', [a:bufnr]),
         \   'Set': function('bss#buf#Set', [a:bufnr]),
+        \   'Match': function('bss#buf#Match', [a:bufnr]),
         \   'Reset': function('bss#buf#Reset', [a:bufnr]),
         \ }
 endfunction
@@ -42,6 +34,10 @@ endfunction
 
 function! bss#buf#AppendJson(bufnr, data) abort
   call appendbufline(s:fix_bufnr(a:bufnr), '$', json_encode(a:data))
+endfunction
+
+function! bss#buf#Match(bufnr, pat) abort
+  return matchbufline(s:fix_bufnr(a:bufnr), a:pat, 1, '$')
 endfunction
 
 " If {bufnr} is v:none, return the current bufnr, otherwise {bufnr}

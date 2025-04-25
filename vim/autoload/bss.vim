@@ -36,6 +36,10 @@ function! bss#ClassFiles(files) abort
   return bss#java#classfiles#Open(a:files)
 endfunction
 
+function! bss#Buf(bufnr = v:none) abort
+  return bss#buf#Create(a:bufnr)
+endfunction
+
 " Generic Getters/Setters
 " ======================================================================
 function! bss#Get(data, index, default = v:none) abort
