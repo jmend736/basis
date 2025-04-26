@@ -1,0 +1,57 @@
+snippet implPCMF "impl: ProductionComponentMonitor.Factory"
+class ${1:Impl} extends ProductionComponentMonitor.Factory {
+	@Override
+	public ProductionComponentMonitor create(Object component) {
+		throw new UnsupportedOperationException("Unimplemented method 'create'");
+	}
+}
+endsnippet
+
+snippet implPCM "impl: ProductionComponentMonitor"
+class ${1:Impl} extends ProductionComponentMonitor {
+	@Override
+	public ProducerMonitor producerMonitorFor(ProducerToken token) {
+		throw new UnsupportedOperationException("Unimplemented method 'producerMonitorFor'");
+	}
+}
+endsnippet
+
+snippet implPM "impl: ProducerMonitor"
+class ${1:Impl} extends ProducerMonitor {
+	/**
+	 * Called before calling {@code collectDependencies()} and creating the transformed
+	 * future by binding {@code callProducesMethod()}.
+	 */
+	@Override
+	public void requested() {}
+
+	/** Called before scheduling {@code callProducesMethod()} on the executor. */
+	@Override
+	public void ready() {}
+
+	/** Called before executing {@code callProducesMethod()}. */
+	@Override
+	public void methodStarting() {}
+
+	/** Called after executing {@code callProducesMethod()}. */
+	@Override
+	public void methodFinished() {}
+
+	/**
+	 * Called after creating the transformed future. Schedules {@link #succeeded} and
+	 * {@link #failed} using a direct executor.
+	 */
+	@Override
+	public <T> void addCallbackTo(ListenableFuture<T> future) {
+		super.addCallbackTo(future);
+	}
+
+	/** Called after the future completes successfully. */
+	@Override
+	public void succeeded(Object value) {}
+
+	/** Called after the future fails. */
+	@Override
+	public void failed(Throwable t) {}
+}
+endsnippet

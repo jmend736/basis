@@ -1576,11 +1576,20 @@ let g:jm_vimrc.java_import_cache = #{
       \   FieldVisitor               : 'org.objectweb.asm.FieldVisitor',
       \   MethodVisitor              : 'org.objectweb.asm.MethodVisitor',
       \   TypePath                   : 'org.objectweb.asm.TypePath',
+      \   CodeBlock                  : 'com.squareup.javapoet.CodeBlock',
       \   JavaFile                   : 'com.squareup.javapoet.JavaFile',
       \   MethodSpec                 : 'com.squareup.javapoet.MethodSpec',
       \   TypeSpec                   : 'com.squareup.javapoet.TypeSpec',
+      \   TypeName                   : 'com.squareup.javapoet.TypeName',
+      \   ClassName                  : 'com.squareup.javapoet.ClassName',
+      \   ParameterSpec              : 'com.squareup.javapoet.ParameterSpec',
+      \   ParameterizedTypeName      : 'com.squareup.javapoet.ParameterizedTypeName',
+      \   FieldSpec                  : 'com.squareup.javapoet.FieldSpec',
       \   Element                    : 'javax.lang.model.element.Element',
+      \   ElementVisitor             : 'javax.lang.model.element.ElementVisitor',
       \   TypeElement                : 'javax.lang.model.element.TypeElement',
+      \   ExecutableElement          : 'javax.lang.model.element.ExecutableElement',
+      \   TypeMirror                 : 'javax.lang.model.type.TypeMirror',
       \   Modifier                   : 'java.lang.reflect.Modifier',
       \   Executable                 : 'java.lang.reflect.Executable',
       \   Field                      : 'java.lang.reflect.Field',
@@ -1664,6 +1673,7 @@ let g:jm_vimrc.java_import_cache = #{
       \   SupportedAnnotationTypes   : 'javax.annotation.processing.SupportedAnnotationTypes',
       \   SupportedOptions           : 'javax.annotation.processing.SupportedOptions',
       \   SupportedSourceVersion     : 'javax.annotation.processing.SupportedSourceVersion',
+      \   MoreElements               : 'com.google.auto.common.MoreElements',
       \ }
 " }}} Java Import Cache
 
