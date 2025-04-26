@@ -1,0 +1,58 @@
+snippet implAP "AbstractProcessor"
+public class ${1:Impl} extends AbstractProcessor {
+	@Override
+	public ImmutableSet<String> getSupportedAnnotationTypes() {
+		// Example: "com.example.Outer.Inner"
+		return ImmutableSet.of();
+	}
+
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latestSupported();
+	}
+
+	@Override
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		return false;
+	}
+}
+endsnippet
+
+snippet implEV "ElementVisitor"
+class ${1:Impl} implements ElementVisitor<${2:Void}, ${3:Void}> {
+	@Override
+	public $3 visit(Element element, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitExecutable(ExecutableElement executableElement, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitPackage(PackageElement packageElement, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitType(TypeElement typeElement, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitTypeParameter(TypeParameterElement typeParameterElement, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitUnknown(Element element, $2 arg) {
+		return null;
+	}
+
+	@Override
+	public $3 visitVariable(VariableElement variableElement, $2 arg) {
+		return null;
+	}
+}
+endsnippet
