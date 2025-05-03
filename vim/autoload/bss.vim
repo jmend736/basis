@@ -103,6 +103,27 @@ function! bss#PA(array, with_methods = v:false) abort
   eval a:array.ToString(v:true)
 endfunction
 
+""
+" Print an aligned table defined by a format string.
+"
+" Syntax:
+"
+"     bss#PT({format}, {col} ...)
+"
+" Example:
+"
+"     bss#PT("Hello {} world {}", [111, 22, 3], ['a', 'bb', 'ccc'])
+"
+"     produces:
+"
+"        Hello 111 world   a
+"        Hello  22 world  bb
+"        Hello   3 world ccc
+"
+function! bss#PT(fmt, ...) abort
+  return bss#ThreadedPrintLists(a:fmt, a:000)
+endfunction
+
 function! bss#ThreadedPrintLists(fmt, lists) abort
   let l:fmt       = a:fmt
   let l:lists     = a:lists
@@ -114,7 +135,7 @@ function! bss#ThreadedPrintLists(fmt, lists) abort
   endfor
 
   for l:args in l:arg_lists
-    echo call('printf', [l:fmt] + l:args)
+    echo call('printf', [l:fmt] + map(l:args, 'bss#Str(v:val)'))
   endfor
 endfunction
 
@@ -201,7 +222,7 @@ function! bss#MaxLen(list) abort
 endfunction
 
 function! bss#MaxStrLen(list) abort
-  let Op = {i, v -> len(type(v) is v:t_string ? v : string(v))}
+  let Op = {i, v -> len(bss#Str(v))}
   return a:list->mapnew(Op)->max()
 endfunction
 
@@ -269,6 +290,9 @@ function! bss#Hex(x, size=0) abort
   endif
 endfunction
 
+function! bss#Str(arg) abort
+  return type(a:arg) is v:t_string ? a:arg : string(a:arg)
+endfunction
 
 " Math helpers
 " ======================================================================
