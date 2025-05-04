@@ -22,9 +22,6 @@ function! bss#draw#block#Center(line1, line2, width) abort
   let l:extent   = l:max_line - l:min_trim
   let l:padding  = (l:text_width - l:extent) / 2
 
-  " Width calculations
-  let l:widths = l:trimmed_lines->mapnew('strdisplaywidth(v:val.content)')
-
   if l:padding <= 0
     return
   endif
