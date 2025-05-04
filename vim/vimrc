@@ -591,6 +591,10 @@ let g:jm_vimrc.docs.commands['Dis'] =
 command! -bar Dis
       \ setlocal ft=dis buftype=nofile
 
+let g:jm_vimrc.docs.commands['Center'] =
+      \ 'Block alignment-preserving :center'
+call bss#draw#block#RegisterCommands()
+
 let g:jm_vimrc.docs.commands['ToggleFoldOpenSearch'] =
       \ 'Toggle search on foldopen option'
 command! ToggleFoldOpenSearch
