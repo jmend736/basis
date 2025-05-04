@@ -17,7 +17,7 @@ function! bss#draw#block#Center(line1, line2, width) abort
         \ }})
 
   " Extent/padding calculation
-  let l:min_trim = l:trimmed_lines->mapnew('v:val.trim')->min()
+  let l:min_trim = l:trimmed_lines->mapnew('v:val.trim')->filter('v:val > 0')->min()
   let l:max_line = l:trimmed_lines->mapnew('v:val.trim + strdisplaywidth(v:val.content)')->max()
   let l:extent   = l:max_line - l:min_trim
   let l:padding  = (l:text_width - l:extent) / 2
@@ -27,7 +27,7 @@ function! bss#draw#block#Center(line1, line2, width) abort
   endif
 
   let l:new_lines = l:trimmed_lines
-        \->mapnew({_, line -> repeat(' ', l:padding + (line.trim - l:min_trim)) .. line.content})
+        \->mapnew({_, line -> empty(line.content) ? '' : repeat(' ', l:padding + (line.trim - l:min_trim)) .. line.content})
 
   call setline(a:line1, l:new_lines)
 endfunction
