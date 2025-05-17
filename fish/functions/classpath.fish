@@ -33,6 +33,9 @@ function classpath --description '$CLASSPATH management'
                 classpath list-classes $jar
             end
         case list-classes
+            if test -z "$args"
+                set args $jars
+            end
             jar tf $args \
                 | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
                 | string match --invert --regex '\$' \

@@ -924,3 +924,29 @@ endsnippet
 snippet Sw "unstarted"
 var ${1:sw} = Stopwatch.createUnstarted();
 endsnippet
+
+snippet sb
+var sb = new StringBuilder();
+endsnippet
+
+snippet pw "PrintWriter"
+try (var pw = new PrintWriter(${1:fileOrWriter})) {
+	$2
+}$0
+endsnippet
+
+snippet node "dot node stirng" i
+String.format("\"%s\" [];", ${1:node});
+endsnippet
+
+snippet edge "dot edge stirng" i
+String.format("\"%s\" -> \"%s\" [];", ${1:src}, ${2:dst})
+endsnippet
+
+snippet rec
+record ${1:Ctx}($2) {
+	static $1 create($2) {
+		return new $1();
+	}
+}
+endsnippet

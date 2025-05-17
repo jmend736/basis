@@ -126,3 +126,24 @@ endsnippet
 snippet npa
 np.array($1)$0
 endsnippet
+
+snippet ppe
+print("$1 =", ${1:Hello})
+endsnippet
+
+snippet pp
+print(${1:"${2:Hello world!}"})$0
+endsnippet
+
+snippet pf
+print(f'$1')$0
+endsnippet
+
+snippet plt.subplot
+fig, ax = plt.subplots(figsize=(10.0, 10.0))
+ax.set(aspect='auto')
+endsnippet
+
+snippet plt.subplots
+fig, axs = plt.subplots(nrows=${1:1}, ncols=${1:2}, figsize=(10.0, 10.0))$0
+endsnippet

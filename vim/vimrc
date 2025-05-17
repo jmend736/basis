@@ -285,6 +285,12 @@ digraphs uu 8746 " Union
 digraphs un 8746 " Union
 digraphs co 8728 " Composition
 digraphs \|> 8614 " Maps to
+digraphs tl 8598 " Diagonal arrow top-left
+digraphs tr 8599 " Diagonal arrow top-right
+digraphs br 8600 " Diagonal arrow bot-right
+digraphs bl 8601 " Diagonal arrow bot-left
+digraphs -u 8593 " Up arrow
+digraphs -d 8595 " down arrow
 
 " Themes
 colorscheme gruvbox
@@ -690,6 +696,14 @@ function! s:GenerateYcm(classpath) abort
   return l:lines
 endfunction
 
+let g:jm_vimrc.docs.commands['SetupOcamlformat'] =
+      \ 'Create a basic .ocamlformat'
+command! SetupOcamlformat call s:SetupOcamlformat()
+function! s:SetupOcamlformat() abort
+  if !filereadable('.ocamlformat')
+    call writefile(['profile = default'], '.ocamlformat')
+  endif
+endfunction
 
 " The Silver Searcher
 if executable('ag')
