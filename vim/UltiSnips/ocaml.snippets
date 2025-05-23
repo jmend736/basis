@@ -42,6 +42,16 @@ let rec nest f i n = if n == 0 then i else f (nest f i (n - 1)) in
 endsnippet
 
 snippet lcc
+(** call-with-current-continuation in CPS
+
+	[call_cc f k] represents an [call/cc] operation which accepts two arguments:
+	- [f]: A function which accepts two arguments:
+		- A 2-arg function that continues at [k] with the first argument. The
+			second argument is supposed to be a the "continuation" specified by [f],
+			but the semantics of [call_cc] mean that we intentionally ignore it.
+	- [k]: The continuation that should follow the [f]. *)
 let call_cc f k =
-	(f (fun v k0 -> k v) k) in
+	(f (fun v k0 -> k v) k)
+in
+$0
 endsnippet
