@@ -1,5 +1,4 @@
 snippet implAP "impl: AbstractProcessor"
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -8,9 +7,9 @@ import javax.lang.model.element.TypeElement;
 
 public class ${1:Impl} extends AbstractProcessor {
 	@Override
-	public ImmutableSet<String> getSupportedAnnotationTypes() {
+	public Set<String> getSupportedAnnotationTypes() {
 		// Example: "com.example.Outer.Inner"
-		return ImmutableSet.of();
+		return Set.of();
 	}
 
 	@Override
@@ -86,7 +85,7 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.SimpleElementVisitor14;
 
-class ${1:Impl} extends SimpleElementVisitor14<${2:R}, ${3:P}> {
+class ${1:Impl} extends SimpleElementVisitor14<${2:R}, ${3:Void}> {
 	@Override
 	protected $2 defaultAction(Element e, $3 p) {
 		throw new UnsupportedOperationException();
@@ -134,6 +133,54 @@ class ${1:Impl} extends SimpleElementVisitor14<${2:R}, ${3:P}> {
 }
 endsnippet
 
+snippet implSEV "(inline) impl: SimpleElementVisitor14" i
+new SimpleElementVisitor14<${2:R}, ${3:Void}>() {
+	@Override
+	protected $2 defaultAction(Element e, $3 p) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public $2 visitUnknown(Element e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitPackage(PackageElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitType(TypeElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitExecutable(ExecutableElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitTypeParameter(TypeParameterElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitVariable(VariableElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitModule(ModuleElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+
+	@Override
+	public $2 visitRecordComponent(RecordComponentElement e, $3 p) {
+		return defaultAction(e, p);
+	}
+}
+endsnippet
 
 snippet implSTV "impl: SimpleTypeVisitor14"
 import javax.lang.model.type.ArrayType;
@@ -150,7 +197,7 @@ import javax.lang.model.type.UnionType;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor14;
 
-class ${1:Impl} extends SimpleTypeVisitor14<${2:R}, ${3:P}> {
+class ${1:Impl} extends SimpleTypeVisitor14<${2:R}, ${3:Void}> {
 	@Override
 	protected $2 defaultAction(TypeMirror t, $3 p) {
 		throw new UnsupportedOperationException();
@@ -158,62 +205,131 @@ class ${1:Impl} extends SimpleTypeVisitor14<${2:R}, ${3:P}> {
 
 	@Override
 	public $2 visitUnknown(TypeMirror t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitPrimitive(PrimitiveType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitNull(NullType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitArray(ArrayType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitDeclared(DeclaredType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitError(ErrorType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitTypeVariable(TypeVariable t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitWildcard(WildcardType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitExecutable(ExecutableType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitNoType(NoType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitUnion(UnionType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
 	}
 
 	@Override
 	public $2 visitIntersection(IntersectionType t, $3 p) {
-		return defaultAction(e, p);
+		return defaultAction(t, p);
+	}
+}
+endsnippet
+
+snippet implSTV "(inline) impl: SimpleTypeVisitor14" i
+new SimpleTypeVisitor14<${2:R}, ${3:Void}>() {
+	@Override
+	protected $2 defaultAction(TypeMirror t, $3 p) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public $2 visitUnknown(TypeMirror t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitPrimitive(PrimitiveType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitNull(NullType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitArray(ArrayType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitDeclared(DeclaredType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitError(ErrorType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitTypeVariable(TypeVariable t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitWildcard(WildcardType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitExecutable(ExecutableType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitNoType(NoType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitUnion(UnionType t, $3 p) {
+		return defaultAction(t, p);
+	}
+
+	@Override
+	public $2 visitIntersection(IntersectionType t, $3 p) {
+		return defaultAction(t, p);
 	}
 }
 endsnippet

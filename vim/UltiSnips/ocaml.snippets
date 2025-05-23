@@ -1,0 +1,47 @@
+priority -1
+
+snippet **
+(** ${1:documentation} *)
+endsnippet
+
+snippet main
+let () =
+	${1:(* Body *)}
+endsnippet
+
+snippet st
+struct
+	${1:(* Body *)}
+end
+endsnippet
+
+snippet pp
+Printf.printf "${1:hello}"$0
+endsnippet
+
+snippet test
+let test_$1 () =
+	Alcotest.(check ${2:string}) "${2:tested condition}" ${3:"expected"} ${4:"actual"}
+endsnippet
+
+snippet mktest
+let test_$4 () =
+	Alcotest.(check string) "${5:something}" ${6:"expected"} ${7:"actual"}
+
+let () =
+	let open Alcotest in
+	run "${1:Name}" [
+		"${2:group}", [
+			test_case "${3:case}" \`Quick test_${4:example}
+		]
+	]
+endsnippet
+
+snippet lnest
+let rec nest f i n = if n == 0 then i else f (nest f i (n - 1)) in
+endsnippet
+
+snippet lcc
+let call_cc f k =
+	(f (fun v k0 -> k v) k) in
+endsnippet

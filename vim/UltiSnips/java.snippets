@@ -950,3 +950,21 @@ record ${1:Ctx}($2) {
 	}
 }
 endsnippet
+
+snippet vis "java proc TypeVisitor" i
+new SimpleTypeVisitor14<${1:R}, ${2:P}>() {
+	@Override
+	public $1 defaultAction(TypeMirror t, $2 p) {
+		throw new UnsupportedOperationException();
+	}
+}
+endsnippet
+
+snippet vis "java proc ElementVisitor" i
+new SimpleElementVisitor14<${1:R}, ${2:P}>() {
+	@Override
+	public $1 defaultAction(Element e, $2 p) {
+		throw new UnsupportedOperationException();
+	}
+}
+endsnippet
