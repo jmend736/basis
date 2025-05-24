@@ -103,6 +103,7 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \     cp: 'Files ~/code/pandas',
       \     cd: 'Files ~/code/dagger',
       \     cb: 'Files ~/code/basis',
+      \     cO: 'Files /usr/lib/ocaml',
       \     n:  'Files ~/jmendio/n',
       \     v:  'edit ~/.vimrc',
       \   }
@@ -737,6 +738,13 @@ augroup ft_latex
     autocmd FileType tex setlocal tabstop=4 shiftwidth=4
     autocmd FileType tex nnoremap <buffer> <localleader>r
           \ :execute 'Term fish -c "mkt ' .. expand('%') .. '"'<cr>
+augroup END
+
+augroup ft_dot
+    autocmd!
+    autocmd FileType dot setlocal tabstop=2 shiftwidth=2
+    autocmd FileType dot nnoremap <buffer> <localleader>r
+          \ :execute 'Term dot -T svg -O' expand('%') <cr>
 augroup END
 
 augroup ft_c
@@ -1555,6 +1563,7 @@ dagger.producers.ProductionSubcomponent
 dagger.producers.monitoring.ProducerMonitor
 dagger.producers.monitoring.ProducerToken
 dagger.producers.monitoring.ProductionComponentMonitor
+java.io.IOException
 java.lang.reflect.AnnotatedElement
 java.lang.reflect.Executable
 java.lang.reflect.Field
