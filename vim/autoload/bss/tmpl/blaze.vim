@@ -1,9 +1,4 @@
 
-function! s:main() abort
-  let x = bss#tmpl#blaze#WORKSPACE("HELLO")
-  eval x.WORKSPACE->map('bss#P("%s", v:val)')
-endfunction
-
 function! bss#tmpl#blaze#WORKSPACE(name) abort
   let files = {}
   let files.WORKSPACE = flatten([
@@ -42,5 +37,3 @@ function! s:ext_common() abort
   END
   return contents
 endfunction
-
-call s:main()

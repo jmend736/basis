@@ -148,3 +148,13 @@ endsnippet
 snippet plt.subplots
 fig, axs = plt.subplots(nrows=${1:1}, ncols=${1:2}, figsize=(10.0, 10.0))$0
 endsnippet
+
+snippet argp
+argp = argparse.ArgumentParser()
+argp.add_argument("-x",
+                  "--value",
+                  default=10,
+                  help="A value to use.",
+                  required=True)
+args = argp.parse_args()
+endsnippet

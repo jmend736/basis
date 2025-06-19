@@ -32,12 +32,14 @@ endsnippet
 
 snippet ac
 switch $argv[1]
-    case _complete
-        set -l code (functions (status current-function) | string collect)
-        string match -r -a -q '\s*case (?<all_subcommands>(\s*[^_](\w|\.)+))' -- $code
-        set -l subcommands (string split --no-empty ' ' $all_subcommands)
-        complete -c (status current-function) \
-            -n "not __fish_seen_subcommand_from $subcommands" \
-            -xa "$subcommands"
+	case _complete
+		set -l code (functions (status current-function) | string collect)
+		string match --regex --all --quiet \
+			'\s*case (?<all_subcommands>( *[^_](\w|\.)+)+)' \
+			-- $code
+		set -l subcommands (string split --no-empty ' ' $all_subcommands)
+		complete -c (status current-function) \
+			-n "not __fish_seen_subcommand_from $subcommands" \
+			-xa "$subcommands"
 end
 endsnippet

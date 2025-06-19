@@ -19,6 +19,10 @@ snippet pp
 Printf.printf "${1:hello}"$0
 endsnippet
 
+snippet pl
+Printf.printf "\n"$0
+endsnippet
+
 snippet test
 let test_$1 () =
 	Alcotest.(check ${2:string}) "${2:tested condition}" ${3:"expected"} ${4:"actual"}
@@ -54,4 +58,12 @@ let call_cc f k =
 	(f (fun v k0 -> k v) k)
 in
 $0
+endsnippet
+
+snippet err
+(failwith "${1:error}")
+endsnippet
+
+snippet fail
+(failwith "${1:error}")
 endsnippet
