@@ -25,10 +25,22 @@ function! ${1:`!p autoload(snip, path)`Name}() abort
 endfunction
 endsnippet
 
+snippet fnp
+function! ${1:`!p autoload(snip, path)`Name}() abort
+python3 << trim END
+	$0
+END
+endfunction
+endsnippet
+
 snippet fna
 function! `!p autoload(snip, path)`${1:Name}() abort
 	$0
 endfunction
+endsnippet
+
+snippet fnn
+`!p autoload(snip, path)`${1:Name}
 endsnippet
 
 snippet fnd
