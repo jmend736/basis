@@ -705,21 +705,28 @@ interface ${1:C} {
 }
 endsnippet
 
-snippet ExecutorModule
+snippet ExecutorModule "Cached ThreadPool"
 @Module
-public static class ExecutorModule {
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-
+interface ExecutorModule {
 	@Provides
 	@Singleton
-	ExecutorService provideExecutorService() {
-		return Executors.newSingleThreadExecutor();
+	static ExecutorService provideExecutorService() {
+		return Executors.newCachedThreadPool();
 	}
 
+	@Binds
+	@Production
+	Executor provideExecutor(ExecutorService executor);
+}
+endsnippet
+
+snippet ExecutorModule "Direct Executor"
+@Module
+interface ExecutorModule {
 	@Provides
 	@Production
-	Executor provideExecutor() {
-		return executor;
+	static Executor provideExecutor() {
+		return MoreExecutors.directExecutor();
 	}
 }
 endsnippet

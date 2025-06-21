@@ -14,68 +14,33 @@ function! bss#java#jdwp#Complete(arg, cmd, cur) abort
 endfunction
 
 function! s:commands.init() abort dict
-  call self.run_imports()
-  call self.kill()
-  call self.at_start()
-  call self.reload()
+  call bss#java#jdwp_thread#Init()
+  call s:DefineData()
+  call s:DefineManager()
 endfunction
 
-function! s:commands.run_imports() abort dict
+function! s:commands.kill() abort
+  call bss#java#jdwp_thread#Close()
+endfunction
+
+function! s:commands.at() abort
 python3 << trim END
-  import struct
-  import asyncio
-  import time
-  from concurrent.futures import ThreadPoolExecutor
-  from threading import Condition, Thread
+  print(AT)
+END
+endfunction
+
+function! s:commands.pending() abort
+python3 << trim END
+  print('pending:' + ('' if AT.pending else ' <EMPTY>'))
+  for p in AT.pending:
+    print(f'  {p}')
+END
+endfunction
+
+function! s:DefineData() abort
+python3 << trim END
   from dataclasses import dataclass
-END
-endfunction
 
-function! s:commands.at_define() abort
-python3 << trim END
-  class AsyncThread(Thread):
-    _instance = None
-
-    def __init__(self):
-      super().__init__(daemon=True)
-      self.loop = asyncio.new_event_loop()
-
-    def run(self):
-      asyncio.set_event_loop(self.loop)
-      self.loop.run_forever()
-
-    def stop(self):
-      self.loop.call_soon_threadsafe(self.loop.stop)
-      self.join()
-
-    def submit(self, coro):
-      return asyncio.run_coroutine_threadsafe(coro, self.loop)
-END
-endfunction
-
-function! s:commands.at_start() abort
-  call self.at_define()
-python3 << trim END
-  AsyncThread._instance = AsyncThread()
-  AsyncThread._instance.start()
-END
-endfunction
-
-function! s:commands.at_stop() abort
-python3 << trim END
-  if AsyncThread._instance != None:
-    AsyncThread._instance.stop()
-END
-endfunction
-
-function! s:commands.at_dump() abort
-python3 << trim END
-  print(AsyncThread._instance)
-END
-endfunction
-
-function! s:commands.data_define() abort dict
-python3 << trim END
   @dataclass
   class PacketHeader:
     length: int
@@ -103,20 +68,15 @@ python3 << trim END
 END
 endfunction
 
-function! s:commands.man_define() abort dict
+function! s:DefineManager() abort
 python3 << trim END
+  import struct
+  import asyncio
+  import time
+  from concurrent.futures import ThreadPoolExecutor
+  from threading import Condition, Thread
+
   class Manager:
-
-    _instance = None
-
-    @classmethod
-    def get(cls):
-      if cls._instance is None:
-        cls._instance = Manager()
-      return cls._instance
-
-    def run(self):
-      return AsyncThread._instance.submit(self.top())
 
     async def top(self):
       r, w = await asyncio.open_connection('localhost', 8080)
@@ -158,29 +118,9 @@ python3 << trim END
       if resp != exp:
         raise Exception('Failed handshake!')
 
-END
-endfunction
+  AT.co_submit(Manager().top())
 
-function! s:commands.man_run() abort
-python3 << trim END
-  f = Manager.get().run()
-END
-endfunction
-
-function! s:commands.reload() abort dict
-  call self.man_define()
-  call self.data_define()
-endfunction
-
-function! s:commands.kill() abort
-python3 << trim END
-  try:
-    AsyncThread._instance.stop()
-  except Exception as e:
-    print(e)
 END
 endfunction
 
 call bss#java#jdwp#Init()
-Jdwp init
-Jdwp man_run
