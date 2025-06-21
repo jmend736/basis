@@ -55,3 +55,158 @@ class ${1:Impl} extends ProducerMonitor {
 	public void failed(Throwable t) {}
 }
 endsnippet
+
+snippet implPC "impl: ProductionComponent"
+// import java.util.concurrent.Executor;
+// import dagger.producers.Production;
+// import dagger.BindsInstance;
+// import dagger.producers.ProductionComponent;
+@ProductionComponent
+interface ${1:Name} {
+	@ProductionComponent.Factory
+	interface Factory {
+		$1 create(@BindsInstance @Production Executor executor);
+	}
+}
+endsnippet
+
+snippet implPC "impl: ProductionComponent with ProducerModule"
+// import com.google.common.util.concurrent.ListenableFuture;
+// import java.util.concurrent.Executor;
+// import dagger.producers.Production;
+// import dagger.BindsInstance;
+// import dagger.producers.ProducerModule;
+// import dagger.producers.Produces;
+// import dagger.producers.ProductionComponent;
+@ProductionComponent(modules = {$1.Bindings.class})
+interface ${1:Name} {
+
+	ListenableFuture<Integer> x();
+
+	@ProductionComponent.Factory
+	interface Factory {
+		$1 create(@BindsInstance @Production Executor executor);
+	}
+
+	@ProducerModule
+	interface Bindings {
+		@Produces
+		static Integer produceX() {
+			return 10;
+		}
+	}
+}
+endsnippet
+
+snippet implPC "impl: ProductionComponent with ProducerModule and (direct) ExecutorModule"
+// import com.google.common.util.concurrent.ListenableFuture;
+// import com.google.common.util.concurrent.MoreExecutors;
+// import java.util.concurrent.Executor;
+// import dagger.producers.Production;
+// import dagger.BindsInstance;
+// import dagger.producers.ProducerModule;
+// import dagger.producers.Produces;
+// import dagger.producers.ProductionComponent;
+// import dagger.Module;
+// import dagger.Provides;
+@ProductionComponent(modules = {$1.Bindings.class, $1.ExecutorModule.class})
+interface ${1:Name} {
+	@ProductionComponent.Factory
+	interface Factory {
+		$1 create();
+	}
+
+	@ProducerModule
+	interface Bindings {}
+
+	@Module
+	interface ExecutorModule {
+		@Provides
+		@Production
+		static Executor provideExecutor() {
+			return MoreExecutors.directExecutor();
+		}
+	}
+}
+endsnippet
+
+snippet implPSC "impl: ProductionSubcomponent"
+// import dagger.producers.ProductionSubcomponent;
+@ProductionSubcomponent
+interface ${1:Name} {
+	@ProductionSubcomponent.Factory
+	interface Factory {
+		$1 create();
+	}
+}
+endsnippet
+
+snippet implPSC "impl: ProductionSubcomponent with ProducerModule"
+// import com.google.common.util.concurrent.ListenableFuture;
+// import dagger.producers.ProducerModule;
+// import dagger.producers.Produces;
+// import dagger.producers.ProductionSubcomponent;
+@ProductionSubcomponent(modules = {$1.Bindings.class})
+interface ${1:Name} {
+
+	ListenableFuture<Integer> x();
+
+	@ProductionSubcomponent.Factory
+	interface Factory {
+		$1 create();
+	}
+
+	@ProducerModule
+	interface Bindings {
+		@Produces
+		static Integer produceX() {
+			return 10;
+		}
+	}
+}
+endsnippet
+
+snippet implPSC "impl: ProductionSubcomponent with FlowModule and ProducerModule"
+// import com.google.common.util.concurrent.ListenableFuture;
+// import dagger.Module;
+// import dagger.Provides;
+// import dagger.producers.ProducerModule;
+// import dagger.producers.Produces;
+// import dagger.producers.ProductionSubcomponent;
+// import java.util.List;
+// import java.util.concurrent.CopyOnWriteArrayList;
+@ProductionSubcomponent(modules = {$1.Bindings.class})
+interface ${1:Name} {
+
+	ListenableFuture<Integer> x();
+
+	List<$1> all();
+
+	@Module(subcomponents = {$1.class})
+	interface FlowModule {
+		@Provides
+		static List<$1> provideAll$1() {
+			return new CopyOnWriteArrayList<>();
+		}
+	}
+
+	@ProductionSubcomponent.Builder
+	interface Builder {
+		$1 buildImpl();
+
+		default $1 build() {
+			var instance = buildImpl();
+			instance.all().add(instance);
+			return instance;
+		}
+	}
+
+	@ProducerModule
+	interface Bindings {
+		@Produces
+		static Integer produceX() {
+			return 10;
+		}
+	}
+}
+endsnippet
