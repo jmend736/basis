@@ -1,0 +1,78 @@
+snippet aio
+import asyncio
+
+async def main():
+	${1:pass}
+
+if __name__ == "__main__":
+	asyncio.run(main())
+endsnippet
+
+snippet atask "Create an asyncio.Task"
+${1:task} = asyncio.create_task(${2:coro})
+await $1
+endsnippet
+
+snippet agather "Get result list from multiple coroutines"
+${1:results} = await asyncio.gather(${2:*tasks})
+endsnippet
+
+snippet agather "Get result list from multiple coroutines (with exceptions)"
+${1:results} = await asyncio.gather(${2:*tasks}, return_exceptions=True)
+endsnippet
+
+snippet await "asyncio.wait for first completed task"
+done, pending = await asyncio.wait(${2:tasks}, return_when=asyncio.FIRST_COMPLETED)
+for task in pending:
+	task.cancel()
+(completed_task,) = done
+endsnippet
+
+snippet await "asyncio.wait for first failed task (or all succeed)"
+done, pending = await asyncio.wait(${2:tasks}, return_when=asyncio.FIRST_EXCEPTION)
+for task in pending:
+	task.cancel()
+(failed_task,) = done
+endsnippet
+
+snippet await "asyncio.wait for completion of all tasks"
+done, pending = await asyncio.wait(${2:tasks}, return_when=asyncio.ALL_COMPLETED)
+endsnippet
+
+snippet atimeout "asyncio.wait_for with a timeout"
+try:
+	${1:result} = await asyncio.wait_for(${2:awaitable}, timeout${3:1.0})
+except asyncio.TimeoutError:
+	${4:raise}
+endsnippet
+
+snippet asem "Apply limit to concurrency"
+${1:semaphore} = asyncio.Semaphore(${2:max_concurrent_tasks})
+
+async def ${3:worker}($4):
+	async with $1:
+		${5:pass}
+
+# Usage:
+# await asyncio.gather(*[$3() for i in range(10)])
+endsnippet
+
+snippet ablock "Run blocking code"
+loop = asyncio.get_running_loop()
+future = loop.run_in_executor(${1:pool}, ${2:blocking_fn})
+result = await future
+endsnippet
+
+snippet ashutdown "Graceful shutdown" b
+tasks = asyncio.all_tasks()
+for task in tasks:
+	task.cancel()
+results = await asyncio.gather(*tasks, return_exceptions=True)
+endsnippet
+
+snippet aperiodic "Periodic task loop" b
+async def ${1:periodic_task}($2):
+	while True:
+		${3:pass}
+		await asyncio.sleep(${4:secs})
+endsnippet
