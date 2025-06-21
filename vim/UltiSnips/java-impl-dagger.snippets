@@ -175,6 +175,7 @@ snippet implPSC "impl: ProductionSubcomponent with FlowModule and ProducerModule
 // import dagger.producers.ProductionSubcomponent;
 // import java.util.List;
 // import java.util.concurrent.CopyOnWriteArrayList;
+// import javax.inject.Singleton;
 @ProductionSubcomponent(modules = {$1.Bindings.class})
 interface ${1:Name} {
 
@@ -185,6 +186,7 @@ interface ${1:Name} {
 	@Module(subcomponents = {$1.class})
 	interface FlowModule {
 		@Provides
+		@Singleton
 		static List<$1> provideAll$1() {
 			return new CopyOnWriteArrayList<>();
 		}
