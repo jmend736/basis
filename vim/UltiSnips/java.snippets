@@ -975,3 +975,20 @@ new SimpleElementVisitor14<${1:R}, ${2:P}>() {
 	}
 }
 endsnippet
+
+snippet str "Reflective toString (default)" i
+new ReflectionToStringBuilder(${1:${VISUAL}}).toString()
+endsnippet
+
+snippet str "Reflective toString (json)" i
+new ReflectionToStringBuilder(${1:${VISUAL}}, ToStringStyle.JSON_STYLE).toString()
+endsnippet
+
+snippet str "Reflective toString (multiline)" i
+new ReflectionToStringBuilder(${1:${VISUAL}}, ToStringStyle.MULTI_LINE_STYLE).toString()
+endsnippet
+
+snippet str "Reflective toString (simple)" i
+new ReflectionToStringBuilder(${1:${VISUAL}}, ToStringStyle.SIMPLE_STYLE).toString()
+endsnippet
+
