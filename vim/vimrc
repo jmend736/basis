@@ -104,6 +104,7 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \     cd: 'Files ~/code/dagger',
       \     cb: 'Files ~/code/basis',
       \     cO: 'Files /usr/lib/ocaml',
+      \     j:  'Files ~/junk',
       \     n:  'Files ~/jmendio/n',
       \     v:  'edit ~/.vimrc',
       \   }
@@ -149,6 +150,7 @@ Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
 Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
+Plug 'AndrewRadev/linediff.vim'
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
 Plug 'romainl/vim-devdocs'
 if isdirectory('$OCAML_OCP_INDENT')
@@ -542,9 +544,14 @@ let g:jm_vimrc.docs.commands['StopAllJobs'] =
 command! -bar StopAllJobs eval job_info()->map('job_stop(v:val)')
 
 let g:jm_vimrc.docs.commands['ListAllJobs'] =
-      \ 'Stop all running jobs'
+      \ 'List all running jobs'
 command! -bar -bang ListAllJobs
       \ call bss#PP(job_info()->filter('<bang>0 || (job_status(v:val) == "run")'))
+
+let g:jm_vimrc.docs.commands['DumpAllJobs'] =
+      \ 'List job_infos for all running jobs'
+command! -bar -bang DumpAllJobs
+      \ call bss#PP(job_info()->filter('<bang>0 || (job_status(v:val) == "run")')->map('job_info(v:val)'))
 
 let g:jm_vimrc.docs.commands['SetupClasspath'] =
       \ 'Set classpath to jm_vimrc.deps.ClasspathJarList()'
@@ -592,6 +599,11 @@ let g:jm_vimrc.docs.commands['SetupMatchNum'] =
       \ 'Match decimal numbers'
 command! -bar SetupMatchNum
       \ match GruvboxAqua /\<\(0x\)\?0*\zs[1-9a-f]\x*\>/
+
+let g:jm_vimrc.docs.commands['RefreshSnippets'] =
+      \ 'Refresh ultisnips'
+command! -bar RefreshSnippets
+      \ call UltiSnips#RefreshSnippets()
 
 let g:jm_vimrc.docs.commands['Dis'] =
       \ 'Setup terminal for viewing objdump output ($ objdump -d ... | vim +Dis -)'
@@ -1589,6 +1601,7 @@ java.util.Set
 java.util.TreeMap
 java.util.TreeSet
 java.util.concurrent.ConcurrentHashMap
+java.util.concurrent.CopyOnWriteArrayList
 java.util.concurrent.ExecutionException
 java.util.concurrent.Executor
 java.util.concurrent.ExecutorService
