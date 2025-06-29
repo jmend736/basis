@@ -992,3 +992,16 @@ snippet str "Reflective toString (simple)" i
 new ReflectionToStringBuilder(${1:${VISUAL}}, ToStringStyle.SIMPLE_STYLE).toString()
 endsnippet
 
+snippet toString "toString implementation"
+@Override
+public String toString() {
+	return ${1:${VISUAL:super.toString()}};
+}
+endsnippet
+
+snippet toString "toString implementation (reflective/multiline)"
+@Override
+public String toString() {
+	return new ReflectionToStringBuilder(${1:${VISUAL:this}}, ToStringStyle.MULTI_LINE_STYLE).toString();
+}
+endsnippet
