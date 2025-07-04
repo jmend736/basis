@@ -9,7 +9,7 @@ public class ${1:Impl} extends AbstractProcessor {
 	@Override
 	public Set<String> getSupportedAnnotationTypes() {
 		// Example: "com.example.Outer.Inner"
-		return Set.of();
+		return Set.of("*");
 	}
 
 	@Override
@@ -19,6 +19,7 @@ public class ${1:Impl} extends AbstractProcessor {
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		if (roundEnv.processingOver()) {}
 		return false;
 	}
 }
@@ -330,6 +331,50 @@ new SimpleTypeVisitor14<${2:R}, ${3:Void}>() {
 	@Override
 	public $2 visitIntersection(IntersectionType t, $3 p) {
 		return defaultAction(t, p);
+	}
+}
+endsnippet
+
+snippet implRunProc "Run an annotation processor from a script."
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
+import javax.tools.ToolProvider;
+
+public class RunProc {
+
+	static class Proc extends AbstractProcessor {
+		@Override
+		public Set<String> getSupportedAnnotationTypes() {
+			// Example: "com.example.Outer.Inner"
+			return Set.of("*");
+		}
+
+		@Override
+		public SourceVersion getSupportedSourceVersion() {
+			return SourceVersion.latestSupported();
+		}
+
+		@Override
+		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+			if (roundEnv.processingOver()) {}
+			return false;
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		var compiler = ToolProvider.getSystemJavaCompiler();
+		var fileManager = compiler.getStandardFileManager(null, null, null);
+		var javaFiles = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(args));
+		var task = compiler.getTask(null, fileManager, null, null, null, javaFiles);
+		var proc = new Proc();
+		task.setProcessors(List.of(proc));
+		boolean ok = task.call();
+		System.out.println(ok ? "OK" : "ERROR");
 	}
 }
 endsnippet

@@ -1,0 +1,19 @@
+snippet implFaC "Futures.addCallback"
+Futures.addCallback(
+		${1:${VISUAL:future}},
+		new FutureCallback<${2:}>() {
+			@Override
+			public void onFailure(Throwable t) {}
+
+			@Override
+			public void onSuccess($2 result) {}
+		},
+		${3:Runnable::run});
+endsnippet
+
+snippet implFt "Futures.transform"
+Futures.transform(
+		${1:${VISUAL:future}},
+		x -> ${2:x},
+		${3:Runnable::run});
+endsnippet
