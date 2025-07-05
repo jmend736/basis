@@ -1,0 +1,67 @@
+# java functors
+
+snippet "Queue\((\w+)\)" "LinkedBlockingQueue<T>" r
+BlockingQueue<${2:`!p snip.rv = match.group(1)`}> ${1:blockingQueue} = new LinkedBlockingQueue<>();
+// add(e)    | offer(e) | put(e) | offer(e, t, u)
+// remove()  | poll()   | take() | poll(t, u)
+// element() | peek()   |
+endsnippet
+
+snippet "Queue\((\w+)\)" "LinkedTransferQueue<T>" r
+TransferQueue<${2:`!p snip.rv = match.group(1)`}> ${1:transferQueue} = new LinkedTransferQueue<>();
+//           |          | transfer(e) | tryTransfer(e, t, u)
+// add(e)    | offer(e) | put(e)      | offer(e, t, u)
+// remove()  | poll()   | take()      | poll(t, u)
+// element() | peek()   |             |
+endsnippet
+
+snippet "Queue\((\w+)\)" "ArrayBlockingQueue<T>" r
+BlockingQueue<${2:`!p snip.rv = match.group(1)`}> ${1:blockingQueue} = new ArrayBlockingQueue<>();
+// add(e)    | offer(e) | put(e) | offer(e, t, u)
+// remove()  | poll()   | take() | poll(t, u)
+// element() | peek()   |
+endsnippet
+
+snippet "Queue\((\w+)\)" "ConcurrentLinkedQueue<T>" r
+Queue<${2:`!p snip.rv = match.group(1)`}> ${1:queue} = new ConcurrentLinkedQueue<>();
+// add(e)    | offer(e)
+// remove()  | poll()
+// element() | peek()
+endsnippet
+
+snippet "Queue\((\w+)\)" "DelayQueue<T>"
+BlockingDeque<${2:`!p snip.rv = match.group(1)`}> ${1:blockingDeque} = new DelayQueue<>();
+// add(e)    | offer(e) | put(e) | offer(e, t, u)
+// remove()  | poll()   | take() | poll(t, u)
+// element() | peek()   |
+endsnippet
+
+snippet "Deque\((\w+)\)" "LinkedBlockingDeque<T>" r
+BlockingDeque<${2:`!p snip.rv = match.group(1)`}> ${1:blockingDeque} = new LinkedBlockingDeque<>();
+// * All methods have First/Last variants.
+// * Variants without prefix follow queue semantics.
+// add(e)    | offer(e) | put(e) | offer(e, t, u)
+// remove()  | poll()   | take() | poll(t, u)
+// element() | peek()   |
+endsnippet
+
+snippet "Deque\((\w+)\)" "ConcurrentLinkedDeque<T>" r
+Deque<${2:`!p snip.rv = match.group(1)`}> ${1:deque} = new ConcurrentLinkedDeque<>();
+// * All methods have First/Last variants.
+// * Variants without prefix follow queue semantics.
+// add(e)    | offer(e)
+// remove()  | poll()
+// element() | peek()
+endsnippet
+
+snippet "List\((\w+)\)" "ArrayList<T>" r
+List<${2:`!p snip.rv = match.group(1)`}> ${1:list} = new ArrayList<>();
+endsnippet
+
+snippet "List\((\w+)\)" "LinkedList<T>" r
+LinkedList<${2:`!p snip.rv = match.group(1)`}> ${1:list} = new LinkedList<>();
+endsnippet
+
+snippet "List\((\w+)\)" "CopyOnWriteArrayList<T>" r
+List<${2:`!p snip.rv = match.group(1)`}> ${1:list} = new CopyOnWriteArrayList<>();
+endsnippet

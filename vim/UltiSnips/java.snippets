@@ -1,6 +1,7 @@
 priority -1
 
 extends java-impl
+extends java-func
 
 # In general
 #  Blocks     don't add ';'
@@ -394,8 +395,9 @@ endsnippet
 snippet cbench
 @BenchmarkMode(Mode.AverageTime)
 @Fork(2)
-@Warmup(iterations = 2, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Timeout(time = 10, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 2, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class ${1:`!v expand('%:t:r')`} {
@@ -408,6 +410,11 @@ snippet sbench
 public void setup() {
 	$0
 }
+endsnippet
+
+snippet pbench
+@Param({${2:"1", "10", "100"}})
+int ${1:p};
 endsnippet
 
 snippet bench
@@ -992,16 +999,23 @@ snippet str "Reflective toString (simple)" i
 new ReflectionToStringBuilder(${1:${VISUAL}}, ToStringStyle.SIMPLE_STYLE).toString()
 endsnippet
 
-snippet toString "toString implementation"
+snippet str "toString() implementation"
 @Override
 public String toString() {
 	return ${1:${VISUAL:super.toString()}};
 }
 endsnippet
 
-snippet toString "toString implementation (reflective/multiline)"
+snippet str "toString() implementation (reflective/multiline)"
 @Override
 public String toString() {
 	return new ReflectionToStringBuilder(${1:${VISUAL:this}}, ToStringStyle.MULTI_LINE_STYLE).toString();
+}
+endsnippet
+
+snippet run "Runnable.run()"
+@Override
+public void run() {
+	$1
 }
 endsnippet
