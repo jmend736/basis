@@ -2,8 +2,7 @@
 " Defines bss#java#javap#Browse() which is similar to zip#Browse() but for
 " java classfiles.
 "
-" TODO: Add setup method to do the autocmd for users.
-"
+" DONE: Add setup method to do the autocmd for users.
 " DONE: Ensure options are setup on previously read buffers.
 " DONE: Nested classes work (escape $ in fname)
 " DONE: Write into the current buffer rather than creating a new one.
@@ -20,6 +19,17 @@ call bss#SetDefault(g:, 'bss_java_javap_view', {
       \   })
       \ })
 let s:view = g:bss_java_javap_view
+
+""
+" Setup autocmd for class files
+"
+function! bss#java#javap#Setup() abort
+  augroup ft_class
+    autocmd!
+    autocmd BufReadCmd *.class
+          \ call bss#java#javap#Browse(expand("<amatch>"))
+  augroup END
+endfunction
 
 ""
 " Enable unit test.
