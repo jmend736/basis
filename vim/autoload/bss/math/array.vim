@@ -49,8 +49,8 @@ function! bss#math#array#Range2D(n) abort
   return bss#math#array#MapIndexed([a:n, a:n], {i, j -> a:n*i + j })
 endfunction
 
-function! bss#math#array#MapIndexed(dims, Fn = { -> 0}, base=s:Array) abort
-  return bss#math#array#Array(s:NDimMapIndexed(a:dims, a:Fn), a:base)
+function! bss#math#array#MapIndexed(dims, Fn = { -> 0}, base=v:none) abort
+  return bss#math#array#Array(s:NDimMapIndexed(a:dims, a:Fn), (a:base is v:none) ? s:Array : a:base)
 endfunction
 
 function! s:Array.Get(...) abort dict

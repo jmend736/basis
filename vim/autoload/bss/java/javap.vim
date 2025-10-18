@@ -4,6 +4,7 @@
 "
 " TODO: Add setup method to do the autocmd for users.
 "
+" DONE: Ensure options are setup on previously read buffers.
 " DONE: Nested classes work (escape $ in fname)
 " DONE: Write into the current buffer rather than creating a new one.
 "
@@ -40,11 +41,15 @@ endfunction
 " name: A file path of a .class file
 "
 function! bss#java#javap#Browse(name, args=[]) abort
-  let l:lines = s:CallJavap(a:name, a:args)
+  let l:args = []
+  if exists('b:view_options')
+    let l:args = b:view_options
+  endif
+  let l:lines = s:CallJavap(a:name, l:args)
   let l:prefix =<< trim eval END
   // bss#java#javap#Browse for
   //   {a:name}
-  // with args: {string(a:args)}
+  // with args: {string(l:args)}
   END
   let l:help =<< trim eval END
   //
@@ -61,7 +66,7 @@ function! bss#java#javap#Browse(name, args=[]) abort
   END
   call s:view.Extend({'bufnr': bufnr(), 'winid': win_getid()})
   call s:view.Open()
-        \.Exec('setlocal modifiable ft=java foldlevel=1')
+        \.Exec('setlocal modifiable ft=java foldlevel=1 bt=nowrite nowrap')
         \.SetLines(l:prefix + (get(b:, 'view_help', v:false) ? l:help : []) + l:lines)
         \.Call({ -> extend(b:, {
         \   'view'         : s:view,

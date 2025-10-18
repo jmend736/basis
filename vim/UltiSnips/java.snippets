@@ -396,8 +396,8 @@ snippet cbench
 @BenchmarkMode(Mode.AverageTime)
 @Fork(2)
 @Timeout(time = 10, timeUnit = TimeUnit.SECONDS)
-@Warmup(iterations = 2, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 2, time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class ${1:`!v expand('%:t:r')`} {

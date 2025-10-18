@@ -254,3 +254,19 @@ interface ${1:Name} {
 	}
 }
 endsnippet
+
+snippet implPCF "impl: ProductionComponent.Factory"
+@ProductionComponent.Factory
+interface Factory {
+	${1:T} create(@BindsInstance @Production Executor executor);
+}
+endsnippet
+
+snippet implPCB "impl: ProductionComponent.Builder"
+@ProductionComponent.Builder
+interface Builder {
+	@BindsInstance Builder executor(@Production Executor executor);
+	${1:T} build();
+}
+endsnippet
+
