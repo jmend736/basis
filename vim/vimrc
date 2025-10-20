@@ -294,6 +294,8 @@ digraphs br 8600 " Diagonal arrow bot-right
 digraphs bl 8601 " Diagonal arrow bot-left
 digraphs -u 8593 " Up arrow
 digraphs -d 8595 " down arrow
+digraphs c. 183  " center dot
+digraphs .. 183  " center dot
 
 " Themes
 colorscheme gruvbox
@@ -863,6 +865,24 @@ augroup ft_java
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
+augroup END
+
+augroup ft_kotlin
+    autocmd!
+    autocmd FileType kotlin
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 shiftwidth=2 smarttab
+    if filereadable('Makefile')
+      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
+            \ :Term make<cr>
+    elseif filereadable('gradlew')
+      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
+            \ :Term ./gradlew test --rerun<cr>
+    else
+      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
+            \ :MakeOrSetup ./gradlew run %<cr>
+    endif
+    autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>R
+          \ :Term ./gradlew run<cr>
 augroup END
 
 augroup ft_jar

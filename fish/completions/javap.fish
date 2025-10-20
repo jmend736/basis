@@ -76,6 +76,7 @@ complete -c javap \
 function _javap_classes
     set -l base (dirname (dirname (realpath (which java))))
     cat $base/lib/classlist \
+        | string match -ve '@' \
         | string match -ve '#' \
         | string replace -ra '(\/|\$)' '.'
 end
