@@ -523,13 +523,20 @@ nmap <leader>0 <Plug>BufTabLine.Go(10)
 " This command will reuse the last window, unless it's no longer being used
 " for the terminal buffer. Also, this hides the buffer, in case you leave a
 " terminal window running and don't want to accidentally get stuck in it.
-if !exists('g:jm_term')
+if !exists('g:jm_term') || !exists('g:jm_terms')
   let g:jm_term = bss#view#TermView()
+  let g:jm_terms = {}
 endif
 let g:jm_vimrc.docs.commands['Term'] =
       \ 'Run a terminal command in a reused window'
 command! -nargs=* -complete=shellcmd Term
       \ eval g:jm_term.Run(<q-args>)
+
+let g:jm_vimrc.docs.commands['Terms'] =
+      \ 'Run a terminal command in a reused named window. Terms [name] [cmd]...'
+command! -nargs=* -complete=shellcmd Terms
+      \ eval bss#SetDefault(g:jm_terms, [<f-args>][0], {-> bss#view#TermView()})
+      \   .Run([<f-args>][1:]->join(' '))
 
 let g:jm_vimrc.docs.commands['ReplaceR'] =
       \ 'Locally set \r to run :Term with the specified command'

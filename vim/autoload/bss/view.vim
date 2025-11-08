@@ -122,6 +122,7 @@ function! bss#view#TermView(args = {}) abort
         \   'options': [
         \     'nobuflisted',
         \     'winfixwidth',
+        \     'winfixheight',
         \     'nonumber',
         \     'norelativenumber',
         \   ],
