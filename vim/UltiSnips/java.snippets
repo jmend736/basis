@@ -1025,3 +1025,24 @@ snippet qual "Qualifier"
 @Retention(RetentionPolicy.RUNTIME)
 @interface ${1:Qual} {}
 endsnippet
+
+snippet emain
+public static void main(String[] args) throws Exception {
+	$0
+}
+endsnippet
+
+snippet maine
+public static void main(String[] args) throws Exception {
+	$0
+}
+endsnippet
+
+snippet sf
+SettableFuture<${1:Void}> ${2:future} = SettableFuture.create();
+endsnippet
+
+snippet op
+@Override
+public $0
+endsnippet
