@@ -325,6 +325,8 @@ let g:lightline = {
 
 let $FZF_DEFAULT_COMMAND = 'ag -l'
 
+let g:html_dynamic_folds = v:true
+
 "let g:lsc_server_commands = {}
 "let g:lsc_enable_autocomplete = v:true
 "let g:lsc_auto_map = v:true
@@ -483,6 +485,11 @@ let g:jm_vimrc.docs.mappings['\a'] =
 xmap <leader>a <Plug>(EasyAlign)
 nmap <leader>a <Plug>(EasyAlign)
 
+let g:jm_vimrc.docs.mappings['\O'] =
+      \ 'Run `open %`'
+xmap <leader>O :<C-u>!open %<cr>
+nmap <leader>O :<C-u>!open %<cr>
+
 let g:jm_vimrc.docs.mappings["C-W !"] =
       \ 'Toggle buflisted'
 nnoremap <C-W>l :set buflisted!<cr>
@@ -494,6 +501,10 @@ nnoremap <space>cC :YcmCompleter GoToDefinition<cr>
 nnoremap <space>cf :YcmCompleter FixIt<cr>
 nnoremap <space>cd :YcmCompleter GetDoc<cr>
 nnoremap <space>ct :YcmCompleter GetType<cr>
+
+let g:jm_vimrc.docs.mappings["<space>T"] =
+      \ 'Go to java test (and maybe make it)'
+nnoremap <space>T :FindOrMakeJavaTest<cr>
 
 let g:jm_vimrc.docs.mappings['\a[:(]'] =
       \ 'Extra/overriden EasyAlign items'
@@ -1533,6 +1544,33 @@ function! s:InvertLayout(l, path=[]) abort
   endif
 endfunction
 
+
+" FindOrMakeJavaTest
+"   Navigate to the associated Java test of the current file, creating one if
+"   none exists.
+" {{{
+command! FindOrMakeJavaTest call s:FindOrMakeJavaTest()
+function! s:FindOrMakeJavaTest() abort
+  let l:path = expand('%:p:h')
+  let l:name = expand('%:t:r')
+  let l:extn = expand('%:t:e')
+  if l:path =~# ".*/src/main/java/.*"
+    let l:path = substitute(l:path, "src/main/java", "src/test/java", "")
+    let l:name .= 'Test'
+  elseif l:path =~# ".*/src/test/java/.*" && l:name =~# ".*Test$"
+    let l:path = substitute(l:path, "src/test/java", "src/main/java", "")
+    let l:name = l:name[:-5]
+  elseif l:path =~# ".*/java/.*"
+    let l:path = substitute(l:path, "/java/", "/javatests/", "")
+    let l:name .= 'Test'
+  elseif l:path =~# ".*/javatests/.*" && l:name =~# ".*Test$"
+    let l:path = substitute(l:path, "/javatests/", "/java/", "")
+    let l:name = l:name[:-5]
+  endif
+  execute 'edit' $"{l:path}/{l:name}.{l:extn}"
+endfunction
+" }}}
+
 " }}} Misc
 
 " Notes {{{
@@ -1763,6 +1801,24 @@ static java.util.stream.Collectors.toSet
 static java.util.stream.Collectors.toUnmodifiableList
 static java.util.stream.Collectors.toUnmodifiableMap
 static java.util.stream.Collectors.toUnmodifiableSet
+java.net.ServerSocket
+java.net.Socket
+java.io.OutputStream
+com.google.common.flogger.FluentLogger
+static com.google.common.util.concurrent.Futures.immediateFuture
+java.util.concurrent.atomic.AtomicReference
+static com.google.common.util.concurrent.Futures.immediateVoidFuture
+java.util.concurrent.atomic.AtomicMarkableReference
+java.util.Random
+java.time.Instant
+static com.google.common.base.Preconditions.checkArgument
+static com.google.common.base.Preconditions.checkNotNull
+static org.mockito.Mockito.mock
+static org.mockito.Mockito.verify
+static org.mockito.ArgumentMatchers.any
+static org.mockito.Mockito.times
+static org.mockito.AdditionalMatchers.and
+static org.mockito.ArgumentMatchers.assertArg
 JAVA_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
@@ -1770,7 +1826,7 @@ function! AddJavaImport(content) abort
   let content = a:content
         \->substitute('^import ', '', '')
         \->substitute(';$', '', '')
-  if index(g:jm_vimrc.java_import_list, content)
+  if index(g:jm_vimrc.java_import_list, content) != -1
     echom "Already present:" content
     return
   endif
@@ -1778,7 +1834,6 @@ function! AddJavaImport(content) abort
   let index = match(lines, '^JAVA_IMPORT_LIST_END$')
   call insert(lines, content, index)
   call writefile(lines, $MYVIMRC)
-  execute 'source' $MYVIMRC
   echom "Added:" content
 endfunction
 

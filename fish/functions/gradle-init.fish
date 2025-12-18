@@ -20,7 +20,7 @@ function gradle-init
         --dsl groovy \
         --java-version $JAVA_VERSION \
         --package $PACKAGE \
-        --project-name pg \
+        --project-name $PACKAGE \
         --no-split-project \
 
     switch $argv[1]
@@ -43,8 +43,14 @@ function gradle-init
         case _make
             begin
                 echo -e ".PHONY: all"
-                echo -e "all:"
+                echo -e "all: run"
+                echo -e ""
+                echo -e "run:"
                 echo -e "\t./gradlew run"
+                echo -e ""
+                echo -e "test:"
+                echo -e "\t./gradlew --rerun-tasks test"
+                echo -e ""
             end > Makefile
         case _complete
             set -l code (functions (status current-function) | string collect)
@@ -67,8 +73,6 @@ function gradle-init
             complete -c (status current-function) \
                 -d "Java pacakge" \
                 -s p -l package -xa "pg io.jmend"
-        case ''
-            gradle-init java
         case '*'
             echo "Invalid command: $argv[1]"
     end

@@ -34,13 +34,25 @@ function classpath --description '$CLASSPATH management'
             end
         case list-classes
             if test -z "$args"
-                set args $jars
+                classpath list-classes-in-jar $CLASSPATH
+            else
+                classpath list-classes-in-jar $args
             end
-            jar tf $args \
-                | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
-                | string match --invert --regex '\$' \
-                | string match --invert --regex 'package-info' \
-                | string replace --all '/' '.'
+        case list-classes-in-jar
+            if test -z "$args"
+                echo 'Error: missing arguments to list-classes-in-jar'
+            end
+            for jar in $args
+                if test ! -f "$jar"
+                    echo ">>> skipping non-file:" $jar >&2
+                    continue
+                end
+                jar tf $jar \
+                    | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
+                    | string match --invert --regex '\$' \
+                    | string match --invert --regex 'package-info' \
+                    | string replace --all '/' '.'
+            end
         case _complete
             complete -c classpath -e
             complete -c classpath \
