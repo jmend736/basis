@@ -188,7 +188,8 @@ endif
 call plug#end()
 
 if !exists('g:loaded_plug')
-  echoerr "ERROR: vim-plug is REQUIRED https://github.com/junegunn/vim-plug"
+  echoerr "ERROR: vim-plug is REQUIRED https://github.com/junegunn/vim-plug OR :InstallPlug"
+  command InstallPlug execute printf('term curl -fLo %s/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim', $HOME)
   finish
 endif
 
@@ -1012,6 +1013,19 @@ augroup ft_ocaml
     endif
 augroup END
 
+augroup ft_coq
+    autocmd!
+    autocmd FileType coq
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+    if filereadable('Makefile')
+      autocmd FileType coq nnoremap <silent> <buffer> <localleader>r
+            \ :Term make<cr>
+    else
+      autocmd FileType coq nnoremap <silent> <buffer> <localleader>r
+            \ :execute 'Term coqc' expand("%")<cr>
+    endif
+augroup END
+
 " Use quickfix window when using :make
 augroup cfg_quickfix_fix
     autocmd QuickFixCmdPost [^l]* nested cwindow
@@ -1176,29 +1190,36 @@ let g:jm_vimrc.docs.commands['MavenSearch'] =
 command! -nargs=1 MavenSearch call <SID>MavenSearch(<q-args>)
 command! -nargs=1 M MavenSearch <args>
 function! s:MavenSearch(query) abort
-  const l:query_url = printf(
-        \ 'https://search.maven.org/solrsearch/select?q=%s&rows=20&wt=json',
-        \ a:query)
+  const l:request = {
+        \   "page": 0,
+        \   "size": 20,
+        \   "searchTerm": a:query,
+        \   "filter": []
+        \ }
+  const l:query_url =
+        \ 'https://central.sonatype.com/api/internal/browse/components'
 
   const l:query_cmd = join([
         \   g:jm_vimrc.deps.curl,
         \   '-s',
-        \   printf('"%s"', l:query_url),
+        \   l:query_url,
+        \   '--json',
+        \   shellescape(json_encode(l:request))
         \ ])
 
   let l:msg = system(l:query_cmd)
-  let l:resp = json_decode(l:msg).response
+  let l:resp = json_decode(l:msg)
 
-  if l:resp.numFound == 0
+  if l:resp.totalResultCount == 0
     echom "None found!"
     return
   endif
-  let l:docs = l:resp.docs
+  let l:components = l:resp.components
   const l:mappings = {
         \   '<cr>': [function("s:MInsert")->get("name"), 'Close', 'Insert below'],
         \   'D': [function("s:MDownload")->get("name"), 'Close', 'Insert below'],
         \ }
-  call maktaba#ui#selector#Create(map(l:docs, 'v:val.id .. ":" ..  v:val.latestVersion'))
+  call maktaba#ui#selector#Create(map(l:components, 'v:val.namespace .. ":" .. v:val.name .. ":" ..  v:val.latestVersionInfo.version'))
         \.WithMappings(l:mappings)
         \.Show()
 endfunction

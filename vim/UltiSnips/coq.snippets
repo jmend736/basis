@@ -1,0 +1,26 @@
+snippet *
+(* ${1:Comment.} *)
+endsnippet
+
+snippet **
+(**
+	${1:Comment.}
+*)
+endsnippet
+
+snippet b "[binder] ident" i
+${1:ident}
+endsnippet
+
+snippet b "[binder] ident : type" i
+${1:ident} : ${2:type}
+endsnippet
+
+
+snippet forall "forall"
+forall ${1:open_binders}, ${2:term}
+endsnippet
+
+snippet fun "fun"
+fun ${1:open_binders} => ${2:term}
+endsnippet
