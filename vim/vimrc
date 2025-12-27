@@ -1016,7 +1016,7 @@ augroup END
 augroup ft_coq
     autocmd!
     autocmd FileType coq
-          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab
+          \ setlocal tabstop=2 softtabstop=2 tabstop=2 smarttab smartindent
     if filereadable('Makefile')
       autocmd FileType coq nnoremap <silent> <buffer> <localleader>r
             \ :Term make<cr>
