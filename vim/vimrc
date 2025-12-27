@@ -544,6 +544,11 @@ let g:jm_vimrc.docs.commands['Term'] =
 command! -nargs=* -complete=shellcmd Term
       \ eval g:jm_term.Run(<q-args>)
 
+let g:jm_vimrc.docs.commands['TermSet'] =
+      \ 'Set an option on the term window'
+command! -nargs=* -complete=option TermSet
+      \ eval g:jm_term.Exec(printf("setlocal %s", <q-args>))
+
 let g:jm_vimrc.docs.commands['Terms'] =
       \ 'Run a terminal command in a reused named window. Terms [name] [cmd]...'
 command! -nargs=* -complete=shellcmd Terms
@@ -1022,7 +1027,8 @@ augroup ft_coq
             \ :Term make<cr>
     else
       autocmd FileType coq nnoremap <silent> <buffer> <localleader>r
-            \ :execute 'Term coqc' expand("%")<cr>
+            \ :execute 'Term coqc' expand("%")
+            \ <bar> execute 'TermSet ft=coq'<cr>
     endif
 augroup END
 

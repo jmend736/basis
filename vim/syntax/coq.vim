@@ -13,7 +13,7 @@ syntax keyword coqVernac Definition
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
-syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined
+syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
 
 syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists

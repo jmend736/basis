@@ -30,3 +30,14 @@ match ${1:ident} with
 	| ${2:O} => ${3:term}
 end.
 endsnippet
+
+snippet Theorem "Theorem"
+Theorem ${1:name} :
+		${2:forall P Q : Prop : P -> Q}.
+
+	${3:intros.}
+
+Show.
+Show Proof.
+Qed.
+endsnippet
