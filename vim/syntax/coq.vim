@@ -10,6 +10,8 @@ syntax keyword coqVernac Require Import
 syntax keyword coqVernac Show Compute Eval Check Print
 syntax keyword coqVernac Locate SearchRewrite
 
+syntax keyword coqVernac Section End Variable Variables
+
 syntax keyword coqVernac Definition
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint

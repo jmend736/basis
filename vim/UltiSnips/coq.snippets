@@ -41,3 +41,13 @@ Show.
 Show Proof.
 Qed.
 endsnippet
+
+snippet Section
+Section ${1:list}.
+	Variable T : Set.
+
+	Inductive $1 : Set :=
+	| nil : $1
+	| const : T -> $1 -> $1.
+End $1.
+endsnippet
