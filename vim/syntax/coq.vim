@@ -8,6 +8,7 @@ syntax keyword coqSort Set Prop SProp Type
 
 syntax keyword coqVernac Require Import
 syntax keyword coqVernac Show Compute Eval Check Print
+syntax keyword coqVernac Locate SearchRewrite
 
 syntax keyword coqVernac Definition
 syntax keyword coqVernac Inductive CoInductive
@@ -19,6 +20,7 @@ syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists
 
 syntax keyword coqTactics intro intros
+syntax keyword coqTactics constructor
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
 syntax keyword coqTactics unfold fold at induction as f_equal
 syntax keyword coqTactics destruct discriminate injection
