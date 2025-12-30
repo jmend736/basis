@@ -10,6 +10,8 @@ syntax keyword coqVernac Require Import
 syntax keyword coqVernac Show Compute Eval Check Print
 syntax keyword coqVernac Locate SearchRewrite
 
+syntax keyword coqVernac Scheme Induction Sort
+
 syntax keyword coqVernac Section End Variable Variables Implicit Types
 
 syntax keyword coqVernac Definition
@@ -17,6 +19,8 @@ syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
 syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
+
+syntax keyword coqLtac for
 
 syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists
@@ -35,6 +39,7 @@ syntax keyword coqTacticsCPDT crush
 syntax match coqArrow /[=-]>/
 syntax match coqArrow /<-/
 syntax match coqArrow /[:,]/
+syntax match coqArrow /:=/
 
 syntax region coqComment start=/(\*/ end=/\*)/
 
@@ -42,6 +47,7 @@ highlight default link coqArrow Type
 highlight default link coqSort Type
 highlight default link coqTypes Type
 highlight default link coqVernac Special
+highlight default link coqLtac Constant
 highlight default link coqComment Comment
 highlight default link coqGallina Statement
 highlight default link coqTactics Function
