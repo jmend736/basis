@@ -13,6 +13,8 @@ syntax keyword coqVernac Locate SearchRewrite
 syntax keyword coqVernac Scheme Induction Sort
 
 syntax keyword coqVernac Section End Variable Variables Implicit Types
+syntax keyword coqVernac Variable Variables Implicit Types
+syntax keyword coqVernac Hypothesis
 
 syntax keyword coqVernac Definition
 syntax keyword coqVernac Inductive CoInductive
