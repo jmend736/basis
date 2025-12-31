@@ -19,6 +19,7 @@ syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
 syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
+syntax keyword coqVernac Goal
 
 syntax keyword coqLtac for
 
