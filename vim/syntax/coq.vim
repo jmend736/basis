@@ -2,7 +2,7 @@ if exists('b:current_syntax')
     finish
 endif
 
-syntax match coqIdentifier /\<[A-Z]\w\+\>/
+syntax match coqIdentifier /\<[A-Z]\w*\>/
 
 syntax keyword coqSort Set Prop SProp Type
 
