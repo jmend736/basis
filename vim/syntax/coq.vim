@@ -15,6 +15,7 @@ syntax keyword coqStuff iff iff_refl iff_trans iff_sym
 syntax keyword coqStuff not
 syntax keyword coqStuff ex ex_intro ex2 ex_intro2 all
 syntax keyword coqStuff eq eq_refl
+syntax match coqStuff /\v(\~|\/\\|\\\/|<->|\=|\<\>)/
 
 " Coq.Init.DataTypes
 syntax keyword coqStuff Empty_set unit tt
@@ -34,6 +35,7 @@ syntax keyword coqStuff max min even odd pow div divmod modulo gcd
 syntax keyword coqStuff square sqrt_iter sqrt log2_iter log2 iter
 syntax keyword coqStuff div2 testbit shiftl shiftr bitwise
 syntax keyword coqStuff land lor ldiff lxor
+syntax match coqStuff /\v(\+|\*|\-|\=\?|\<\=\?|\<\?|\?\=|\^)/
 
 syntax keyword coqVernac Require Import
 syntax keyword coqVernac Show Compute Eval Check Print
