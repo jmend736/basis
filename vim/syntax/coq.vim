@@ -68,6 +68,7 @@ syntax keyword coqTactics unfold fold at induction as f_equal
 syntax keyword coqTactics destruct discriminate injection
 syntax keyword coqTactics trivial info_trivial
 syntax keyword coqTactics assert revert clear rename move
+syntax keyword coqTactics tauto
 
 " Tactics from 'Certified Tactics with Dependent Types'
 syntax keyword coqTacticsCPDT crush
