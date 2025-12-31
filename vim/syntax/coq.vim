@@ -63,6 +63,7 @@ syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
+syntax keyword coqTactics assumption
 syntax keyword coqTactics unfold fold at induction as f_equal
 syntax keyword coqTactics destruct discriminate injection
 syntax keyword coqTactics trivial info_trivial
