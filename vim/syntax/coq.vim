@@ -52,7 +52,7 @@ syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
 syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
-syntax keyword coqVernac Goal
+syntax keyword coqVernac Goal Restart
 
 syntax keyword coqLtac for
 
@@ -65,11 +65,17 @@ syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
 syntax keyword coqTactics assumption
 syntax keyword coqTactics unfold fold at induction as f_equal
-syntax keyword coqTactics destruct discriminate injection
+syntax keyword coqTactics destruct discriminate injection inversion
 syntax keyword coqTactics trivial info_trivial
 syntax keyword coqTactics assert revert clear rename move
+" Automation: ???
+syntax keyword coqTactics auto
+" Automation: Constructive Propositional Logic
 syntax keyword coqTactics tauto
-
+" Automation: Propositional Reasoning
+syntax keyword coqTactics intuition
+" Automation: First-order Logic
+syntax keyword coqTactics firstorder
 " Tactics from 'Certified Tactics with Dependent Types'
 syntax keyword coqTacticsCPDT crush
 
