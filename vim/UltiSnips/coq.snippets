@@ -45,9 +45,17 @@ endsnippet
 snippet Section
 Section ${1:list}.
 	Variable T : Set.
+	Implicit Types (a b : T).
+	Hypothesis H : forall x y : T, x = y -> y = x.
 
 	Inductive $1 : Set :=
 	| nil : $1
 	| const : T -> $1 -> $1.
+End $1.
+endsnippet
+
+snippet sec
+Section ${1:ident}.
+	${2:(*body*)}
 End $1.
 endsnippet

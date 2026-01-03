@@ -60,7 +60,7 @@ syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists
 
 syntax keyword coqTactics intro intros
-syntax keyword coqTactics constructor
+syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
 syntax keyword coqTactics assumption
