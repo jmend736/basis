@@ -244,6 +244,7 @@ set hlsearch         " Highlight search results
 set incsearch        " Highlight while searching
 set foldopen-=search " Whether to open folds when searching
                      " Also see :ToggleFoldOpenSearch
+set foldlevel=999    " Start with all folds open
 
 " Ignore case, unless you use uppercase characters
 set ignorecase
@@ -947,7 +948,11 @@ augroup ft_markdown
 
     autocmd FileType markdown nnoremap <buffer> <space>l :<c-u>lvimgrep /\v^#+ / %<cr>
 
-    autocmd FileType markdown command! SetupR nnoremap <buffer> <localleader>r
+    autocmd FileType markdown nnoremap <buffer> <localleader>r
+          \ :call bss#md#GoToRandomSection()<cr>
+          \ :normal zt<cr>
+
+    autocmd FileType markdown command! SetupRPandoc nnoremap <buffer> <localleader>r
           \ :call execute(printf(
           \     "Term pandoc %s -s --highlight-style kate --pdf-engine=xelatex -o %s.pdf",
           \     expand('%:p'),

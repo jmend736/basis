@@ -53,6 +53,60 @@ function! bss#md#GetBlocks(lines = v:none) abort
   return l:blocks
 endfunction
 
+function! bss#md#GetSections(lines = v:none) abort
+  let l:lines = (a:lines is v:none) ? getline(0, '$') : a:lines
+  let l:sections = []
+  let l:kind = v:none
+  let l:lnum = len(l:lines)
+  " Processing lines in reverse since headers can be specified by the
+  " line following the header line.
+  for l:line in reverse(l:lines)
+    " Handle header lines
+    if l:kind isnot v:none
+      call add(l:sections, {
+            \   'kind': l:kind,
+            \   'name': l:line,
+            \   'lnum': l:lnum,
+            \ })
+      let l:kind = v:none
+    elseif l:line =~# '\v^#+'
+      let [l:match, l:kind_str, l:name; _] = matchlist(l:line, '\v^(#+) (.*)')
+      call add(l:sections, {
+            \   'kind': len(l:kind_str),
+            \   'name': l:name,
+            \   'lnum': l:lnum,
+            \ })
+      let l:kind = v:none
+    endif
+
+    " Set expecation that next line is a header
+    if l:line =~# '\v^\=+$'
+      let l:kind = 1
+    elseif l:line =~# '\v^\-+$'
+      let l:kind = 2
+    else
+      let l:kind = v:none
+    endif
+
+    let l:lnum -= 1
+  endfor
+
+  " Handle any dangling header (e.g. `===` is the first line in a file)
+  if l:kind isnot v:none
+    call add(l:sections, {'kind': l:kind, 'name': ''})
+  endif
+  return reverse(l:sections)
+endfunction
+
+function! bss#md#GoToRandomSection() abort
+  let l:sections = bss#md#GetSections()
+  if empty(l:sections)
+    throw 'ERROR(Failure): No sections defined in file'
+  endif
+  let l:section = l:sections[rand() % len(l:sections)]
+  call cursor(l:section['lnum'], 1)
+endfunction
+
 if v:false
   call assert_equal(
         \ [s:FENCE, s:FENCE],
