@@ -950,7 +950,7 @@ augroup ft_markdown
 
     autocmd FileType markdown nnoremap <buffer> <localleader>r
           \ :call bss#md#GoToRandomSection()<cr>
-          \ :normal zt<cr>
+          \ :normal zt0<cr>
 
     autocmd FileType markdown command! SetupRPandoc nnoremap <buffer> <localleader>r
           \ :call execute(printf(
