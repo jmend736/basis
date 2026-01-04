@@ -104,7 +104,7 @@ function! bss#md#GoToRandomSection() abort
     throw 'ERROR(Failure): No sections defined in file'
   endif
   let l:section = l:sections[rand() % len(l:sections)]
-  call cursor(l:section['lnum'], 1)
+  call cursor(l:section['lnum'], 0)
 endfunction
 
 if v:false
