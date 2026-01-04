@@ -57,7 +57,7 @@ syntax keyword coqVernac Goal Restart
 syntax keyword coqLtac for
 
 syntax keyword coqGallina forall match with end fun fix cofix let in
-syntax keyword coqGallina exists
+syntax keyword coqGallina exists eexists
 
 syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
