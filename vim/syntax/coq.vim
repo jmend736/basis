@@ -59,17 +59,17 @@ syntax keyword coqLtac for
 syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists eexists
 
+syntax keyword coqTactics assumption
 syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
+syntax keyword coqTactics discriminate injection inversion
+syntax keyword coqTactics induction destruct
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
-syntax keyword coqTactics assumption
-syntax keyword coqTactics unfold fold at induction as f_equal
-syntax keyword coqTactics destruct discriminate injection inversion
-syntax keyword coqTactics trivial info_trivial
+syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics assert revert clear rename move
 " Automation: ???
-syntax keyword coqTactics auto
+syntax keyword coqTactics auto easy trivial info_trivial
 " Automation: Constructive Propositional Logic
 syntax keyword coqTactics tauto
 " Automation: Propositional Reasoning
