@@ -54,12 +54,15 @@ syntax keyword coqVernac Fixpoint  CoFixpoint
 syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
 syntax keyword coqVernac Goal Restart
 
+syntax keyword coqVernac Create HintDb
+syntax keyword coqVernac Hint Resolve Rewrite Constructors
+
 syntax keyword coqLtac for
 
 syntax keyword coqGallina forall match with end fun fix cofix let in
 syntax keyword coqGallina exists eexists
 
-syntax keyword coqTactics assumption
+syntax keyword coqTactics assumption try
 syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
