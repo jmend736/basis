@@ -329,10 +329,6 @@ let $FZF_DEFAULT_COMMAND = 'ag -l'
 
 let g:html_dynamic_folds = v:true
 
-"let g:lsc_server_commands = {}
-"let g:lsc_enable_autocomplete = v:true
-"let g:lsc_auto_map = v:true
-
 let g:ycm_auto_trigger = 1
 let g:ycm_disable_signature_help = 1
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
@@ -345,9 +341,6 @@ let g:bss_markdown_fix = 1
 
 let g:bss_java_fix = 1
 
-"let g:vim_markdown_new_list_item_indent = 0
-"let g:vim_markdown_folding_disabled = 1
-"let g:markdown_fold_style = 'nested'
 let g:markdown_folding = 1
 
 let g:NERDCompactSexyComs = v:true
@@ -379,8 +372,11 @@ let g:gitgutter_sign_modified_removed = '·'
 " Keymappings: {{{
 "   To understand keys see :h key-notation
 
-" Moves around a line more closely to what is expected (at least by me) when
-" the line is wrapped.
+" By default, `j` and `k` will move between lines; this means they will skip
+" over multiple lines when lines wrap.
+"
+" Uncomment the 4 lines below so that `j` and `k` move between lines on the
+" screen.
 "nnoremap j gj
 "nnoremap k gk
 "vnoremap j gj
