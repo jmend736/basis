@@ -139,7 +139,6 @@ Plug 'triglav/vim-visual-increment'
 Plug 'tmhedberg/SimpylFold'
 Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
-Plug 'nelstrom/vim-markdown-folding'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'jpalardy/vim-slime'
 Plug 'itchyny/lightline.vim'
@@ -152,7 +151,6 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 Plug 'AndrewRadev/linediff.vim'
 Plug 'shiracamus/vim-syntax-x86-objdump-d'
-Plug 'romainl/vim-devdocs'
 if isdirectory('$OCAML_OCP_INDENT')
   Plug $OCAML_OCP_INDENT
 endif
@@ -175,6 +173,8 @@ endif
 " http://eclim.org
 " Plug 'bazelbuild/vim-ft-bzl'
 " -> https://github.com/bazelbuild/vim-ft-bzl/commit/941fb142f604c254029c2a0852ea7578f08de91a
+" Plug 'nelstrom/vim-markdown-folding'
+" Plug 'romainl/vim-devdocs'
 
 "" Plugins to check out:
 " Plug 'liuchengxu/vista.vim'
@@ -345,9 +345,10 @@ let g:bss_markdown_fix = 1
 
 let g:bss_java_fix = 1
 
-let g:vim_markdown_new_list_item_indent = 0
-let g:vim_markdown_folding_disabled = 1
-let g:markdown_fold_style = 'nested'
+"let g:vim_markdown_new_list_item_indent = 0
+"let g:vim_markdown_folding_disabled = 1
+"let g:markdown_fold_style = 'nested'
+let g:markdown_folding = 1
 
 let g:NERDCompactSexyComs = v:true
 let g:NERDCommentEmptyLines = v:true

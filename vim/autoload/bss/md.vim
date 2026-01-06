@@ -69,7 +69,7 @@ function! bss#md#GetSections(lines = v:none) abort
             \   'lnum': l:lnum,
             \ })
       let l:kind = v:none
-    elseif l:line =~# '\v^#+'
+    elseif l:line =~# '\v^(#+) (.*)'
       let [l:match, l:kind_str, l:name; _] = matchlist(l:line, '\v^(#+) (.*)')
       call add(l:sections, {
             \   'kind': len(l:kind_str),
