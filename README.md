@@ -32,4 +32,4 @@ Plug 'jmend736/basis', { 'rtp': 'vim' }
 
 MIT License
 
-Copyright (c) 2025 Julian Mendoza
+Copyright (c) 2026 Julian Mendoza
