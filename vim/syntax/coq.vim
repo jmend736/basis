@@ -86,6 +86,8 @@ syntax keyword coqTactics tauto
 syntax keyword coqTactics intuition
 " Automation: First-order Logic
 syntax keyword coqTactics firstorder
+" Automation: Linear Integer Arithmetic
+syntax keyword coqTactics lia
 " Tactics from 'Certified Tactics with Dependent Types'
 syntax keyword coqTacticsCPDT crush
 
