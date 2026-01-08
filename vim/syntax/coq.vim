@@ -60,7 +60,7 @@ syntax keyword coqVernac Hint Resolve Rewrite Constructors
 syntax keyword coqLtac for
 
 syntax keyword coqGallina forall match with end fun fix cofix let in
-syntax keyword coqGallina exists eexists
+syntax keyword coqGallina exists
 
 syntax keyword coqTactics assumption
 syntax keyword coqTactics try repeat
