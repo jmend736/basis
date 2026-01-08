@@ -47,7 +47,7 @@ syntax keyword coqVernac Section End Variable Variables Implicit Types
 syntax keyword coqVernac Variable Variables Implicit Types
 syntax keyword coqVernac Hypothesis
 
-syntax keyword coqVernac Definition
+syntax keyword coqVernac Definition Parameter
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
@@ -72,6 +72,12 @@ syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity exact apply rewrite
 syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics assert revert clear rename move
+" Existential: Create existential variables
+syntax keyword coqTactics eapply eassert eassumption eauto ecase
+syntax keyword coqTactics econstructor edestruct ediscriminate eelim
+syntax keyword coqTactics eenough eexact eexists einduction einjection
+syntax keyword coqTactics eintros eleft epose eremember erewrite eright
+syntax keyword coqTactics eset esimplify_eq esplit etransitivity
 " Automation: ???
 syntax keyword coqTactics auto easy trivial info_trivial
 " Automation: Constructive Propositional Logic
