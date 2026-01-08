@@ -38,7 +38,7 @@ syntax keyword coqStuff land lor ldiff lxor
 syntax match coqStuff /\v(\+|\*|\-|\=\?|\<\=\?|\<\?|\?\=|\^)/
 
 syntax keyword coqVernac Require Import
-syntax keyword coqVernac Show Compute Eval Check Print
+syntax keyword coqVernac Show Compute Eval Check Print Existentials
 syntax keyword coqVernac Locate SearchRewrite
 
 syntax keyword coqVernac Scheme Induction Sort
@@ -78,6 +78,7 @@ syntax keyword coqTactics econstructor edestruct ediscriminate eelim
 syntax keyword coqTactics eenough eexact eexists einduction einjection
 syntax keyword coqTactics eintros eleft epose eremember erewrite eright
 syntax keyword coqTactics eset esimplify_eq esplit etransitivity
+syntax keyword coqTactics instantiate
 " Automation: ???
 syntax keyword coqTactics auto easy trivial info_trivial
 " Automation: Constructive Propositional Logic
