@@ -47,7 +47,7 @@ syntax keyword coqVernac Section End Variable Variables Implicit Types
 syntax keyword coqVernac Variable Variables Implicit Types
 syntax keyword coqVernac Hypothesis
 
-syntax keyword coqVernac Definition Parameter
+syntax keyword coqVernac Definition Parameter Parameters
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
@@ -59,17 +59,18 @@ syntax keyword coqVernac Hint Resolve Rewrite Constructors
 
 syntax keyword coqLtac for
 
-syntax keyword coqGallina forall match with end fun fix cofix let in
+syntax keyword coqGallina forall match with return end fun fix cofix let in
 syntax keyword coqGallina exists
 
-syntax keyword coqTactics assumption
+syntax keyword coqTactics exact assumption refine
+syntax keyword coqTactics absurd
 syntax keyword coqTactics try repeat
 syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
 syntax keyword coqTactics induction destruct
 syntax keyword coqTactics split left right
-syntax keyword coqTactics simpl reflexivity exact apply rewrite
+syntax keyword coqTactics simpl reflexivity apply rewrite
 syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics assert revert clear rename move
 " Existential: Create existential variables
