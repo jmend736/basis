@@ -63,7 +63,7 @@ syntax keyword coqGallina forall match with return end fun fix cofix let in
 syntax keyword coqGallina exists
 
 syntax keyword coqTactics exact assumption refine
-syntax keyword coqTactics absurd
+syntax keyword coqTactics absurd admit
 syntax keyword coqTactics try repeat
 syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
