@@ -66,6 +66,7 @@ syntax keyword coqTactics exact assumption refine
 syntax keyword coqTactics intro intros clear revert
 syntax keyword coqTactics move at top bottom before after
 syntax keyword coqTactics set remember pose
+syntax keyword coqTactics assert enough specialize
 syntax keyword coqTactics absurd admit pattern
 syntax keyword coqTactics try repeat
 syntax keyword coqTactics constructor symmetry
@@ -74,7 +75,7 @@ syntax keyword coqTactics induction destruct
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity apply rewrite
 syntax keyword coqTactics unfold fold at as f_equal
-syntax keyword coqTactics assert revert clear rename move
+syntax keyword coqTactics revert clear rename move
 " Existential: Create existential variables
 syntax keyword coqTactics eapply eassert eassumption eauto ecase
 syntax keyword coqTactics econstructor edestruct ediscriminate eelim
