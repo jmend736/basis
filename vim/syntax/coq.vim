@@ -63,9 +63,11 @@ syntax keyword coqGallina forall match with return end fun fix cofix let in
 syntax keyword coqGallina exists
 
 syntax keyword coqTactics exact assumption refine
+syntax keyword coqTactics intro intros clear revert
+syntax keyword coqTactics move at top bottom before after
+syntax keyword coqTactics set remember pose
 syntax keyword coqTactics absurd admit pattern
 syntax keyword coqTactics try repeat
-syntax keyword coqTactics intro intros
 syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
 syntax keyword coqTactics induction destruct
