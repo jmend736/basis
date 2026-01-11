@@ -298,6 +298,9 @@ digraphs -u 8593 " Up arrow
 digraphs -d 8595 " down arrow
 digraphs c. 183  " center dot
 digraphs .. 183  " center dot
+digraphs T- 8866  " Turnstile (right) |-
+digraphs -T 8867  " Turnstile (left) -|
+digraphs =v 8659  " Downwards double arrow
 
 " Themes
 colorscheme gruvbox
