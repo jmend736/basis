@@ -77,7 +77,7 @@ syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity apply rewrite
 syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics revert clear rename move
-syntax keyword coqTactics cbv
+syntax keyword coqTactics cbv lazy compute cbn red
 " Existential: Create existential variables
 syntax keyword coqTactics eapply eassert eassumption eauto ecase
 syntax keyword coqTactics econstructor edestruct ediscriminate eelim

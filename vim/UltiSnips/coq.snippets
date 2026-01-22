@@ -54,6 +54,11 @@ Section ${1:list}.
 End $1.
 endsnippet
 
+snippet ind
+Inductive ${1:unit} : ${2:Set} :=
+| ${3:tt} : $1.
+endsnippet
+
 snippet sec
 Section ${1:ident}.
 	${2:(*body*)}
