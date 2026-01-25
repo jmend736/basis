@@ -37,6 +37,10 @@ syntax keyword coqStuff div2 testbit shiftl shiftr bitwise
 syntax keyword coqStuff land lor ldiff lxor
 syntax match coqStuff /\v(\+|\*|\-|\=\?|\<\=\?|\<\?|\?\=|\^)/
 
+" Coq.Classes.RelationClasses
+syntax keyword coqStuff Reflexive complement Irreflexive Symmetric Asymmetric
+syntax keyword coqStuff Transitive PreOrder StrictOrder PER Equivalence
+
 syntax keyword coqVernac Require Import
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
 syntax keyword coqVernac Locate SearchRewrite About
@@ -46,13 +50,16 @@ syntax keyword coqVernac Scheme Induction Sort
 syntax keyword coqVernac Section End Variable Variables Implicit Types
 syntax keyword coqVernac Variable Variables Implicit Types
 syntax keyword coqVernac Hypothesis
+syntax keyword coqVernac Global Instance
+syntax keyword coqVernac Class
 
 syntax keyword coqVernac Definition Parameter Parameters
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 
-syntax keyword coqVernac Theorem Proof Lemma Qed Abort Defined Admitted
-syntax keyword coqVernac Goal Restart
+syntax keyword coqVernac Theorem Proof Lemma Fact Remark Corollary Proposition Property
+syntax keyword coqVernac Qed Abort Defined Admitted
+syntax keyword coqVernac Goal Restart Undo To
 
 syntax keyword coqVernac Create HintDb
 syntax keyword coqVernac Hint Resolve Rewrite Constructors
