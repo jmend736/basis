@@ -37,6 +37,12 @@ syntax keyword coqStuff div2 testbit shiftl shiftr bitwise
 syntax keyword coqStuff land lor ldiff lxor
 syntax match coqStuff /\v(\+|\*|\-|\=\?|\<\=\?|\<\?|\?\=|\^)/
 
+syntax keyword coqStuff land lor ldiff lxor
+
+" Co.Init.Peano
+syntax keyword coqStuff plus_n_O plus_O_n plus_n_Sm plus_Sn_m
+syntax keyword coqStuff mult_n_O mult_n_Sm
+
 " Coq.Classes.RelationClasses
 syntax keyword coqStuff Reflexive complement Irreflexive Symmetric Asymmetric
 syntax keyword coqStuff Transitive PreOrder StrictOrder PER Equivalence
@@ -82,6 +88,7 @@ syntax keyword coqTactics discriminate injection inversion
 syntax keyword coqTactics induction destruct
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity apply rewrite
+syntax keyword coqTactics replace
 syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics revert clear rename move
 syntax keyword coqTactics cbv lazy compute cbn red
