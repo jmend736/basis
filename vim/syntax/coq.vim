@@ -62,6 +62,7 @@ syntax keyword coqVernac Class
 syntax keyword coqVernac Definition Parameter Parameters
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
+syntax keyword coqVernac Record Structure
 
 syntax keyword coqVernac Theorem Proof Lemma Fact Remark Corollary Proposition Property
 syntax keyword coqVernac Qed Abort Defined Admitted
