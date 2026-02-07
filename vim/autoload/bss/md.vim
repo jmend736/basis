@@ -98,6 +98,17 @@ function! bss#md#GetSections(lines = v:none) abort
   return reverse(l:sections)
 endfunction
 
+function! bss#md#GoToSection() abort
+  let l:sections = bss#md#GetSections()
+  call maktaba#ui#selector#Create(map(l:sections, {i, v -> [repeat('#', v.kind) .. ' ' .. v.name, v]}))
+        \.WithMappings({'<cr>': [function('s:GoToSection'), 'Close', 'yyy']})
+        \.Show()
+endfunction
+
+function! s:GoToSection(line, section) abort
+  call cursor(a:section.lnum, 1)
+endfunction
+
 function! bss#md#GoToRandomSection() abort
   let l:sections = bss#md#GetSections()
   if empty(l:sections)
