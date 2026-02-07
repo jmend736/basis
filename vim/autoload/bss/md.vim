@@ -105,6 +105,8 @@ function! s:FindCurrentSection(sections = v:none) abort
   for l:section in l:sections
     if l:curline >= l:section.lnum
       let l:cursec = l:section
+    else
+      break
     endif
   endfor
   return l:cursec
