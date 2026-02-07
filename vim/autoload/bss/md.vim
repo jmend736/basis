@@ -98,11 +98,28 @@ function! bss#md#GetSections(lines = v:none) abort
   return reverse(l:sections)
 endfunction
 
+function! s:FindCurrentSection(sections = v:none) abort
+  let l:sections = a:sections is v:none ? bss#md#GetSections() : a:sections
+  let l:curline = line('.')
+  let l:cursec = v:none
+  for l:section in l:sections
+    if l:curline >= l:section.lnum
+      let l:cursec = l:section
+    endif
+  endfor
+  return l:cursec
+endfunction
+
 function! bss#md#GoToSection() abort
   let l:sections = bss#md#GetSections()
+  let l:cursec = s:FindCurrentSection(l:sections)
+  let l:start_line = index(l:sections, l:cursec) + 1 + 1
+
   call maktaba#ui#selector#Create(map(l:sections, {i, v -> [repeat('#', v.kind) .. ' ' .. v.name, v]}))
-        \.WithMappings({'<cr>': [function('s:GoToSection'), 'Close', 'yyy']})
+        \.WithMappings({'<CR>': [function('s:GoToSection'), 'Close', 'Navigate to the section']})
         \.Show()
+
+  call cursor(l:start_line, 1)
 endfunction
 
 function! s:GoToSection(line, section) abort
