@@ -33,12 +33,19 @@ endsnippet
 
 snippet Theorem "Theorem"
 Theorem ${1:name} :
-		${2:forall P Q : Prop : P -> Q}.
-
+	${2:forall P Q : Prop : P -> Q}.
+Proof.
 	${3:intros.}
-
 Show.
-Show Proof.
+Qed.
+endsnippet
+
+snippet th "Theorem"
+Theorem ${1:name} :
+	${2:goal}.
+Proof.
+	${3:intros.}
+Show.
 Qed.
 endsnippet
 
