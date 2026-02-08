@@ -43,13 +43,27 @@ syntax keyword coqStuff land lor ldiff lxor
 syntax keyword coqStuff plus_n_O plus_O_n plus_n_Sm plus_Sn_m
 syntax keyword coqStuff mult_n_O mult_n_Sm
 
+" Coq.ZArith
+" - Coq.Numbers.BinNums
+syntax keyword coqStuff positive xI xO xH
+syntax keyword coqStuff N N0 Npos
+syntax keyword coqStuff Z Zpos Zneg
+
 " Coq.Classes.RelationClasses
 syntax keyword coqStuff Reflexive complement Irreflexive Symmetric Asymmetric
 syntax keyword coqStuff Transitive PreOrder StrictOrder PER Equivalence
 
-syntax keyword coqVernac Require Import
+" Libraries
+syntax keyword coqStuff Stdlib Arith ZArith List ListNotations
+
+" Settings
+syntax keyword coqStuff Printing Notations
+
+syntax keyword coqVernac Require Import From
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
-syntax keyword coqVernac Locate SearchRewrite About
+syntax keyword coqVernac SearchRewrite About
+syntax keyword coqVernac Locate Open Scope Add Remove Test
+syntax keyword coqVernac Unset Set
 
 syntax keyword coqVernac Scheme Induction Sort
 

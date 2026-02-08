@@ -90,6 +90,7 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \ ? #{
       \     co: 'Files ~/Playground',
       \     cj: 'Files ~/Playground/jdk/src/java.base/share/classes',
+      \     cO: 'Files /opt/homebrew/lib/ocaml/',
       \     pg: 'Files ~/Playground',
       \     n:  'Files ~/Playground/jmendio/n',
       \     v:  'edit ~/.vimrc',
@@ -328,7 +329,9 @@ let g:lightline = {
       \   },
       \ }
 
-let $FZF_DEFAULT_COMMAND = 'ag -l'
+if !g:jm_vimrc.is_mac
+  let $FZF_DEFAULT_COMMAND = 'ag -l'
+endif
 
 let g:html_dynamic_folds = v:true
 
@@ -948,7 +951,13 @@ augroup ft_markdown
 
     autocmd FileType markdown nnoremap <buffer> <space>l :<c-u>lvimgrep /\v^#+ / %<cr>
 
+    autocmd FileType markdown
+          \ command! GoToSection call bss#md#GoToSection()
+
     autocmd FileType markdown nnoremap <buffer> <localleader>r
+          \ :GoToSection<cr>
+
+    autocmd FileType markdown nnoremap <buffer> <localleader>R
           \ :call bss#md#GoToRandomSection()<cr>
           \ :normal zt0<cr>
 
