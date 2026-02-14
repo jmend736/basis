@@ -67,13 +67,18 @@ syntax keyword coqVernac Unset Set
 
 syntax keyword coqVernac Scheme Induction Sort
 
-syntax keyword coqVernac Section End Variable Variables Implicit Types
 syntax keyword coqVernac Variable Variables Implicit Types Let
-syntax keyword coqVernac Hypothesis
 syntax keyword coqVernac Global Instance
 syntax keyword coqVernac Class
 
-syntax keyword coqVernac Definition Parameter Parameters
+" Global Declarations
+syntax keyword coqVernac Definition Parameter Parameters Axiom Axioms
+" Local declarations
+syntax keyword coqVernac Let Variable Variables Hypothesis Hypotheses
+
+syntax keyword coqVernac Section End
+syntax keyword coqVernac Implicit Types
+
 syntax keyword coqVernac Inductive CoInductive
 syntax keyword coqVernac Fixpoint  CoFixpoint
 syntax keyword coqVernac Record Structure
