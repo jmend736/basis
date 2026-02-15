@@ -1,12 +1,9 @@
 function classpath --description '$CLASSPATH management'
-    set -l command $argv[1]
-    set -l args $argv[2..]
-    switch $command
+    switch $argv[1]
         case help
             string collect -- \
-                "setup	'[]: Set global \$CLASSPATH to \$jars'" \
-                "add	'[{file}]: Add {file} to \$jars.'" \
-                "add-gradle	'Select jar from .gradle to track in \$jars'" \
+                "setup	'Set global \$CLASSPATH to \$jars'" \
+                "add	'Select jar from .gradle to track in \$jars'" \
                 "reset	'Clear \$jars'" \
                 "list	'List tracked \$jars'" \
                 "list-all-classes	'outputs classes all \$jars'" \
@@ -14,16 +11,10 @@ function classpath --description '$CLASSPATH management'
                 "help	'Print this help'"
         case setup
             set -xg CLASSPATH $jars
-        case reset
-            set -U jars
-        case find
-            pushd $HOME/.gradle/
-            realpath (fzf $args)
-            popd
         case add
-            set -Ua jars (realpath $args)
-        case add-gradle
-            classpath add (classpath find -m)
+            pushd $HOME/.gradle/
+            set -Ua jars (realpath (fzf -m))
+            popd
         case reset
             set -Ue jars
         case list
@@ -33,26 +24,11 @@ function classpath --description '$CLASSPATH management'
                 classpath list-classes $jar
             end
         case list-classes
-            if test -z "$args"
-                classpath list-classes-in-jar $CLASSPATH
-            else
-                classpath list-classes-in-jar $args
-            end
-        case list-classes-in-jar
-            if test -z "$args"
-                echo 'Error: missing arguments to list-classes-in-jar'
-            end
-            for jar in $args
-                if test ! -f "$jar"
-                    echo ">>> skipping non-file:" $jar >&2
-                    continue
-                end
-                jar tf $jar \
-                    | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
-                    | string match --invert --regex '\$' \
-                    | string match --invert --regex 'package-info' \
-                    | string replace --all '/' '.'
-            end
+            jar tf $argv[2] \
+                | string replace --regex --filter '^(classes/)?(.*)\.class' '$2' \
+                | string match --invert --regex '\$' \
+                | string match --invert --regex 'package-info' \
+                | string replace --all '/' '.'
         case _complete
             complete -c classpath -e
             complete -c classpath \
@@ -60,6 +36,7 @@ function classpath --description '$CLASSPATH management'
                 -xa "(classpath help | string replace \t "\\t")"
 
         case '*'
-            classpath list | ag '\.jar$' | string join ':'
+            echo 'Invalid subcommand'
+            return 1
     end
 end

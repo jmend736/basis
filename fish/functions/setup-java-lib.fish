@@ -15,20 +15,12 @@ function setup-java-lib
 
     if not test -f .ycm_extra_conf.py
         echo '>>> Creating .ycm_extra_conf.py (hint :YcmRestartServer)'
-        set -l cp_options (string join ', ' -- "'"$CLASSPATH"'")
-        set -l ls_option_parts
-        set -a ls_option_parts "'java.project.referencedLibraries': [$cp_options]"
-        if test -d out/main/java
-            set -a ls_option_parts "'java.project.outputPath': 'out/main/java'"
-        end
-        if test -d src/main/java
-            set -a ls_option_parts "'java.project.sourcePaths': ['src/main/java']"
-        end
-        set -l ls_options (string join ', ' -- $ls_option_parts)
         begin
+            set -l cp_options (string join ', ' -- "'"$CLASSPATH"'")
+
             echo 'def Settings(**kwargs):'
             echo '  if kwargs["language"] == "java":'
-            echo "    return {'ls': {$ls_options}}"
+            echo "    return {'ls': {'java.project.referencedLibraries': [$cp_options]}}"
         end >> .ycm_extra_conf.py
     end
 end

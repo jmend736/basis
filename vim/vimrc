@@ -88,6 +88,7 @@ let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " Playground: {{{
 let s:pg_items = (g:jm_vimrc.is_mac)
       \ ? #{
+      \     b:  'Files ~/Playground/basis',
       \     co: 'Files ~/Playground',
       \     cj: 'Files ~/Playground/jdk/src/java.base/share/classes',
       \     cO: 'Files /opt/homebrew/lib/ocaml/',
@@ -96,16 +97,11 @@ let s:pg_items = (g:jm_vimrc.is_mac)
       \     v:  'edit ~/.vimrc',
       \   }
       \ : #{
-      \     a:  'Files ~/code/abseil-cpp/absl',
+      \     b:  'Files ~/code/basis',
       \     co: 'Files ~/code',
       \     cg: 'Files ~/code/guava/guava/src',
       \     cj: 'Files ~/code/jdk/src/java.base/share/classes',
-      \     cv: 'Files ~/code/opencv/modules/core',
-      \     cp: 'Files ~/code/pandas',
-      \     cd: 'Files ~/code/dagger',
-      \     cb: 'Files ~/code/basis',
       \     cO: 'Files /usr/lib/ocaml',
-      \     j:  'Files ~/junk',
       \     n:  'Files ~/jmendio/n',
       \     v:  'edit ~/.vimrc',
       \   }
