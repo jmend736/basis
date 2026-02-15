@@ -40,6 +40,37 @@ function! bss#Buf(bufnr = v:none) abort
   return bss#buf#Create(a:bufnr)
 endfunction
 
+" Simple Maktaba Selector
+" ======================================================================
+
+function! bss#Select(options, Callback) abort
+  if len(a:options) == 0
+    return
+  elseif len(a:options) == 1
+    call a:Callback(a:options[0])
+  else
+    call maktaba#ui#selector#Create(a:options)
+          \.WithMappings({
+          \   '<CR>': [{line -> a:Callback(line)}, 'Close', 'Run the selected command'],
+          \ })
+          \.Show()
+  endif
+endfunction
+
+function! bss#SelectWithInfo(options, Callback) abort
+  if len(a:options) == 0
+    return
+  elseif len(a:options) == 1
+    call call(a:Callback, a:options[0])
+  else
+    call maktaba#ui#selector#Create(a:options)
+          \.WithMappings({
+          \   '<CR>': [{line, info -> a:Callback(line, info)}, 'Close', 'Run the selected command'],
+          \ })
+          \.Show()
+  endif
+endfunction
+
 " Generic Getters/Setters
 " ======================================================================
 function! bss#Get(data, index, default = v:none) abort
