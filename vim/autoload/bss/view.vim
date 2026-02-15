@@ -17,6 +17,8 @@
 "       'bufnr'   : ( <bufnr> | 'current' ),
 "       'winid'   : ( <winid> | 'current' ),
 "       'options' : list<string>,
+"       'exec'    : list<string>,
+"       'call'    : list<callable>,
 "       'vars'    : dict<string, any>,
 "     }
 "
@@ -32,6 +34,9 @@
 "
 "   s:View.Run({cmd})
 "     Runs :term {cmd} using View for output.
+"
+"   s:View.RunAppend({cmd})
+"     Runs systemlist({cmd}) and appends output to the View.
 "
 "   s:View.Exec({src})
 "     Runs :execute {src} while cursor is in View.
@@ -51,12 +56,22 @@
 "   s:View.Append([{line}...])
 "     Appends all lines [{line}...] to buffer
 "
+"   s:View.Insert({line})
+"     Appends lines {line} to buffer after the current line
+"
+"   s:View.Insert({line}, {lnum})
+"     Appends lines {line} to buffer after {lnum}
+"
 "   s:View.AppendPretty({expr})
 "     Appends pretty printed likes of {expr} to buffer
 "
 "   s:View.Clear()
 "     Clear all lines in View's buffer
 "
+" Cursor Operations:
+"
+"   s:View.Move({lnum})
+"     Set cursor position to {lnum}
 "
 " Buffer Variable:
 "
@@ -96,6 +111,8 @@ let s:View = {
       \   'winid'   : v:none,
       \   'options' : [],
       \   'vars'    : {},
+      \   'exec'    : [],
+      \   'call'    : [],
       \ }
 
 function! bss#view#View(...) abort
@@ -145,6 +162,25 @@ function! bss#view#ScratchView(args = {}) abort
         \ a:args)
 endfunction
 
+function! bss#view#PromptView(prompt, Callback) abort
+  let l:view = bss#view#ScratchView({
+        \   'options': [
+        \     'buftype=prompt',
+        \     'bufhidden=wipe',
+        \   ],
+        \   'call': [
+        \     {-> prompt_setprompt(bufnr(''), a:prompt .. ': ')},
+        \     {-> prompt_setcallback(bufnr(''), {text -> [
+        \       a:Callback(text),
+        \       execute('close!')
+        \     ]})},
+        \   ],
+        \ })
+  call l:view.GoToWindow()
+  startinsert
+  return l:view
+endfunction
+
 function! bss#view#DataView(data, with_methods = v:false) abort
   let l:view = bss#view#ScratchView({
         \   'options': [
@@ -185,6 +221,12 @@ function! s:View.Extend(args) abort dict
   if has_key(a:args, 'vars')
     eval self.vars->extend(a:args.vars)
   endif
+  if has_key(a:args, 'exec')
+    eval self.exec->extend(a:args.exec)
+  endif
+  if has_key(a:args, 'call')
+    eval self.call->extend(a:args.call)
+  endif
   return self
 endfunction
 
@@ -204,6 +246,12 @@ function! s:View.Setup() abort dict
   endfor
   for [l:key, l:value] in items(self.vars)
     let b:[l:key] = l:value
+  endfor
+  for l:cmd in self.exec
+    call execute(l:cmd)
+  endfor
+  for l:Fn in self.call
+    call l:Fn()
   endfor
 endfunction
 
@@ -240,15 +288,35 @@ function! s:View.GoToWindow() abort
   return self
 endfunction
 
-function! s:View.Run(cmd) abort dict
+function! s:PrepareCommand(cmd) abort
   let l:cmd = empty(a:cmd) ? [&shell] : a:cmd
   if type(l:cmd) is v:t_string
     let l:cmd = substitute(l:cmd, "%", expand("%"), "a")
   endif
+  return l:cmd
+endfunction
+
+function! s:View.Run(cmd) abort dict
+  let l:cmd = s:PrepareCommand(a:cmd)
   let l:cursor = bss#cursor#Save()
   try
     call self.GoToWindow()
     call term_start(l:cmd, {'curwin': v:true})
+    call self.Setup()
+    let self.bufnr = bufnr('')
+    let self.winid = win_getid()
+  finally
+    call l:cursor.Restore()
+  endtry
+  return self
+endfunction
+
+function! s:View.RunAppend(cmd) abort dict
+  let l:cmd = s:PrepareCommand(a:cmd)
+  let l:cursor = bss#cursor#Save()
+  try
+    call self.GoToWindow()
+    call self.Append(systemlist(l:cmd))
     call self.Setup()
     let self.bufnr = bufnr('')
     let self.winid = win_getid()
@@ -286,6 +354,20 @@ function! s:View.Append(line_or_lines) abort
     call appendbufline(
           \ self.bufnr,
           \ line('$', self.winid),
+          \ a:line_or_lines)
+  endif
+  return self
+endfunction
+
+function! s:View.Insert(line_or_lines, lnum = v:none) abort
+  if self.CheckValid("View.Insert()")
+    let l:lnum = a:lnum
+    if l:lnum is v:none
+      let l:lnum = line('.')
+    endif
+    call appendbufline(
+          \ self.bufnr,
+          \ l:lnum,
           \ a:line_or_lines)
   endif
   return self
@@ -367,3 +449,17 @@ function! s:View.SetLines(lines) abort
   endif
   return self
 endfunction
+
+function! s:View.Move(line) abort
+  if self.CheckValid("View.Move()")
+    let l:cursor = bss#cursor#Save()
+    try
+      call self.GoToWindow()
+      call cursor(a:line, 1)
+    finally
+      call l:cursor.Restore()
+    endtry
+  endif
+  return self
+endfunction
+

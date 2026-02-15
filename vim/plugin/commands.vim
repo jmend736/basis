@@ -11,3 +11,5 @@ command! -nargs=* -complete=expression -bang PN call bss#PN(<args>)
 command! -nargs=* -complete=expression -bang PA call bss#PA(<args>, "<bang>" ==# '!')
 
 command! -nargs=* -complete=expression -bang BssTry call bss#Try({ -> <args>})
+
+command! -bang BssHg call bss#hg#Hg()
