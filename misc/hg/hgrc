@@ -1,0 +1,12 @@
+[ui]
+username = jmend
+
+[extensions]
+extdiff =
+
+[extdiff]
+cmd.vimdiff = vimdiff
+
+[alias]
+vim = vimdiff
+xl = log --graph
