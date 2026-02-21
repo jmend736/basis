@@ -26,6 +26,7 @@ syntax keyword coqStuff sum prod sft snd
 syntax keyword coqStuff length app
 syntax keyword coqStuff comparison Eq Lt Gt CompOpp
 syntax keyword coqStuff identity identity_refl ID id IDProp idProp
+syntax keyword coqStuff list nil cons length app
 
 " Coq.Init.Nat
 syntax keyword coqStuff zero one two
