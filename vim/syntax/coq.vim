@@ -112,7 +112,7 @@ syntax keyword coqTactics admit pattern
 syntax keyword coqTactics try repeat
 syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
-syntax keyword coqTactics induction destruct
+syntax keyword coqTactics induction destruct elim
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity apply rewrite
 syntax keyword coqTactics replace
