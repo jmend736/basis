@@ -40,6 +40,12 @@ syntax match coqStuff /\v(\+|\*|\-|\=\?|\<\=\?|\<\?|\?\=|\^)/
 
 syntax keyword coqStuff land lor ldiff lxor
 
+" Coq.Init.Specif
+syntax keyword coqStuff sig exist proj1_sig proj2_sig
+syntax keyword coqStuff sig2 exist2
+syntax keyword coqStuff sigT existT
+syntax keyword coqStuff sigT2 existT2
+
 " Co.Init.Peano
 syntax keyword coqStuff plus_n_O plus_O_n plus_n_Sm plus_Sn_m
 syntax keyword coqStuff mult_n_O mult_n_Sm
