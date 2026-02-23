@@ -1,5 +1,6 @@
 [ui]
 username = jmend
+editor = vim
 
 [extensions]
 extdiff =
@@ -10,3 +11,6 @@ cmd.vimdiff = vimdiff
 [alias]
 vim = vimdiff
 xl = log --graph --template '\033[31m{node|short}\033[0m | \033[33m{date|isodatesec}\033[0m | {author|user}:\n{desc|strip|firstline}\n'
+
+[merge-tools]
+vimdiff.priority = 99
