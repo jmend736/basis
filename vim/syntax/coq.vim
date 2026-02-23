@@ -68,7 +68,7 @@ syntax keyword coqStuff Printing Notations
 
 syntax keyword coqVernac Require Import From
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
-syntax keyword coqVernac SearchRewrite About
+syntax keyword coqVernac SearchRewrite About Search SearchPattern
 syntax keyword coqVernac Locate Open Scope Add Remove Test
 syntax keyword coqVernac Unset Set
 
