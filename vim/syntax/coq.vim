@@ -114,7 +114,7 @@ syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
 syntax keyword coqTactics induction destruct elim
 syntax keyword coqTactics split left right
-syntax keyword coqTactics simpl reflexivity apply rewrite
+syntax keyword coqTactics simpl reflexivity apply rewrite change
 syntax keyword coqTactics replace
 syntax keyword coqTactics unfold fold at as f_equal
 syntax keyword coqTactics revert clear rename move
