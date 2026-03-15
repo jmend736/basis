@@ -1,0 +1,3 @@
+function git-root
+    git rev-parse --show-toplevel
+end

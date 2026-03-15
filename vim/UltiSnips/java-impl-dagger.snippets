@@ -270,3 +270,27 @@ interface Builder {
 }
 endsnippet
 
+snippet implPS "impl: ProductionSubcomponent with ProducerModule"
+@ProductionSubcomponent(modules = {$2.class})
+interface ${1:Name} {
+
+	@ProductionSubcomponent.Factory
+	interface Factory {
+		$1 create();
+	}
+
+	@ProducerModule
+	interface ${2:Mod} {}
+}
+endsnippet
+
+snippet implPM "impl: ProducerModule"
+@ProducerModule
+interface ${2:Mod} {
+	@Produces
+	static Integer produceX() {
+		return 10;
+	}
+}
+endsnippet
+
