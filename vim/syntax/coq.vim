@@ -45,6 +45,7 @@ syntax keyword coqStuff sig exist proj1_sig proj2_sig
 syntax keyword coqStuff sig2 exist2
 syntax keyword coqStuff sigT existT
 syntax keyword coqStuff sigT2 existT2
+syntax keyword coqStuff sumbool left right
 
 " Co.Init.Peano
 syntax keyword coqStuff plus_n_O plus_O_n plus_n_Sm plus_Sn_m
@@ -68,7 +69,7 @@ syntax keyword coqStuff Printing Notations
 
 syntax keyword coqVernac Require Import From
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
-syntax keyword coqVernac SearchRewrite About Search SearchPattern
+syntax keyword coqVernac SearchRewrite About Search SearchPattern SearchAbout
 syntax keyword coqVernac Locate Open Scope Add Remove Test
 syntax keyword coqVernac Unset Set
 
