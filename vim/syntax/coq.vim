@@ -98,7 +98,11 @@ syntax keyword coqVernac Goal Restart Undo To
 syntax keyword coqVernac Create HintDb
 syntax keyword coqVernac Hint Resolve Rewrite Constructors
 
-syntax keyword coqLtac for
+syntax keyword coqVernac Ltac
+
+syntax keyword coqLtac for first
+syntax keyword coqLtac try repeat
+syntax match coqLtac /||/
 
 syntax keyword coqGallina forall match with return end fun fix cofix let in
 syntax keyword coqGallina exists
@@ -110,10 +114,9 @@ syntax keyword coqTactics set remember pose
 syntax keyword coqTactics assert enough specialize generalize
 syntax keyword coqTactics absurd contradiction contradict exfalso
 syntax keyword coqTactics admit pattern
-syntax keyword coqTactics try repeat
 syntax keyword coqTactics constructor symmetry
 syntax keyword coqTactics discriminate injection inversion
-syntax keyword coqTactics induction destruct elim
+syntax keyword coqTactics induction destruct elim case
 syntax keyword coqTactics split left right
 syntax keyword coqTactics simpl reflexivity apply rewrite change
 syntax keyword coqTactics replace
