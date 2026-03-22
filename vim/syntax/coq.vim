@@ -62,7 +62,7 @@ syntax keyword coqStuff Reflexive complement Irreflexive Symmetric Asymmetric
 syntax keyword coqStuff Transitive PreOrder StrictOrder PER Equivalence
 
 " Libraries
-syntax keyword coqStuff Stdlib Arith ZArith List ListNotations
+syntax keyword coqStuff Stdlib Arith ZArith List ListNotations Lia
 
 " Settings
 syntax keyword coqStuff Printing Notations
@@ -70,7 +70,7 @@ syntax keyword coqStuff Printing Notations
 syntax keyword coqVernac Require Import From
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
 syntax keyword coqVernac SearchRewrite About Search SearchPattern SearchAbout
-syntax keyword coqVernac Locate Open Scope Add Remove Test
+syntax keyword coqVernac Locate Open Close Scope Add Remove Test
 syntax keyword coqVernac Unset Set
 
 syntax keyword coqVernac Scheme Induction Sort
