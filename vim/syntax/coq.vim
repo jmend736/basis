@@ -111,7 +111,7 @@ syntax keyword coqTactics exact assumption refine
 syntax keyword coqTactics intro intros clear revert
 syntax keyword coqTactics move at top bottom before after
 syntax keyword coqTactics set remember pose
-syntax keyword coqTactics assert enough specialize generalize
+syntax keyword coqTactics assert enough specialize generalize dependent
 syntax keyword coqTactics absurd contradiction contradict exfalso
 syntax keyword coqTactics admit pattern
 syntax keyword coqTactics constructor symmetry
