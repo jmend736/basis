@@ -164,3 +164,13 @@ snippet adef
 async def ${1:main}($2):
 	${3:pass}
 endsnippet
+
+snippet withf
+with open('${1:data.json}', 'r') as f:
+	${2:data = json.load(f)}
+endsnippet
+
+snippet open
+with open('${1:data.json}', 'r') as f:
+	${2:data = json.load(f)}
+endsnippet
