@@ -131,7 +131,7 @@ syntax keyword coqTactics eintros eleft epose eremember erewrite eright
 syntax keyword coqTactics eset esimplify_eq esplit etransitivity
 syntax keyword coqTactics instantiate
 " Automation: ???
-syntax keyword coqTactics auto easy trivial info_trivial
+syntax keyword coqTactics auto easy trivial info_trivial autorewrite
 " Automation: Constructive Propositional Logic
 syntax keyword coqTactics tauto
 " Automation: Propositional Reasoning
