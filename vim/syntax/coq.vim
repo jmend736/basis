@@ -69,6 +69,7 @@ syntax keyword coqStuff Printing Notations
 
 syntax keyword coqVernac Require Import From
 syntax keyword coqVernac Show Compute Eval Check Print Existentials
+syntax keyword coqVernac Namespace
 syntax keyword coqVernac SearchRewrite About Search SearchPattern SearchAbout
 syntax keyword coqVernac Locate Open Close Scope Add Remove Test
 syntax keyword coqVernac Unset Set
@@ -85,6 +86,7 @@ syntax keyword coqVernac Definition Parameter Parameters Axiom Axioms
 syntax keyword coqVernac Let Variable Variables Hypothesis Hypotheses
 
 syntax keyword coqVernac Section End
+syntax keyword coqVernac Module Include Import Export
 syntax keyword coqVernac Implicit Types
 
 syntax keyword coqVernac Inductive CoInductive
