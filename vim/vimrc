@@ -82,6 +82,11 @@ let g:jm_vimrc.deps.JavaClassnameList      = {-> systemlist('fish -c "classpath 
 let g:jm_vimrc.deps.ClasspathJarList       = {-> systemlist('fish -c classpath')}
 "let g:jm_vimrc.deps.google_java_executable = 'google-java-format --skip-javadoc-formatting'
 let g:jm_vimrc.deps.google_java_executable = 'google-java-format'
+let g:jm_vimrc.deps.ktfmt_executable = [
+      \   'java',
+      \   '-jar',
+      \   '/Users/jmend/.classpath/ktfmt-0.62-with-dependencies.jar'
+      \ ]
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " }}}
 
@@ -196,6 +201,7 @@ call glaive#Install()
 Glaive codefmt
       \ google_java_executable=`g:jm_vimrc.deps.google_java_executable`
       \ clang_format_style='Google'
+      \ ktfmt_executable=`g:jm_vimrc.deps.ktfmt_executable`
 
 " }}} Plugins (Vundle)
 
@@ -681,10 +687,12 @@ let g:jm_vimrc.docs.commands['MakeOrSetup'] =
       \ 'Run blaze, make, or create a Makefile with included commands (using ; as separator)'
 command! -nargs=+ MakeOrSetup call s:MakeOrSetup(<q-args>)
 function! s:MakeOrSetup(cmds) abort
-  if filereadable('WORKSPACE')
-    execute 'Term blaze build' BlazeTarget()
-  elseif filereadable('Makefile')
+  if filereadable('Makefile')
     Term make
+  elseif filereadable('WORKSPACE')
+    execute 'Term blaze build' BlazeTarget()
+  elseif filereadable('gradlew')
+    Term ./gradlew test --rerun
   else
     let l:cmds = substitute(a:cmds, '%', expand('%'), 'g')
     let l:lines = split(l:cmds, ';')->map('trim(v:val)')
@@ -834,6 +842,8 @@ augroup ft_python
           \ execute "Term" g:jm_vimrc.deps.python "-m mypy --ignore-missing-imports --follow-imports=skip " expand("%")
     autocmd FileType python command! RunPythonMPL
           \ StopAllJobs | eval timer_start(0, {-> execute('RunPython')})
+    autocmd FileType python command! ReplaceRMPL
+          \ nnoremap <buffer> <localleader>r :RunPythonMPL<cr>
     autocmd FileType python nnoremap <buffer> <localleader>r
           \ :RunPython<cr>
     autocmd FileType python nnoremap <buffer> <localleader>R
@@ -873,19 +883,8 @@ augroup ft_java
     autocmd FileType java nnoremap <space>f :FormatCode<cr>
     autocmd FileType java nnoremap <space>F :set bt=nowrite <bar> FormatCode<cr>
     autocmd FileType java vnoremap <space>f :FormatLines<cr>
-    if filereadable('Makefile')
-      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :Term make<cr>
-    elseif filereadable('WORKSPACE')
-      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :execute "Term blaze run " .. join(<SID>BlazeTargets(expand("%")), " ")<cr>
-    elseif filereadable('gradlew')
-      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :Term ./gradlew test --rerun<cr>
-    else
-      autocmd FileType java nnoremap <silent> <buffer> <localleader>r
-            \ :MakeOrSetup java %<cr>
-    endif
+    autocmd FileType java nnoremap <silent> <buffer> <localleader>r
+          \ :MakeOrSetup java %<cr>
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
@@ -895,16 +894,11 @@ augroup ft_kotlin
     autocmd!
     autocmd FileType kotlin
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 shiftwidth=2 smarttab
-    if filereadable('Makefile')
-      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
-            \ :Term make<cr>
-    elseif filereadable('gradlew')
-      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
-            \ :Term ./gradlew test --rerun<cr>
-    else
-      autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
-            \ :MakeOrSetup ./gradlew run %<cr>
-    endif
+
+    autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
+          \ :MakeOrSetup
+          \   kotlinc . -include-runtime -d a.jar;
+          \   java -jar a.jar<CR>
     autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
 augroup END
@@ -1083,6 +1077,39 @@ function! s:FindImport(word) abort
     else
       call s:AddImportCpp(l:res[0])
     endif
+    return
+  endif
+
+  if &filetype ==# 'kotlin'
+    " First try the kotlin import cache
+    if (has_key(g:jm_vimrc.kotlin_import_cache, a:word))
+      call s:AddOrSelectImport(get(g:jm_vimrc.kotlin_import_cache, a:word)->mapnew({_, w -> printf('import %s', w)}))
+      return
+    endif
+
+    " Next, try the java import cache
+    if (has_key(g:jm_vimrc.java_import_cache, a:word))
+      call s:AddOrSelectImport(get(g:jm_vimrc.java_import_cache, a:word)->mapnew({_, w -> printf('import %s', w)}))
+      return
+    endif
+
+    " Next, find an import statement in the current directory
+    let l:results = printf(
+            \ '%s --nofilename --nobreak %s',
+            \ g:jm_vimrc.deps.ag,
+            \ shellescape(printf('import .+\b%s\b', a:word)))
+            \->systemlist()
+            \->sort()
+            \->uniq()
+
+    " Finally, fallback to classname list
+    if empty(l:results)
+      let l:results = g:jm_vimrc.deps.JavaClassnameList()
+            \->filter('v:val =~# a:word')
+            \->map('"import " .. v:val')
+    endif
+
+    call s:AddOrSelectImport(l:results)
     return
   endif
 
@@ -1860,6 +1887,64 @@ static org.mockito.AdditionalMatchers.and
 static org.mockito.ArgumentMatchers.assertArg
 JAVA_IMPORT_LIST_END
 
+let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
+kotlin.reflect.KClass
+kotlin.reflect.KProperty
+kotlin.reflect.KFunction
+kotlin.reflect.full.memberProperties
+kotlinx.coroutines.CoroutineScope
+kotlinx.coroutines.Dispatchers
+kotlinx.coroutines.Dispatchers.Main
+kotlinx.coroutines.Dispatchers.IO
+kotlinx.coroutines.Dispatchers.Unconfined
+kotlinx.coroutines.limitedParallelism
+kotlinx.coroutines.Job
+kotlinx.coroutines.Deferred
+kotlinx.coroutines.async
+kotlinx.coroutines.launch
+kotlinx.coroutines.runBlocking
+kotlinx.coroutines.withContext
+kotlinx.coroutines.delay
+kotlinx.coroutines.coroutineScope
+kotlinx.coroutines.flow.Flow
+kotlinx.coroutines.flow.flow
+kotlinx.coroutines.flow.StateFlow
+kotlinx.coroutines.flow.MutableStateFlow
+kotlin.concurrent.thread
+kotlin.time.Duration
+kotlin.time.Duration.Companion.days
+kotlin.time.Duration.Companion.hours
+kotlin.time.Duration.Companion.INFINITE
+kotlin.time.Duration.Companion.microseconds
+kotlin.time.Duration.Companion.milliseconds
+kotlin.time.Duration.Companion.minutes
+kotlin.time.Duration.Companion.nanoseconds
+kotlin.time.Duration.Companion.seconds
+kotlin.time.Duration.Companion.ZERO
+kotlin.time.Clock
+kotlin.time.DurationUnit
+kotlin.time.DurationUnit.NANOSECONDS
+kotlin.time.DurationUnit.MICROSECONDS
+kotlin.time.DurationUnit.MILLISECONDS
+kotlin.time.DurationUnit.SECONDS
+kotlin.time.DurationUnit.MINUTES
+kotlin.time.DurationUnit.HOURS
+kotlin.time.DurationUnit.DAYS
+kotlin.time.Instant
+kotlin.time.measureTime
+kotlin.time.measureTimedValue
+kotlin.time.TimedValue
+kotlin.time.TimeMark
+kotlin.time.TimeSource
+kotlin.time.toDuration
+kotlin.time.toDurationUnit
+kotlin.time.toJavaDuration
+kotlin.time.toJSDate
+kotlin.time.toKotlinDuration
+kotlin.time.toKotlinInstant
+kotlin.time.toTimeUnit
+KOTLIN_IMPORT_LIST_END
+
 command! AddJavaImport call AddJavaImport(getline('.'))
 function! AddJavaImport(content) abort
   let content = a:content
@@ -1891,6 +1976,9 @@ endfunction
 
 let g:jm_vimrc.java_import_cache =
       \ s:ProcessJavaImportList(g:jm_vimrc.java_import_list)
+
+let g:jm_vimrc.kotlin_import_cache =
+      \ s:ProcessJavaImportList(g:jm_vimrc.kotlin_import_list)
 
 " }}} Java Import Cache
 

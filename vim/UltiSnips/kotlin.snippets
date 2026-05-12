@@ -1,0 +1,19 @@
+snippet pl
+println($0)
+endsnippet
+
+snippet pp
+println(${1:"hello world"})
+endsnippet
+
+snippet pa
+package `!v substitute(split(expand('%:p:h'), '/java/')[-1], '/', '.', 'g')`
+endsnippet
+
+snippet for
+for (${1:x} in ${2:1..10}) $0
+endsnippet
+
+snippet dc
+data class ${1:Point}(${2:val x: Int}$3)$0
+endsnippet
