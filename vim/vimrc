@@ -342,6 +342,17 @@ let g:ycm_disable_signature_help = 1
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
+if g:jm_vimrc.is_mac
+  let g:ycm_language_server =
+      \ [
+      \   {
+      \     'name': 'kotlin-lsp',
+      \     'cmdline': ['kotlin-lsp', '--stdio'],
+      \     'filetypes': [ 'kotlin' ]
+      \   },
+      \ ]
+endif
+
 let g:slime_target = "tmux"
 
 " Will disable indent-based markdown code blocks
@@ -1885,6 +1896,22 @@ static org.mockito.ArgumentMatchers.any
 static org.mockito.Mockito.times
 static org.mockito.AdditionalMatchers.and
 static org.mockito.ArgumentMatchers.assertArg
+org.jline.reader.LineReader
+org.jline.reader.LineReaderBuilder
+org.jline.terminal.Cursor
+org.jline.terminal.KeyEvent
+org.jline.terminal.KeyParser
+org.jline.terminal.MouseEvent
+org.jline.terminal.Size
+org.jline.terminal.Terminal
+org.jline.terminal.TerminalBuilder
+org.jline.utils.AttributedCharSequence
+org.jline.utils.AttributedString
+org.jline.utils.AttributedStringBuilder
+org.jline.utils.AttributedStyle
+org.jline.utils.ColorPalette
+org.jline.utils.Colors
+org.jline.utils.InfoCmp.Capability
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
