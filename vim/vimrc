@@ -1970,6 +1970,9 @@ kotlin.time.toJSDate
 kotlin.time.toKotlinDuration
 kotlin.time.toKotlinInstant
 kotlin.time.toTimeUnit
+kotlinx.coroutines.channels.Channel
+kotlinx.coroutines.asCoroutineDispatcher
+kotlinx.coroutines.CoroutineDispatcher
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
@@ -2000,6 +2003,36 @@ function! s:ProcessJavaImportList(import_list) abort
   endfor
   return cache
 endfunction
+
+command! AddKotlinImport call AddKotlinImport(getline('.'))
+function! AddKotlinImport(content) abort
+  let content = a:content
+        \->substitute('^import ', '', '')
+        \->substitute(';$', '', '')
+  if index(g:jm_vimrc.kotlin_import_list, content) != -1
+    echom "Already present:" content
+    return
+  endif
+  let lines = readfile($MYVIMRC)
+  let index = match(lines, '^KOTLIN_IMPORT_LIST_END$')
+  call insert(lines, content, index)
+  call writefile(lines, $MYVIMRC)
+  echom "Added:" content
+endfunction
+
+function! s:ProcessKotlinImportList(import_list) abort
+  let cache = {}
+  for elem in a:import_list
+    let name = slice(elem, strridx(elem, '.') + 1)
+    if has_key(cache, name)
+      call add(cache[name], elem)
+    else
+      let cache[name] = [elem]
+    endif
+  endfor
+  return cache
+endfunction
+
 
 let g:jm_vimrc.java_import_cache =
       \ s:ProcessJavaImportList(g:jm_vimrc.java_import_list)
