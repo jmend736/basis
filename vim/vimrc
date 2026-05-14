@@ -85,7 +85,9 @@ let g:jm_vimrc.deps.google_java_executable = 'google-java-format'
 let g:jm_vimrc.deps.ktfmt_executable = [
       \   'java',
       \   '-jar',
-      \   '/Users/jmend/.classpath/ktfmt-0.62-with-dependencies.jar'
+      \   ((g:jm_vimrc.is_mac)
+      \     ? '/Users/jmend/.classpath/ktfmt-0.62-with-dependencies.jar'
+      \     : '/home/jmend/.classpath/ktfmt-0.62-with-dependencies.jar')
       \ ]
 let g:jm_vimrc.deps.buildozer   = 'fish -c buildozer'
 " }}}
@@ -495,8 +497,8 @@ let g:jm_vimrc.docs.mappings['\s'] =
 nnoremap <leader>s :call UltiSnips#RefreshSnippets()<cr>
 
 let g:jm_vimrc.docs.mappings['\<Space>'] =
-      \ 'Toggle foldcolumn'
-nnoremap <leader><space> :let &l:foldcolumn = (&l:foldcolumn) ? 0 : 3<cr>
+      \ 'Open BssHg'
+nnoremap <leader><space> :BssHg<cr>
 
 let g:jm_vimrc.docs.mappings['\a'] =
       \ 'Trigger EasyAlign (See :Wtf ea)'
@@ -912,6 +914,8 @@ augroup ft_kotlin
           \   java -jar a.jar<CR>
     autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
+    autocmd FileType kotlin nnoremap <space>f :FormatCode<cr>
+    autocmd FileType kotlin vnoremap <space>f :FormatLines<cr>
 augroup END
 
 augroup ft_jar
@@ -1973,6 +1977,8 @@ kotlin.time.toTimeUnit
 kotlinx.coroutines.channels.Channel
 kotlinx.coroutines.asCoroutineDispatcher
 kotlinx.coroutines.CoroutineDispatcher
+kotlinx.coroutines.sync.Mutex
+kotlinx.coroutines.sync.withLock
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
