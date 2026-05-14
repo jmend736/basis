@@ -147,6 +147,14 @@ function! bss#view#TermView(args = {}) abort
         \ a:args)
 endfunction
 
+function! bss#view#RunView(command) abort
+  let l:view = bss#view#TermView()
+  eval l:view
+        \.Open()
+        \.Run(a:command)
+  return l:view
+endfunction
+
 function! bss#view#ScratchView(args = {}) abort
   return bss#view#View({
         \   'options': [
@@ -193,6 +201,14 @@ function! bss#view#DataView(data, with_methods = v:false) abort
   eval l:view
         \.Open()
         \.SetLines(bss#pretty#PPLines(a:data, a:with_methods))
+  return l:view
+endfunction
+
+function! bss#view#LineView(lines) abort
+  let l:view = bss#view#ScratchView()
+  eval l:view
+        \.Open()
+        \.SetLines(a:lines)
   return l:view
 endfunction
 
@@ -317,6 +333,21 @@ function! s:View.RunAppend(cmd) abort dict
   try
     call self.GoToWindow()
     call self.Append(systemlist(l:cmd))
+    call self.Setup()
+    let self.bufnr = bufnr('')
+    let self.winid = win_getid()
+  finally
+    call l:cursor.Restore()
+  endtry
+  return self
+endfunction
+
+function! s:View.RunInsert(cmd) abort dict
+  let l:cmd = s:PrepareCommand(a:cmd)
+  let l:cursor = bss#cursor#Save()
+  try
+    call self.GoToWindow()
+    call self.Insert(systemlist(l:cmd))
     call self.Setup()
     let self.bufnr = bufnr('')
     let self.winid = win_getid()
