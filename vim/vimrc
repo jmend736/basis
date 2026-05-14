@@ -1979,6 +1979,14 @@ kotlinx.coroutines.asCoroutineDispatcher
 kotlinx.coroutines.CoroutineDispatcher
 kotlinx.coroutines.sync.Mutex
 kotlinx.coroutines.sync.withLock
+kotlin.coroutines.Continuation
+kotlin.coroutines.createCoroutine
+kotlin.coroutines.EmptyCoroutineContext
+kotlin.coroutines.CoroutineInterceptor
+kotlin.coroutines.resume
+kotlin.coroutines.resumeWithException
+kotlin.coroutines.startCoroutine
+kotlin.coroutines.suspendCoroutine
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
