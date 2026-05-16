@@ -17,3 +17,16 @@ endsnippet
 snippet dc
 data class ${1:Point}(${2:val x: Int}$3)$0
 endsnippet
+
+snippet /^main/ "main method" r
+fun main(args: Array<String>) {
+	$0
+}
+endsnippet
+
+snippet /^\s+\zsmain/ "main method" r
+@JvmStatic
+fun main(args: Array<String>) {
+	$0
+}
+endsnippet
