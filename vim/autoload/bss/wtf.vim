@@ -427,3 +427,21 @@ let s:wtf_defaults.snipc =<< END
         reset_indent()
         opt(var, default)
 END
+
+let s:wtf_defaults.kt_pkg =<< END
+  Default Imports:
+
+    kotlin.*
+    kotlin.annotations.*
+    kotlin.collections.*
+    kotlin.comparisons.*
+    kotlin.io.*
+    kotlin.ranges.*
+    kotlin.sequences.*
+    kotlin.text.*
+
+  JVM Specific:
+
+    java.lang.*
+    kotlin.jvm.*
+END

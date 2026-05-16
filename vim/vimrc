@@ -1987,6 +1987,7 @@ kotlin.coroutines.resume
 kotlin.coroutines.resumeWithException
 kotlin.coroutines.startCoroutine
 kotlin.coroutines.suspendCoroutine
+kotlinx.coroutines.job
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
