@@ -60,3 +60,15 @@ TerminalBuilder.builder().system(true).build().use { ${1:term} ->
 	${2:${VISUAL}}
 }
 endsnippet
+
+snippet disps
+data class Disps(val main: CoroutineDispatcher, val default: CoroutineDispatcher)
+
+fun withDispatchers(block: Disps.() -> Unit) {
+	Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { main ->
+		Executors.newFixedThreadPool(16).asCoroutineDispatcher().use { default ->
+			Disps(main, default).block()
+		}
+	}
+}
+endsnippet
