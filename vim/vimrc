@@ -1881,12 +1881,16 @@ kotlinx.coroutines.async
 kotlinx.coroutines.launch
 kotlinx.coroutines.runBlocking
 kotlinx.coroutines.withContext
+kotlinx.coroutines.withTimeout
+kotlinx.coroutines.withTimeoutOrNull
 kotlinx.coroutines.delay
 kotlinx.coroutines.coroutineScope
 kotlinx.coroutines.flow.Flow
 kotlinx.coroutines.flow.flow
+kotlinx.coroutines.flow.channelFlow
 kotlinx.coroutines.flow.StateFlow
 kotlinx.coroutines.flow.MutableStateFlow
+kotlinx.coroutines.flow.asFlow
 kotlin.concurrent.thread
 kotlin.time.Duration
 kotlin.time.Duration.Companion.days
@@ -1925,6 +1929,12 @@ kotlinx.coroutines.asCoroutineDispatcher
 kotlinx.coroutines.CoroutineDispatcher
 kotlinx.coroutines.sync.Mutex
 kotlinx.coroutines.sync.withLock
+kotlinx.coroutines.job
+kotlinx.coroutines.Job
+kotlinx.coroutines.Deferred
+kotlinx.coroutines.ensureActive
+kotlinx.coroutines.isActive
+kotlinx.coroutines.yield
 kotlin.coroutines.Continuation
 kotlin.coroutines.createCoroutine
 kotlin.coroutines.EmptyCoroutineContext
@@ -1933,7 +1943,6 @@ kotlin.coroutines.resume
 kotlin.coroutines.resumeWithException
 kotlin.coroutines.startCoroutine
 kotlin.coroutines.suspendCoroutine
-kotlinx.coroutines.job
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
