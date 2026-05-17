@@ -30,3 +30,33 @@ fun main(args: Array<String>) {
 	$0
 }
 endsnippet
+
+snippet exec "Single thread"
+Executors.newSingleThreadExecutor().use { ${1:executor} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet exec "Fixed thread pool (16)"
+Executors.newFixedThreadPool(16).use { ${1:executor} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet exec "Fixed thread pool (CPU)"
+Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()).use { ${1:executor} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet exec "Cached thread pool"
+Executors.newCachedThreadPool().use { ${1:executor} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet term
+TerminalBuilder.builder().system(true).build().use { ${1:term} ->
+	${2:${VISUAL}}
+}
+endsnippet
