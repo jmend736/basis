@@ -7,7 +7,7 @@ println(${1:"hello world"})
 endsnippet
 
 snippet pa
-package `!v substitute(split(expand('%:p:h'), '/java/')[-1], '/', '.', 'g')`
+package `!v substitute(split(expand('%:p:h'), '/\(java\|kotlin\)/')[-1], '/', '.', 'g')`
 endsnippet
 
 snippet for

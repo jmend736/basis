@@ -901,6 +901,10 @@ augroup ft_java
     autocmd FileType java nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
     autocmd FileType java let b:surround_99 = "{@code \r}"
+    autocmd FileType java nnoremap <silent> <buffer> gd
+          \ :YcmCompleter GoToDefinition<cr>
+    autocmd FileType java nnoremap <silent> <buffer> gD
+          \ :YcmCompleter GoToReferences<cr>
 augroup END
 
 augroup ft_kotlin
@@ -916,6 +920,10 @@ augroup ft_kotlin
           \ :Term ./gradlew run<cr>
     autocmd FileType kotlin nnoremap <space>f :FormatCode<cr>
     autocmd FileType kotlin vnoremap <space>f :FormatLines<cr>
+    autocmd FileType kotlin nnoremap <silent> <buffer> gd
+          \ :YcmCompleter GoToDefinition<cr>
+    autocmd FileType kotlin nnoremap <silent> <buffer> gD
+          \ :YcmCompleter GoToReferences<cr>
 augroup END
 
 augroup ft_jar
@@ -1862,6 +1870,8 @@ org.jline.utils.AttributedStyle
 org.jline.utils.ColorPalette
 org.jline.utils.Colors
 org.jline.utils.InfoCmp.Capability
+org.jline.builtins.Completers.TreeCompleter
+org.jline.builtins.Completers.TreeCompleter.node
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
@@ -1889,6 +1899,7 @@ kotlinx.coroutines.flow.Flow
 kotlinx.coroutines.flow.flow
 kotlinx.coroutines.flow.channelFlow
 kotlinx.coroutines.flow.StateFlow
+kotlinx.coroutines.flow.MutableSharedFlow
 kotlinx.coroutines.flow.MutableStateFlow
 kotlinx.coroutines.flow.asFlow
 kotlin.concurrent.thread
@@ -1943,6 +1954,26 @@ kotlin.coroutines.resume
 kotlin.coroutines.resumeWithException
 kotlin.coroutines.startCoroutine
 kotlin.coroutines.suspendCoroutine
+kotlinx.coroutines.flow.SharedFlow
+kotlinx.coroutines.flow.asSharedFlow
+kotlinx.coroutines.flow.runningReduce
+kotlinx.coroutines.flow.asStateFlow
+kotlinx.coroutines.flow.stateIn
+kotlinx.coroutines.flow.SharingStarted
+kotlin.test.Test
+kotlin.test.BeforeTest
+kotlin.test.AfterTest
+kotlin.test.assertEquals
+kotlin.test.assertNotEquals
+kotlin.test.assertTrue
+kotlin.test.assertFalse
+kotlin.test.assertNull
+kotlin.test.assertNotNull
+kotlin.test.assertContains
+kotlin.test.assertSame
+kotlin.test.assertFails
+kotlin.test.assertFailsWith
+kotlin.test.fail
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
