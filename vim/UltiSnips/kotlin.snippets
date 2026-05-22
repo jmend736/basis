@@ -72,3 +72,13 @@ fun withDispatchers(block: Disps.() -> Unit) {
 	}
 }
 endsnippet
+
+snippet SharedFlow
+private val _$1 = MutableSharedFlow<${2:String}>()
+val ${1:name} = _updates.asSharedFlow()
+endsnippet
+
+snippet StateFlow
+private val _$1 = MutableStateFlow<${2:String}>()
+val ${1:name} = _updates.asStateFlow()
+endsnippet
