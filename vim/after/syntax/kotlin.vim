@@ -1,0 +1,6 @@
+syntax keyword ktFunction arrayListOf arrayOf arrayOfNulls booleanArrayOf byteArrayOf charArrayOf doubleArrayOf emptyArray floatArrayOf intArrayOf longArrayOf shortArrayOf ubyteArrayOf uintArrayOf ulongArrayOf ushortArrayOf
+syntax keyword ktFunction buildList buildMap buildSet
+syntax keyword ktFunction emptyList emptyMap emptySet
+syntax keyword ktFunction hashSetOf hashMapOf listOf listOfNotNull mapOf lastIndexOf linkedMapOf linkedSetOf linkedStringMapOf linkedStringSetOf mapOf mutableListOf mutableMapOf mutableSetOf setOf setOfNotNull sortedMapOf sortedSetOf stringMapOf stringSetOf
+
+highlight link ktFunction Function
