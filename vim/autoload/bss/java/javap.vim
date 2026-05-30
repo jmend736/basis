@@ -76,7 +76,7 @@ function! bss#java#javap#Browse(name, args=[]) abort
   END
   call s:view.Extend({'bufnr': bufnr(), 'winid': win_getid()})
   call s:view.Open()
-        \.Exec('setlocal modifiable ft=java foldlevel=1 bt=nowrite nowrap')
+        \.Exec('setlocal modifiable noreadonly ft=java foldlevel=1 bt=nowrite nowrap')
         \.SetLines(l:prefix + (get(b:, 'view_help', v:false) ? l:help : []) + l:lines)
         \.Call({ -> extend(b:, {
         \   'view'         : s:view,
