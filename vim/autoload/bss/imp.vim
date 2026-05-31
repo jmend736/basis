@@ -75,7 +75,8 @@ function! bss#imp#AddImportJava(import) abort
 endfunction
 
 function! bss#imp#AddImportKotlin(import) abort
-  call bss#imp#AddImportJvm('import ' .. a:import)
+  let l:import_kotlin = substitute(a:import, '^static ', '', '')
+  call bss#imp#AddImportJvm('import ' .. l:import_kotlin)
 endfunction
 
 ""

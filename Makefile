@@ -5,7 +5,10 @@ Available Commands:
     Print this help
 
   sync:
-    Import fish, vim and tmux configurations.
+    Import vim and tmux configurations.
+
+  sync-fish:
+    Import fish configuration.
 
   install:
     Export fish, vim and tmux configurations. If these files already exist, the
@@ -35,6 +38,9 @@ help:
 sync: vim/doc/tags
 	cp ~/.vimrc vim/vimrc
 	cp ~/.tmux.conf tmux/tmux.conf
+
+.PHONY: sync-fish
+sync-fish:
 	$(FISH) fish/scripts/sync.fish
 
 .PHONY: deploy
