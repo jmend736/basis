@@ -70,14 +70,26 @@ endsnippet
 
 snippet SharedFlow
 private val _$1 = MutableSharedFlow<${2:String}>()
-val ${1:name} = _updates.asSharedFlow()
+val ${1:name} = _$1.asSharedFlow()
 endsnippet
 
 snippet StateFlow
 private val _$1 = MutableStateFlow<${2:String}>()
-val ${1:name} = _updates.asStateFlow()
+val ${1:name} = _$1.asStateFlow()
 endsnippet
 
 snippet rep
 repeat(${1:10}) {$2}
+endsnippet
+
+snippet cl
+class `!v expand('%:t:r')`
+endsnippet
+
+snippet cld
+data class ${1:`!v expand('%:t:r')`}($2)
+endsnippet
+
+snippet da
+data class ${1:`!v expand('%:t:r')`}($2)
 endsnippet
