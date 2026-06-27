@@ -344,17 +344,6 @@ let g:ycm_disable_signature_help = 1
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
-if g:jm_vimrc.is_mac
-  let g:ycm_language_server =
-      \ [
-      \   {
-      \     'name': 'kotlin-lsp',
-      \     'cmdline': ['kotlin-lsp', '--stdio'],
-      \     'filetypes': [ 'kotlin' ]
-      \   },
-      \ ]
-endif
-
 let g:slime_target = "tmux"
 
 " Will disable indent-based markdown code blocks
@@ -1873,6 +1862,11 @@ org.jline.utils.InfoCmp.Capability
 org.jline.builtins.Completers.TreeCompleter
 org.jline.builtins.Completers.TreeCompleter.node
 org.jline.utils.NonBlockingReader
+com.sun.jdi.VirtualMachine
+com.sun.jdi.VirtualMachineManager
+com.sun.jdi.event.EventSet
+com.sun.jdi.VMDisconnectedException
+org.jline.terminal.Attributes
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
@@ -1991,6 +1985,12 @@ kotlinx.coroutines.withTimeoutOrNull
 kotlinx.coroutines.yield
 kotlinx.coroutines.GlobalScope
 kotlinx.coroutines.DelicateCoroutinesApi
+kotlinx.coroutines.awaitAll
+kotlin.system.measureTimeMillis
+kotlin.system.measureNanoTime
+kotlin.annotation.AnnotationRetention.BINARY
+kotlinx.coroutines.cancelAndJoin
+kotlinx.coroutines.SupervisorJob
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
