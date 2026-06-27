@@ -1,0 +1,16 @@
+priority -1
+
+snippet all
+.PHONY: all
+all:
+	${1:echo "done"}
+endsnippet
+
+snippet kt
+.PHONY: all
+all: a.jar
+	java -cp a.jar AKt
+
+a.jar: ${1:a}.kt
+	kotlinc -include-runtime -d $@ $<
+endsnippet

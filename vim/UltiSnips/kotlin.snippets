@@ -12,6 +12,18 @@ snippet pa
 package `!v substitute(split(expand('%:p:h'), '/\(java\|kotlin\)/')[-1], '/', '.', 'g')`
 endsnippet
 
+snippet cl
+class `!v expand('%:t:r')`
+endsnippet
+
+snippet cld
+data class ${1:`!v expand('%:t:r')`}($2)
+endsnippet
+
+snippet da
+data class ${1:`!v expand('%:t:r')`}($2)
+endsnippet
+
 snippet for
 for (${1:x} in ${2:1..10}) $0
 endsnippet
@@ -24,6 +36,26 @@ snippet main "main method"
 fun main(args: Array<String>) {
 	$0
 }
+endsnippet
+
+snippet term
+TerminalBuilder.builder().system(true).build().use { ${1:term} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet SharedFlow
+private val _$1 = MutableSharedFlow<${2:String}>()
+val ${1:name} = _$1.asSharedFlow()
+endsnippet
+
+snippet StateFlow
+private val _$1 = MutableStateFlow<${2:String}>()
+val ${1:name} = _$1.asStateFlow()
+endsnippet
+
+snippet rep
+repeat(${1:10}) {$2}
 endsnippet
 
 snippet exec "Single thread"
@@ -50,8 +82,27 @@ Executors.newCachedThreadPool().use { ${1:executor} ->
 }
 endsnippet
 
-snippet term
-TerminalBuilder.builder().system(true).build().use { ${1:term} ->
+snippet disp "Single thread"
+Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ${1:dispatcher} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet disp "Fixed thread pool (16)"
+Executors.newFixedThreadPool(16).asCoroutineDispatcher().use { ${1:dispatcher} ->
+	${2:${VISUAL}}
+}
+endsnippet
+
+snippet disp "Fixed thread pool (CPU)"
+Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+		.asCoroutineDispatcher().use { ${1:dispatcher} ->
+			${2:${VISUAL}}
+		}
+endsnippet
+
+snippet disp "Cached thread pool"
+Executors.newCachedThreadPool().asCoroutineDispatcher().use { ${1:dispatcher} ->
 	${2:${VISUAL}}
 }
 endsnippet
@@ -66,30 +117,4 @@ fun withDispatchers(block: Disps.() -> Unit) {
 		}
 	}
 }
-endsnippet
-
-snippet SharedFlow
-private val _$1 = MutableSharedFlow<${2:String}>()
-val ${1:name} = _$1.asSharedFlow()
-endsnippet
-
-snippet StateFlow
-private val _$1 = MutableStateFlow<${2:String}>()
-val ${1:name} = _$1.asStateFlow()
-endsnippet
-
-snippet rep
-repeat(${1:10}) {$2}
-endsnippet
-
-snippet cl
-class `!v expand('%:t:r')`
-endsnippet
-
-snippet cld
-data class ${1:`!v expand('%:t:r')`}($2)
-endsnippet
-
-snippet da
-data class ${1:`!v expand('%:t:r')`}($2)
 endsnippet
