@@ -118,3 +118,27 @@ fun withDispatchers(block: Disps.() -> Unit) {
 	}
 }
 endsnippet
+
+snippet try "try - catch Exception"
+try {
+	${1:${VISUAL}}
+} catch (e: ${2:Exception}) {
+	${3:/* handle */}
+}
+endsnippet
+
+snippet tryc "try - catch CancellationException"
+try {
+	${1:${VISUAL}}
+} catch (e: CancellationException) {
+	${3:throw e}
+}
+endsnippet
+
+snippet tryf
+try {
+	${1:${VISUAL}}
+} finally {
+	${2:/* after */}
+}
+endsnippet

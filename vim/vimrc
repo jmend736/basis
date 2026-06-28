@@ -1867,6 +1867,7 @@ com.sun.jdi.VirtualMachineManager
 com.sun.jdi.event.EventSet
 com.sun.jdi.VMDisconnectedException
 org.jline.terminal.Attributes
+java.util.concurrent.CancellationException
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
