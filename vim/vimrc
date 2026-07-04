@@ -1875,8 +1875,10 @@ java.util.concurrent.CancellationException
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
-kotlin.concurrent.thread
+kotlin.annotation.AnnotationRetention.BINARY
+kotlin.annotation.Retention
 kotlin.concurrent.Volatile
+kotlin.concurrent.thread
 kotlin.concurrent.withLock
 kotlin.coroutines.AbstractCoroutineContextElement
 kotlin.coroutines.AbstractCoroutineContextKey
@@ -1897,6 +1899,8 @@ kotlin.reflect.KClass
 kotlin.reflect.KFunction
 kotlin.reflect.KProperty
 kotlin.reflect.full.memberProperties
+kotlin.system.measureNanoTime
+kotlin.system.measureTimeMillis
 kotlin.test.AfterTest
 kotlin.test.BeforeTest
 kotlin.test.Test
@@ -1943,16 +1947,26 @@ kotlin.time.toJavaDuration
 kotlin.time.toKotlinDuration
 kotlin.time.toKotlinInstant
 kotlin.time.toTimeUnit
+kotlinx.coroutines.CompletableJob
 kotlinx.coroutines.CoroutineDispatcher
+kotlinx.coroutines.CoroutineExceptionHandler
+kotlinx.coroutines.CoroutineName
 kotlinx.coroutines.CoroutineScope
 kotlinx.coroutines.Deferred
+kotlinx.coroutines.DelicateCoroutinesApi
 kotlinx.coroutines.Dispatchers
 kotlinx.coroutines.Dispatchers.IO
 kotlinx.coroutines.Dispatchers.Main
 kotlinx.coroutines.Dispatchers.Unconfined
+kotlinx.coroutines.ExecutorCoroutineDispatcher
+kotlinx.coroutines.GlobalScope
 kotlinx.coroutines.Job
+kotlinx.coroutines.SupervisorJob
 kotlinx.coroutines.asCoroutineDispatcher
+kotlinx.coroutines.asExecutor
 kotlinx.coroutines.async
+kotlinx.coroutines.awaitAll
+kotlinx.coroutines.cancelAndJoin
 kotlinx.coroutines.channels.Channel
 kotlinx.coroutines.coroutineScope
 kotlinx.coroutines.delay
@@ -1975,7 +1989,10 @@ kotlinx.coroutines.flow.map
 kotlinx.coroutines.flow.runningReduce
 kotlinx.coroutines.flow.shareIn
 kotlinx.coroutines.flow.stateIn
-kotlinx.coroutines.flow.stateIn
+kotlinx.coroutines.guava.asDeferred
+kotlinx.coroutines.guava.asListenableFuture
+kotlinx.coroutines.guava.await
+kotlinx.coroutines.guava.future
 kotlinx.coroutines.isActive
 kotlinx.coroutines.job
 kotlinx.coroutines.launch
@@ -1990,22 +2007,6 @@ kotlinx.coroutines.withContext
 kotlinx.coroutines.withTimeout
 kotlinx.coroutines.withTimeoutOrNull
 kotlinx.coroutines.yield
-kotlinx.coroutines.GlobalScope
-kotlinx.coroutines.DelicateCoroutinesApi
-kotlinx.coroutines.awaitAll
-kotlin.system.measureTimeMillis
-kotlin.system.measureNanoTime
-kotlin.annotation.AnnotationRetention.BINARY
-kotlinx.coroutines.cancelAndJoin
-kotlinx.coroutines.SupervisorJob
-kotlinx.coroutines.guava.asDeferred
-kotlinx.coroutines.guava.asListenableFuture
-kotlinx.coroutines.guava.await
-kotlinx.coroutines.guava.future
-kotlinx.coroutines.CompletableJob
-kotlinx.coroutines.CoroutineName
-kotlinx.coroutines.CoroutineExceptionHandler
-kotlinx.coroutines.asExecutor
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
