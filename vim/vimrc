@@ -1983,7 +1983,9 @@ kotlinx.coroutines.limitedParallelism
 kotlinx.coroutines.runBlocking
 kotlinx.coroutines.supervisorScope
 kotlinx.coroutines.sync.Mutex
+kotlinx.coroutines.sync.Semaphore
 kotlinx.coroutines.sync.withLock
+kotlinx.coroutines.sync.withPermit
 kotlinx.coroutines.withContext
 kotlinx.coroutines.withTimeout
 kotlinx.coroutines.withTimeoutOrNull
