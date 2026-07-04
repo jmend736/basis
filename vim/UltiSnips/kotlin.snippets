@@ -216,3 +216,10 @@ endsnippet
 snippet fun
 fun ${1:fname}($3): ${2:String}
 endsnippet
+
+snippet test
+@Test
+fun ${1:givenX_whenY_thenZ}() {
+	${2:assertThat(true).isFalse()}
+}
+endsnippet
