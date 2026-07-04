@@ -335,6 +335,8 @@ let g:lightline = {
 
 if !g:jm_vimrc.is_mac
   let $FZF_DEFAULT_COMMAND = 'ag -l'
+else
+  let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 endif
 
 let g:html_dynamic_folds = v:true
@@ -2003,6 +2005,14 @@ kotlinx.coroutines.sync.Mutex
 kotlinx.coroutines.sync.Semaphore
 kotlinx.coroutines.sync.withLock
 kotlinx.coroutines.sync.withPermit
+kotlinx.coroutines.test.StandardTestDispatcher
+kotlinx.coroutines.test.TestCoroutineScheduler
+kotlinx.coroutines.test.TestScope
+kotlinx.coroutines.test.advanceTimeBy
+kotlinx.coroutines.test.advanceUntilIdle
+kotlinx.coroutines.test.currentTime
+kotlinx.coroutines.test.runCurrent
+kotlinx.coroutines.test.runTest
 kotlinx.coroutines.withContext
 kotlinx.coroutines.withTimeout
 kotlinx.coroutines.withTimeoutOrNull
