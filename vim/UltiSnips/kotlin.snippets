@@ -12,12 +12,20 @@ snippet pa
 package `!v substitute(split(expand('%:p:h'), '/\(java\|kotlin\)/')[-1], '/', '.', 'g')`
 endsnippet
 
+snippet im
+import `!v substitute(split(expand('%:p:h'), '/\(java\|kotlin\)/')[-1], '/', '.', 'g')`.${1:Name}
+endsnippet
+
 snippet cl
 class `!v expand('%:t:r')`
 endsnippet
 
 snippet cld
 data class ${1:`!v expand('%:t:r')`}($2)
+endsnippet
+
+snippet ob
+object ${1:`!v expand('%:t:r')`}
 endsnippet
 
 snippet da
@@ -30,6 +38,16 @@ endsnippet
 
 snippet dc
 data class ${1:Point}(${2:val x: Int}$3)$0
+endsnippet
+
+snippet co
+companion object {
+	$1
+}
+endsnippet
+
+snippet in
+interface ${1:Example}
 endsnippet
 
 snippet main "main method"
@@ -145,4 +163,60 @@ endsnippet
 
 snippet qual
 @Qualifier @Retention annotation class ${1:Example}
+endsnippet
+
+snippet mod
+@Module
+interface ${1:Example}Module {
+	$2
+}
+endsnippet
+
+snippet md
+@Module
+interface ${1:Example}Module {
+	$2
+}
+endsnippet
+
+snippet pmod
+@ProducerModule
+object ${1:Example}ProducerModule {
+	$2
+}
+endsnippet
+
+snippet pm
+@ProducerModule
+object ${1:Example}ProducerModule {
+	$2
+}
+endsnippet
+
+snippet prov
+@Provides
+fun ${1:name}(
+	$3
+): ${2:String}
+endsnippet
+
+snippet binds
+@Binds fun ${1:name}(
+	$3
+): ${2:String}
+endsnippet
+
+snippet prod
+@Produces
+fun ${1:name}(
+	$3
+): ${2:String}
+endsnippet
+
+snippet fn
+fun ${1:fname}($3): ${2:String}
+endsnippet
+
+snippet fun
+fun ${1:fname}($3): ${2:String}
 endsnippet

@@ -1229,7 +1229,11 @@ endfunction
 
 function! s:MInsert(msg) abort
   let l:spaces = getline('.')->matchstr('^\s*')
-  call append(line('.'), printf("%simplementation '%s'", l:spaces, a:msg))
+  if &filetype ==# 'kotlin'
+    call append(line('.'), printf('%simplementation("%s")', l:spaces, a:msg))
+  else
+    call append(line('.'), printf("%simplementation '%s'", l:spaces, a:msg))
+  endif
 endfunction
 
 function! s:MDownload(msg) abort
@@ -1979,7 +1983,9 @@ kotlinx.coroutines.limitedParallelism
 kotlinx.coroutines.runBlocking
 kotlinx.coroutines.supervisorScope
 kotlinx.coroutines.sync.Mutex
+kotlinx.coroutines.sync.Semaphore
 kotlinx.coroutines.sync.withLock
+kotlinx.coroutines.sync.withPermit
 kotlinx.coroutines.withContext
 kotlinx.coroutines.withTimeout
 kotlinx.coroutines.withTimeoutOrNull
@@ -1992,6 +1998,14 @@ kotlin.system.measureNanoTime
 kotlin.annotation.AnnotationRetention.BINARY
 kotlinx.coroutines.cancelAndJoin
 kotlinx.coroutines.SupervisorJob
+kotlinx.coroutines.guava.asDeferred
+kotlinx.coroutines.guava.asListenableFuture
+kotlinx.coroutines.guava.await
+kotlinx.coroutines.guava.future
+kotlinx.coroutines.CompletableJob
+kotlinx.coroutines.CoroutineName
+kotlinx.coroutines.CoroutineExceptionHandler
+kotlinx.coroutines.asExecutor
 KOTLIN_IMPORT_LIST_END
 
 command! AddJavaImport call AddJavaImport(getline('.'))
