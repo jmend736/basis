@@ -25,22 +25,21 @@ function gradle-init
         set DSL $_flag_dsl
     end
 
-    set -l base_args \
-        --overwrite \
-        --no-incubating \
-        --no-comments \
-        --dsl $DSL \
-        --java-version $JAVA_VERSION \
-        --package $PACKAGE \
-        --project-name $PACKAGE \
-        --no-split-project \
-
     switch $argv[1]
         case kotlin java
             gradle-init _wrapper
             ./gradlew init (gradle-init args $argv[1])
             gradle-init _make
         case args
+            set -l base_args \
+                --overwrite \
+                --no-incubating \
+                --no-comments \
+                --dsl $DSL \
+                --java-version $JAVA_VERSION \
+                --package $PACKAGE \
+                --project-name $PACKAGE \
+                --no-split-project
             switch $argv[2]
                 case java
                     string collect -- $base_args \
