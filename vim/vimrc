@@ -1629,6 +1629,7 @@ com.google.common.collect.Lists
 com.google.common.collect.Streams
 com.google.common.collect.Table
 com.google.common.collect.Tables
+com.google.common.flogger.FluentLogger
 com.google.common.math.Stats
 com.google.common.math.StatsAccumulator
 com.google.common.util.concurrent.AbstractExecutionThreadService
@@ -1655,6 +1656,10 @@ com.squareup.javapoet.ParameterSpec
 com.squareup.javapoet.ParameterizedTypeName
 com.squareup.javapoet.TypeName
 com.squareup.javapoet.TypeSpec
+com.sun.jdi.VMDisconnectedException
+com.sun.jdi.VirtualMachine
+com.sun.jdi.VirtualMachineManager
+com.sun.jdi.event.EventSet
 dagger.Binds
 dagger.BindsInstance
 dagger.Component
@@ -1682,6 +1687,7 @@ dagger.producers.monitoring.ProducerMonitor
 dagger.producers.monitoring.ProducerToken
 dagger.producers.monitoring.ProductionComponentMonitor
 java.io.IOException
+java.io.OutputStream
 java.lang.reflect.AnnotatedElement
 java.lang.reflect.Executable
 java.lang.reflect.Field
@@ -1689,8 +1695,11 @@ java.lang.reflect.GenericDeclaration
 java.lang.reflect.Method
 java.lang.reflect.Modifier
 java.lang.reflect.Type
+java.net.ServerSocket
+java.net.Socket
 java.nio.file.Files
 java.nio.file.Path
+java.time.Instant
 java.util.ArrayList
 java.util.Arrays
 java.util.Collection
@@ -1703,9 +1712,11 @@ java.util.Map
 java.util.NavigableMap
 java.util.Optional
 java.util.OrderedMap
+java.util.Random
 java.util.Set
 java.util.TreeMap
 java.util.TreeSet
+java.util.concurrent.CancellationException
 java.util.concurrent.ConcurrentHashMap
 java.util.concurrent.CopyOnWriteArrayList
 java.util.concurrent.ExecutionException
@@ -1715,8 +1726,11 @@ java.util.concurrent.Executors
 java.util.concurrent.Future
 java.util.concurrent.ThreadPoolExecutor
 java.util.concurrent.TimeUnit
+java.util.concurrent.atomic.AtomicBoolean
 java.util.concurrent.atomic.AtomicInteger
 java.util.concurrent.atomic.AtomicLong
+java.util.concurrent.atomic.AtomicMarkableReference
+java.util.concurrent.atomic.AtomicReference
 java.util.concurrent.atomic.LongAdder
 java.util.function.Consumer
 java.util.function.Function
@@ -1751,6 +1765,26 @@ javax.lang.model.element.TypeElement
 javax.lang.model.type.TypeMirror
 org.apache.commons.lang3.builder.ReflectionToStringBuilder
 org.apache.commons.lang3.builder.ToStringStyle
+org.jline.builtins.Completers.TreeCompleter
+org.jline.builtins.Completers.TreeCompleter.node
+org.jline.reader.LineReader
+org.jline.reader.LineReaderBuilder
+org.jline.terminal.Attributes
+org.jline.terminal.Cursor
+org.jline.terminal.KeyEvent
+org.jline.terminal.KeyParser
+org.jline.terminal.MouseEvent
+org.jline.terminal.Size
+org.jline.terminal.Terminal
+org.jline.terminal.TerminalBuilder
+org.jline.utils.AttributedCharSequence
+org.jline.utils.AttributedString
+org.jline.utils.AttributedStringBuilder
+org.jline.utils.AttributedStyle
+org.jline.utils.ColorPalette
+org.jline.utils.Colors
+org.jline.utils.InfoCmp.Capability
+org.jline.utils.NonBlockingReader
 org.objectweb.asm.ClassReader
 org.objectweb.asm.ClassVisitor
 org.objectweb.asm.ClassWriter
@@ -1791,10 +1825,14 @@ org.openjdk.jmh.runner.options.CommandLineOptionException
 org.openjdk.jmh.runner.options.CommandLineOptions
 org.openjdk.jmh.runner.options.Options
 org.openjdk.jmh.runner.options.OptionsBuilder
+static com.google.common.base.Preconditions.checkArgument
+static com.google.common.base.Preconditions.checkNotNull
 static com.google.common.collect.ImmutableList.toImmutableList
 static com.google.common.collect.ImmutableSet.toImmutableSet
 static com.google.common.truth.Truth.assertThat
 static com.google.common.truth.Truth.assertWithMessage
+static com.google.common.util.concurrent.Futures.immediateFuture
+static com.google.common.util.concurrent.Futures.immediateVoidFuture
 static com.google.common.util.concurrent.MoreExecutors.directExecutor
 static java.util.concurrent.TimeUnit.DAYS
 static java.util.concurrent.TimeUnit.HOURS
@@ -1831,49 +1869,12 @@ static java.util.stream.Collectors.toSet
 static java.util.stream.Collectors.toUnmodifiableList
 static java.util.stream.Collectors.toUnmodifiableMap
 static java.util.stream.Collectors.toUnmodifiableSet
-java.net.ServerSocket
-java.net.Socket
-java.io.OutputStream
-com.google.common.flogger.FluentLogger
-static com.google.common.util.concurrent.Futures.immediateFuture
-java.util.concurrent.atomic.AtomicReference
-static com.google.common.util.concurrent.Futures.immediateVoidFuture
-java.util.concurrent.atomic.AtomicMarkableReference
-java.util.Random
-java.time.Instant
-static com.google.common.base.Preconditions.checkArgument
-static com.google.common.base.Preconditions.checkNotNull
-static org.mockito.Mockito.mock
-static org.mockito.Mockito.verify
-static org.mockito.ArgumentMatchers.any
-static org.mockito.Mockito.times
 static org.mockito.AdditionalMatchers.and
+static org.mockito.ArgumentMatchers.any
 static org.mockito.ArgumentMatchers.assertArg
-org.jline.reader.LineReader
-org.jline.reader.LineReaderBuilder
-org.jline.terminal.Cursor
-org.jline.terminal.KeyEvent
-org.jline.terminal.KeyParser
-org.jline.terminal.MouseEvent
-org.jline.terminal.Size
-org.jline.terminal.Terminal
-org.jline.terminal.TerminalBuilder
-org.jline.utils.AttributedCharSequence
-org.jline.utils.AttributedString
-org.jline.utils.AttributedStringBuilder
-org.jline.utils.AttributedStyle
-org.jline.utils.ColorPalette
-org.jline.utils.Colors
-org.jline.utils.InfoCmp.Capability
-org.jline.builtins.Completers.TreeCompleter
-org.jline.builtins.Completers.TreeCompleter.node
-org.jline.utils.NonBlockingReader
-com.sun.jdi.VirtualMachine
-com.sun.jdi.VirtualMachineManager
-com.sun.jdi.event.EventSet
-com.sun.jdi.VMDisconnectedException
-org.jline.terminal.Attributes
-java.util.concurrent.CancellationException
+static org.mockito.Mockito.mock
+static org.mockito.Mockito.times
+static org.mockito.Mockito.verify
 JAVA_IMPORT_LIST_END
 
 let g:jm_vimrc.kotlin_import_list =<< KOTLIN_IMPORT_LIST_END
@@ -1961,8 +1962,10 @@ kotlinx.coroutines.Dispatchers.IO
 kotlinx.coroutines.Dispatchers.Main
 kotlinx.coroutines.Dispatchers.Unconfined
 kotlinx.coroutines.ExecutorCoroutineDispatcher
+kotlinx.coroutines.ExperimentalCoroutinesApi
 kotlinx.coroutines.GlobalScope
 kotlinx.coroutines.Job
+kotlinx.coroutines.NonCancellable
 kotlinx.coroutines.SupervisorJob
 kotlinx.coroutines.asCoroutineDispatcher
 kotlinx.coroutines.asExecutor
