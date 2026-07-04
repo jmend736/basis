@@ -196,23 +196,18 @@ endsnippet
 snippet prov
 @JvmStatic
 @Provides
-fun ${1:name}(
-	$3
-): ${2:String}
+fun ${1:name}($3): ${2:String}
 endsnippet
 
 snippet binds
-@Binds fun ${1:name}(
-	$3
-): ${2:String}
+@Binds
+fun ${1:name}($3): ${2:String}
 endsnippet
 
 snippet prod
 @JvmStatic
 @Produces
-fun ${1:name}(
-	$3
-): ${2:String}
+fun ${1:name}($3): ${2:String}
 endsnippet
 
 snippet fn
