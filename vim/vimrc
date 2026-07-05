@@ -2010,6 +2010,7 @@ kotlinx.coroutines.flow.asFlow
 kotlinx.coroutines.flow.asSharedFlow
 kotlinx.coroutines.flow.asStateFlow
 kotlinx.coroutines.flow.channelFlow
+kotlinx.coroutines.flow.emptyFlow
 kotlinx.coroutines.flow.flow
 kotlinx.coroutines.flow.flowOf
 kotlinx.coroutines.flow.flowOn
