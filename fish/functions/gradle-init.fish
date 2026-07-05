@@ -27,8 +27,12 @@ function gradle-init
 
     switch $argv[1]
         case kotlin java
-            gradle-init _wrapper
-            ./gradlew init (gradle-init args $argv[1])
+            if test (gradle-init _gradle_major_version) -eq 4
+                gradle wrapper --gradle-version=$GRADLE_VERSION
+                ./gradlew init (gradle-init args $argv[1])
+            else
+                gradle init (gradle-init args $argv[1])
+            end
             gradle-init _make
         case args
             set -l base_args \
@@ -52,15 +56,15 @@ function gradle-init
                 case '*'
                     echo "Invalid type"
             end
-        case _wrapper
-            gradle wrapper --gradle-version=$GRADLE_VERSION
+        case _gradle_major_version
+            gradle --version | string match -r -g 'Gradle (\d+)\.\d+\.\d+'
         case _make
             begin
-                echo -e ".PHONY: all"
+                echo -e ".PHONY: all run test"
                 echo -e "all: run"
                 echo -e ""
                 echo -e "run:"
-                echo -e "\t./gradlew run"
+                echo -e "\t./gradlew run --console=plain"
                 echo -e ""
                 echo -e "test:"
                 echo -e "\t./gradlew --rerun-tasks test"
