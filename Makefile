@@ -29,6 +29,7 @@ dep = $(or $(shell which $(1)),$(error Missing required dependency: $(1)))
 
 FISH = $(call dep, fish)
 VIM = $(call dep, vim)
+GIT = $(call dep, git)
 
 .PHONY: help
 help:
@@ -39,12 +40,17 @@ sync: vim/doc/tags
 	cp ~/.vimrc vim/vimrc
 	cp ~/.tmux.conf tmux/tmux.conf
 
+.PHONY: check-sync
+check-sync:
+	$(GIT) diff vim/vimrc ~/.vimrc
+	$(GIT) diff tmux/tmux.conf ~/.tmux.conf
+
 .PHONY: sync-fish
 sync-fish:
 	$(FISH) fish/scripts/sync.fish
 
 .PHONY: deploy
-deploy:
+deploy: check-sync
 	git pull
 	git add .
 	git commit -m sync

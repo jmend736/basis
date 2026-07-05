@@ -1962,6 +1962,7 @@ kotlin.time.toJavaDuration
 kotlin.time.toKotlinDuration
 kotlin.time.toKotlinInstant
 kotlin.time.toTimeUnit
+kotlinx.coroutines.CompletableDeferred
 kotlinx.coroutines.CompletableJob
 kotlinx.coroutines.CoroutineDispatcher
 kotlinx.coroutines.CoroutineExceptionHandler
