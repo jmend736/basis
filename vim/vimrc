@@ -1350,11 +1350,17 @@ endfunction
 
 " :Touch {path}...
 "   Like `$ touch`, but also create directories if necessary
+"
+" :Touch
+"   Touches the file of the current buffer
 " {{{
 let g:jm_vimrc.docs.commands['Touch'] =
       \ 'Create files and directories'
 command! -nargs=* Touch call s:Touch([<f-args>])
 function! s:Touch(paths) abort
+  if empty(a:paths)
+    return s:Touch([expand('%:p')])
+  endif
   for l:path in a:paths
     let l:dir = fnamemodify(l:path, ':h')
     if l:dir !=# '.' && !isdirectory(l:dir)
@@ -1595,6 +1601,12 @@ function! s:FindOrMakeJavaTest() abort
     let l:name .= 'Test'
   elseif l:path =~# ".*/javatests/.*" && l:name =~# ".*Test$"
     let l:path = substitute(l:path, "/javatests/", "/java/", "")
+    let l:name = l:name[:-5]
+  elseif l:path =~# ".*/src/main/kotlin/.*"
+    let l:path = substitute(l:path, "src/main/kotlin", "src/test/kotlin", "")
+    let l:name .= 'Test'
+  elseif l:path =~# ".*/src/test/kotlin/.*" && l:name =~# ".*Test$"
+    let l:path = substitute(l:path, "src/test/kotlin", "src/main/kotlin", "")
     let l:name = l:name[:-5]
   endif
   execute 'edit' $"{l:path}/{l:name}.{l:extn}"
