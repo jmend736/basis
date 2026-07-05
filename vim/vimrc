@@ -2011,6 +2011,8 @@ kotlinx.coroutines.flow.asSharedFlow
 kotlinx.coroutines.flow.asStateFlow
 kotlinx.coroutines.flow.channelFlow
 kotlinx.coroutines.flow.flow
+kotlinx.coroutines.flow.flowOf
+kotlinx.coroutines.flow.flowOn
 kotlinx.coroutines.flow.map
 kotlinx.coroutines.flow.runningReduce
 kotlinx.coroutines.flow.shareIn

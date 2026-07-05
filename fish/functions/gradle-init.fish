@@ -26,6 +26,8 @@ function gradle-init
     end
 
     switch $argv[1]
+        case ''
+            gradle-init kotlin
         case kotlin java
             if test (gradle-init _gradle_major_version) -eq 4
                 gradle wrapper --gradle-version=$GRADLE_VERSION
