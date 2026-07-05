@@ -1955,6 +1955,11 @@ kotlinx.coroutines.CoroutineDispatcher
 kotlinx.coroutines.CoroutineExceptionHandler
 kotlinx.coroutines.CoroutineName
 kotlinx.coroutines.CoroutineScope
+kotlinx.coroutines.CoroutineStart
+kotlinx.coroutines.CoroutineStart.ATOMIC
+kotlinx.coroutines.CoroutineStart.DEFAULT
+kotlinx.coroutines.CoroutineStart.LAZY
+kotlinx.coroutines.CoroutineStart.UNDISPATCHED
 kotlinx.coroutines.Deferred
 kotlinx.coroutines.DelicateCoroutinesApi
 kotlinx.coroutines.Dispatchers
@@ -1973,6 +1978,9 @@ kotlinx.coroutines.async
 kotlinx.coroutines.awaitAll
 kotlinx.coroutines.cancelAndJoin
 kotlinx.coroutines.channels.Channel
+kotlinx.coroutines.channels.ReceiveChannel
+kotlinx.coroutines.channels.SendChannel
+kotlinx.coroutines.channels.produce
 kotlinx.coroutines.coroutineScope
 kotlinx.coroutines.delay
 kotlinx.coroutines.ensureActive
@@ -2022,37 +2030,16 @@ kotlinx.coroutines.withTimeoutOrNull
 kotlinx.coroutines.yield
 KOTLIN_IMPORT_LIST_END
 
-command! AddJavaImport call AddJavaImport(getline('.'))
-function! AddJavaImport(content) abort
-  let content = a:content
-        \->substitute('^import ', '', '')
-        \->substitute(';$', '', '')
-  if index(g:jm_vimrc.java_import_list, content) != -1
-    echom "Already present:" content
-    return
-  endif
-  let lines = readfile($MYVIMRC)
-  let index = match(lines, '^JAVA_IMPORT_LIST_END$')
-  call insert(lines, content, index)
-  call writefile(lines, $MYVIMRC)
-  echom "Added:" content
-endfunction
-
-command! AddKotlinImport call AddKotlinImport(getline('.'))
-function! AddKotlinImport(content) abort
-  let content = a:content
-        \->substitute('^import ', '', '')
-        \->substitute(';$', '', '')
-  if index(g:jm_vimrc.kotlin_import_list, content) != -1
-    echom "Already present:" content
-    return
-  endif
-  let lines = readfile($MYVIMRC)
-  let index = match(lines, '^KOTLIN_IMPORT_LIST_END$')
-  call insert(lines, content, index)
-  call writefile(lines, $MYVIMRC)
-  echom "Added:" content
-endfunction
+""
+" Sets up the AddJavaImport and AddKotlinImport commands.
+"
+" These need to be defined in a separate file since they reload the vimrc.
+" Otherwise, an error is thrown due to redefinition of an executing function.
+"
+call bss#imp#SetupCommands({
+      \   'AddJavaImport': 'JAVA_IMPORT_LIST_END',
+      \   'AddKotlinImport': 'KOTLIN_IMPORT_LIST_END',
+      \ })
 
 let g:jm_vimrc.java_import_cache =
       \ bss#imp#BuildJvmImportCache(g:jm_vimrc.java_import_list)

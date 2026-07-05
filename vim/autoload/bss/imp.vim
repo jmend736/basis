@@ -117,3 +117,52 @@ function! bss#imp#AddImportCpp(import) abort
     echom "Already Present: " .. a:import
   endif
 endfunction
+
+""
+" Sets up AddJavaImport and AddKotlinImport
+"
+function! bss#imp#SetupCommands(command_to_endmarker) abort
+  for [command, endmarker] in items(a:command_to_endmarker)
+    execute $'command! {command} call bss#imp#InsertSortedJvm(getline("."), "{endmarker}")'
+  endfor
+endfunction
+
+""
+" Inserts a JVM (kotlin or java) import statement into an import list
+"
+function! bss#imp#InsertSortedJvm(content, endmarker) abort
+  let l:content = a:content
+        \->substitute('^import ', '', '')
+        \->substitute(';$', '', '')
+  call bss#imp#InsertSorted(l:content, a:endmarker)
+endfunction
+
+""
+" Insert an import into an endmarker variable.
+"
+" let list =<< END_MARKER
+" hello
+" world
+" END_MARKER
+"
+function! bss#imp#InsertSorted(content, endmarker) abort
+  let lines = readfile($MYVIMRC)
+  let start_index = match(lines, $'{a:endmarker}$')
+  let end_index = match(lines, $'^{a:endmarker}$')
+  let lines_before = lines->slice(0, start_index + 1)
+  let lines_after = lines->slice(end_index)
+
+  let values = slice(lines, start_index + 1, end_index)
+
+  if index(values, a:content) != -1
+    echom "Already present:" a:content
+    return
+  endif
+
+  eval values->add(a:content)->sort()
+
+  let new_lines = lines_before + values + lines_after
+  call writefile(new_lines, $MYVIMRC)
+  echom "Added:" a:content
+  source $MYVIMRC
+endfunction
