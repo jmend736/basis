@@ -1609,11 +1609,11 @@ call bss#wtf#AddDict(['mappings', 'm'], g:jm_vimrc.docs.mappings)
 call bss#wtf#AddDict(['commands', 'c'], g:jm_vimrc.docs.commands)
 " }}} Notes
 
-" Defines the import cache used for Java import search, if an attempt to
+" Java/Kotlin Import Cache: {{{
+"
+" Defines the import cache used for Java/Kotlin import search, if an attempt to
 " resolve the import for a key in this map, the value specified will be
 " imported before trying any other method to find the import.
-" TODO: Switch to a flat list
-" Java Import Cache: {{{
 let g:jm_vimrc.java_import_list =<< JAVA_IMPORT_LIST_END
 com.google.auto.common.AnnotationMirrors
 com.google.auto.common.AnnotationValues
@@ -2046,9 +2046,7 @@ let g:jm_vimrc.java_import_cache =
 
 let g:jm_vimrc.kotlin_import_cache =
       \ bss#imp#BuildJvmImportCache(g:jm_vimrc.kotlin_import_list)
-
-" }}} Java Import Cache
-
+" }}} Java Kotlin Import Cache
 
 " C++ Import Cache: {{{
 let g:jm_vimrc.cc_import_cache = bss#imp#BuildCppImportCache({
