@@ -163,6 +163,6 @@ function! bss#imp#InsertSorted(content, endmarker) abort
 
   let new_lines = lines_before + values + lines_after
   call writefile(new_lines, $MYVIMRC)
-  echom "Added:" a:content
   source $MYVIMRC
+  echom "Added:" a:content
 endfunction
