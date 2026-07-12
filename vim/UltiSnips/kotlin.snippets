@@ -241,6 +241,20 @@ fun ${1:givenX_whenY_thenZ}() {
 }
 endsnippet
 
+snippet before
+@BeforeTest
+fun setUp() {
+	${1:/* setup code */}
+}
+endsnippet
+
+snippet after
+@AfterTest
+fun tearDown() {
+	${1:/* teardown code */}
+}
+endsnippet
+
 snippet kd
 /**
  * ${1:Documentation.}
@@ -251,4 +265,32 @@ snippet **
 /**
  * ${1:Documentation.}
  */
+endsnippet
+
+snippet @ "@property class"
+@property ${1:name} ${2:description}
+endsnippet
+
+snippet @ "@param name"
+@param ${1:name} ${2:description}
+endsnippet
+
+snippet @ "@return"
+@return ${1:description}
+endsnippet
+
+snippet @ "@receiver class"
+@receiver ${1:class} ${2:description}
+endsnippet
+
+snippet @ "@constructor (documents primary constructor)"
+@constructor ${2:description}
+endsnippet
+
+snippet @ "@throws class"
+@throws ${1:class} ${2:description}
+endsnippet
+
+snippet @ "@sample qualified.name"
+@sample ${2:qualified.name}
 endsnippet

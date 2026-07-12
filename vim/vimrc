@@ -666,27 +666,6 @@ command! ToggleFoldOpenSearch
       \   echo "DISABLED foldopen search" |
       \ endif
 
-let g:jm_vimrc.docs.commands['SetupMath'] =
-      \ 'Set up abbreviations for math symbols'
-command! SetupMath
-      \ execute 'iabbrev <buffer> nn ∩' |
-      \ execute 'iabbrev <buffer> uu ∪' |
-      \ execute 'iabbrev <buffer> in ∈' |
-      \ execute 'iabbrev <buffer> ni ∉' |
-      \ execute 'iabbrev <buffer> ss ⊂' |
-      \ execute 'iabbrev <buffer> se ⊆' |
-      \ execute 'iabbrev <buffer> ns ⊄' |
-      \ execute 'iabbrev <buffer> AN ∧' |
-      \ execute 'iabbrev <buffer> OR ∨' |
-      \ execute 'iabbrev <buffer> es ∅' |
-      \ execute 'iabbrev <buffer> => ⇒' |
-      \ execute 'iabbrev <buffer> == ⇔' |
-      \ execute 'iabbrev <buffer> != ≠' |
-      \ execute 'iabbrev <buffer> co ∘' |
-      \ execute 'iabbrev <buffer> FA ∀' |
-      \ execute 'iabbrev <buffer> TE ∃' |
-      \ execute 'iabbrev <buffer> \|> ↦'
-
 let g:jm_vimrc.docs.commands['PyHelp'] =
       \ 'Look-up help for python expression (: PyHelp <pkg> <cls>)'
 command! -nargs=+ -bang PyHelp
@@ -759,6 +738,14 @@ function! s:SetupOcamlformat() abort
   if !filereadable('.ocamlformat')
     call writefile(['profile = default'], '.ocamlformat')
   endif
+endfunction
+
+let g:jm_vimrc.docs.commands['Make'] =
+      \ 'Run make on :Term'
+command! -nargs=* -complete=customlist,MakeComplete Make :Term make <args>
+function! MakeComplete(arg, cmd, cur) abort
+  return systemlist('fish -c ''make -qp | string match -r -g "^(\w+):"''')
+        \->filter('v:val =~# a:arg')
 endfunction
 
 " The Silver Searcher
