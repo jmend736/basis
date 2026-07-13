@@ -86,7 +86,7 @@ endfunction
 " semicolon.
 "
 function! bss#imp#AddImportJvm(import) abort
-    let l:result = search(a:import .. '$', 'nw')
+    let l:result = search('\C' .. a:import .. '$', 'nw')
     if l:result == 0
       let l:start = search('^import', 'nw')
       if l:start == 0
