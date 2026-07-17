@@ -17,7 +17,7 @@ import `!v substitute(split(expand('%:p:h'), '/\(java\|kotlin\)/')[-1], '/', '.'
 endsnippet
 
 snippet cl
-class `!v expand('%:t:r')`
+class ${1:`!v expand('%:t:r')`}
 endsnippet
 
 snippet cld
@@ -38,6 +38,14 @@ endsnippet
 
 snippet dc
 data class ${1:Point}(${2:val x: Int}$3)$0
+endsnippet
+
+snippet fi
+fun interface ${1:`!v expand('%:t:r')`}
+endsnippet
+
+snippet ta
+typealias ${1:`!v expand('%:t:r')`} = ${2:Int}
 endsnippet
 
 snippet co
