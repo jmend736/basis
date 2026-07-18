@@ -1089,7 +1089,7 @@ function! s:FindImport(word) abort
     let l:results = printf(
             \ '%s --nofilename --nobreak %s',
             \ g:jm_vimrc.deps.ag,
-            \ shellescape(printf('import .+\b%s\b', a:word)))
+            \ shellescape(printf('import (\w|\.)+\b%s\b', a:word)))
             \->systemlist()
             \->sort()
             \->uniq()
@@ -2016,6 +2016,7 @@ kotlinx.coroutines.flow.asStateFlow
 kotlinx.coroutines.flow.catch
 kotlinx.coroutines.flow.channelFlow
 kotlinx.coroutines.flow.emptyFlow
+kotlinx.coroutines.flow.first
 kotlinx.coroutines.flow.flow
 kotlinx.coroutines.flow.flowOf
 kotlinx.coroutines.flow.flowOn
