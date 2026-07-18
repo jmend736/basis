@@ -13,3 +13,6 @@ command! -nargs=* -complete=expression -bang PA call bss#PA(<args>, "<bang>" ==#
 command! -nargs=* -complete=expression -bang BssTry call bss#Try({ -> <args>})
 
 command! -bang BssHg call bss#hg#Hg()
+
+command! Scriptnames call bss#EditScript()
+command! ScriptNames call bss#EditScript()

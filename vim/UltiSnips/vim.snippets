@@ -115,3 +115,27 @@ elseif $2
 	$0
 endif
 endsnippet
+
+snippet redir "var"
+redir => ${1:var}
+	${2:scriptnames}
+redir END
+endsnippet
+
+snippet redir "register"
+redir >> ${1:@a}
+	${2:scriptnames}
+redir END
+endsnippet
+
+snippet redir "file (write)"
+redir > ${1:file}
+	${2:scriptnames}
+redir END
+endsnippet
+
+snippet redir "file (append)"
+redir >> ${1:file}
+	${2:scriptnames}
+redir END
+endsnippet

@@ -420,3 +420,39 @@ function! bss#DumpStack(msg = '<bss#DumpStack>') abort
     call bss#DumpCurrentException(v:true, 1)
   endtry
 endfunction
+
+" Vim Helpers
+" ======================================================================
+
+function! bss#ScriptNames() abort
+  let l:output = ''
+  redir => l:output
+    silent scriptnames
+  redir END
+  let l:items = l:output
+        \->split('\n')
+        \->map({ _, v -> trim(v, ' ,') })
+        \->map({ _, v -> split(v, ': ') })
+  let l:dict = {}
+  for [l:index, l:value] in l:items
+    let l:dict[l:index] = l:value
+  endfor
+  return l:dict
+endfunction
+
+function! bss#EditScript() abort
+  let l:values = bss#ScriptNames()->values()
+  call bss#Fzf(l:values, { v ->
+        \   execute($'edit {v}')
+        \ })
+endfunction
+
+" Plugin Helpers
+" ======================================================================
+
+function! bss#Fzf(choices, Consumer = { v -> bss#PP(v) }) abort
+  call fzf#run(fzf#wrap({
+        \   'source': a:choices,
+        \   'sink': a:Consumer
+        \ }))
+endfunction
