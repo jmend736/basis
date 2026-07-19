@@ -2025,7 +2025,11 @@ kotlinx.coroutines.flow.flow
 kotlinx.coroutines.flow.flowOf
 kotlinx.coroutines.flow.flowOn
 kotlinx.coroutines.flow.map
+kotlinx.coroutines.flow.onCompletion
 kotlinx.coroutines.flow.onEach
+kotlinx.coroutines.flow.onEmpty
+kotlinx.coroutines.flow.onStart
+kotlinx.coroutines.flow.onSubscription
 kotlinx.coroutines.flow.retry
 kotlinx.coroutines.flow.retryWhen
 kotlinx.coroutines.flow.runningReduce
@@ -2035,6 +2039,7 @@ kotlinx.coroutines.flow.take
 kotlinx.coroutines.flow.takeWhile
 kotlinx.coroutines.flow.toList
 kotlinx.coroutines.flow.transformWhile
+kotlinx.coroutines.flow.update
 kotlinx.coroutines.guava.asDeferred
 kotlinx.coroutines.guava.asListenableFuture
 kotlinx.coroutines.guava.await
