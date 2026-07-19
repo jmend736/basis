@@ -1,0 +1,50 @@
+/*
+ * Build with:
+ *
+ *  pandoc input.md \
+ *    --from gfm \
+ *    --to html5 \
+ *    --standalone \
+ *    --embed-resources \
+ *    --css markdown.css \
+ *    --output output.html
+ */
+
+body {
+  max-width: 72ch;
+  font-family: monospace;
+  font-size: 14pt;
+  margin: auto;
+}
+
+:not(pre) > code {
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+  /* Don't break lines. */
+  white-space: nowrap;
+}
+
+pre {
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+h1 { color: #d75f5f; }
+h2 { color: #87afaf; }
+h3 { color: #afaf00; }
+h4 { color: #ffaf00; }
+h5 { color: #ffaf00; }
+h6 { color: #ffaf00; }
+
+h1::before { color: #ff8700; content: "# "; }
+h2::before { color: #ff8700; content: "## "; }
+h3::before { color: #ff8700; content: "### "; }
+h4::before { color: #ff8700; content: "#### "; }
+h5::before { color: #ff8700; content: "##### "; }
+h6::before { color: #ff8700; content: "###### "; }
