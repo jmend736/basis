@@ -2019,11 +2019,13 @@ kotlinx.coroutines.flow.channelFlow
 kotlinx.coroutines.flow.drop
 kotlinx.coroutines.flow.dropWhile
 kotlinx.coroutines.flow.emptyFlow
+kotlinx.coroutines.flow.filter
 kotlinx.coroutines.flow.first
 kotlinx.coroutines.flow.flow
 kotlinx.coroutines.flow.flowOf
 kotlinx.coroutines.flow.flowOn
 kotlinx.coroutines.flow.map
+kotlinx.coroutines.flow.onEach
 kotlinx.coroutines.flow.retry
 kotlinx.coroutines.flow.retryWhen
 kotlinx.coroutines.flow.runningReduce
