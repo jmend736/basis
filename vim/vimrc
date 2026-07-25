@@ -1044,6 +1044,13 @@ augroup ft_coq
     endif
 augroup END
 
+" Restore view when switching buffers
+augroup cfg_bufview
+  autocmd!
+  autocmd BufLeave * let b:winview = winsaveview()
+  autocmd BufEnter * if exists('b:winview') | call winrestview(b:winview) | endif
+augroup END
+
 " Use quickfix window when using :make
 augroup cfg_quickfix_fix
     autocmd QuickFixCmdPost [^l]* nested cwindow
