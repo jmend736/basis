@@ -1925,6 +1925,9 @@ kotlin.reflect.KClass
 kotlin.reflect.KFunction
 kotlin.reflect.KProperty
 kotlin.reflect.full.memberProperties
+kotlin.streams.asSequence
+kotlin.streams.asStream
+kotlin.streams.toList
 kotlin.system.measureNanoTime
 kotlin.system.measureTimeMillis
 kotlin.test.AfterTest
