@@ -1747,6 +1747,8 @@ java.util.function.Consumer
 java.util.function.Function
 java.util.function.Predicate
 java.util.function.Supplier
+java.util.jar.JarEntry
+java.util.jar.JarFile
 java.util.stream.Collector
 java.util.stream.Collectors
 java.util.stream.Stream
