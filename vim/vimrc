@@ -1658,6 +1658,8 @@ com.google.common.util.concurrent.ListeningScheduledExecutorService
 com.google.common.util.concurrent.MoreExecutors
 com.google.common.util.concurrent.SettableFuture
 com.google.common.util.concurrent.Uninterruptibles
+com.google.gson.Gson
+com.google.gson.annotations.SerializedName
 com.squareup.javapoet.ClassName
 com.squareup.javapoet.CodeBlock
 com.squareup.javapoet.FieldSpec
@@ -1813,7 +1815,14 @@ org.objectweb.asm.ClassWriter
 org.objectweb.asm.FieldVisitor
 org.objectweb.asm.MethodVisitor
 org.objectweb.asm.Opcodes
+org.objectweb.asm.Type
 org.objectweb.asm.TypePath
+org.objectweb.asm.tree.ClassNode
+org.objectweb.asm.tree.FieldNode
+org.objectweb.asm.tree.InsnList
+org.objectweb.asm.tree.InsnNode
+org.objectweb.asm.tree.MethodNode
+org.objectweb.asm.tree.ParameterNode
 org.openjdk.jmh.annotations.AuxCounters
 org.openjdk.jmh.annotations.Benchmark
 org.openjdk.jmh.annotations.BenchmarkMode
