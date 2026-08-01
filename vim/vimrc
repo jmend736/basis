@@ -1699,6 +1699,7 @@ dagger.producers.ProductionSubcomponent
 dagger.producers.monitoring.ProducerMonitor
 dagger.producers.monitoring.ProducerToken
 dagger.producers.monitoring.ProductionComponentMonitor
+java.io.File
 java.io.IOException
 java.io.OutputStream
 java.lang.reflect.AnnotatedElement
@@ -1821,6 +1822,7 @@ org.objectweb.asm.tree.ClassNode
 org.objectweb.asm.tree.FieldNode
 org.objectweb.asm.tree.InsnList
 org.objectweb.asm.tree.InsnNode
+org.objectweb.asm.tree.MethodInsnNode
 org.objectweb.asm.tree.MethodNode
 org.objectweb.asm.tree.ParameterNode
 org.openjdk.jmh.annotations.AuxCounters
