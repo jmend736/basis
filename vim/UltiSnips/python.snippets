@@ -52,11 +52,17 @@ endglobal
 
 snippet il
 import numpy as np
-import numpy.linalg as la
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import pandas as pd
+import scipy.linalg as la
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
+import jax
+import jax.numpy as jnp
+import jax.numpy.linalg as jla
+
 import networkx as nx
+
+import pandas as pd
+import matplotlib.pyplot as plt
 endsnippet
 
 snippet inp
