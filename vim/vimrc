@@ -681,6 +681,10 @@ function! s:MakeOrSetup(cmds) abort
     execute 'Term blaze build' BlazeTarget()
   elseif filereadable('gradlew')
     Term ./gradlew test --rerun
+  elseif a:cmds =~# 'g:\w*$' && exists(a:cmds)
+    let l:ext = eval(a:cmds)
+    call s:MakeOrSetupExt(l:ext)
+    Term make
   else
     let l:cmds = substitute(a:cmds, '%', expand('%'), 'g')
     let l:lines = split(l:cmds, ';')->map('trim(v:val)')
@@ -699,6 +703,35 @@ function! s:MakeOrSetup(cmds) abort
       call l:cursor.Restore()
     endtry
   endif
+endfunction
+
+""
+" Creates a makefile from a description dict.
+"
+" The {makefile} argument will be a list of dicts or strings:
+"
+"   {'target': ['command_1', ...]}
+"   {'target: input': ['command_1', ...]}
+"   'target: input'
+"
+function! s:MakeOrSetupExt(makefile) abort
+  let l:lines = []
+  let l:Exp = {str -> substitute(str, '%', expand('%'), 'g')}
+  let l:FixTarget = {str -> (stridx(str, ':') == -1) ? str .. ':' : str}
+  let l:FixCommand = {str -> "\t" .. str}
+  for l:rule in a:makefile
+    if type(l:rule) is v:t_string
+      eval lines->add(l:FixTarget(l:rule))
+      eval lines->add('')
+    elseif type(l:rule) is v:t_dict
+      for [l:target, l:commands] in items(l:rule)
+        eval lines->add(l:FixTarget(l:Exp(l:target)))
+        eval lines->extend(l:commands->mapnew({_, v -> l:FixCommand(l:Exp(v))}))
+        eval lines->add('')
+      endfor
+    endif
+  endfor
+  call writefile(l:lines, 'Makefile')
 endfunction
 
 let g:jm_vimrc.docs.commands['SetupYcmClasspath'] =
@@ -808,7 +841,7 @@ augroup ft_cc
           \ :term <C-r>=BlazeGuessCommand()<CR>
     autocmd FileType cpp nnoremap <buffer> <localleader>r
           \ :MakeOrSetup
-          \   clang++-12 -std=c++17 $(CFLAGS) -o build % $(LDFLAGS);
+          \   clang++ -std=c++20 $(CFLAGS) -o build % $(LDFLAGS);
           \   ./build<CR>
     autocmd FileType cpp nnoremap <buffer> <space>f
           \ :FormatCode<CR>
@@ -857,6 +890,13 @@ augroup ft_python
           \   '                "java.project.referencedLibraries": ["~/.jars/*.jar"]',
           \   '            }',
           \   '        }',
+          \   '    if kwargs["language"] == "cfamily":',
+          \   '        return {',
+          \   '            "flags": [',
+          \   '                "-std=c++20",',
+          \   '                "-Wall",',
+          \   '            ]',
+          \   '        }',
           \ ])
 
 
@@ -895,10 +935,14 @@ augroup ft_kotlin
     autocmd FileType kotlin
           \ setlocal tabstop=2 softtabstop=2 tabstop=2 shiftwidth=2 smarttab
 
+    autocmd FileType kotlin let g:KotlinMakefileTemplate = [
+          \   'PHONY: all',
+          \   {'all: a.jar': ['java -jar a.jar']},
+          \   {'a.jar: %': ['kotlinc -include-runtime -d a.jar $<']},
+          \ ]
+
     autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>r
-          \ :MakeOrSetup
-          \   kotlinc . -include-runtime -d a.jar;
-          \   java -jar a.jar<CR>
+          \ :MakeOrSetup g:KotlinMakefileTemplate<cr>
     autocmd FileType kotlin nnoremap <silent> <buffer> <localleader>R
           \ :Term ./gradlew run<cr>
     autocmd FileType kotlin nnoremap <space>f :FormatCode<cr>
@@ -1934,6 +1978,8 @@ kotlin.coroutines.resume
 kotlin.coroutines.resumeWithException
 kotlin.coroutines.startCoroutine
 kotlin.coroutines.suspendCoroutine
+kotlin.math.sin
+kotlin.math.sqrt
 kotlin.reflect.KClass
 kotlin.reflect.KFunction
 kotlin.reflect.KProperty
